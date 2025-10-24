@@ -12,9 +12,18 @@ class AuthService {
     if (isDemoMode) {
       await simulateNetworkDelay();
       
-      const user = DEMO_USERS.find(
-        u => u.email === credentials.email && u.password === credentials.password
+      // Buscar primero en usuarios actualizados de localStorage
+      const storedUsers = JSON.parse(localStorage.getItem('demo_users') || '[]');
+      let user = storedUsers.find(
+        (u: any) => u.email === credentials.email && u.password === credentials.password
       );
+      
+      // Si no se encuentra, buscar en DEMO_USERS
+      if (!user) {
+        user = DEMO_USERS.find(
+          u => u.email === credentials.email && u.password === credentials.password
+        );
+      }
 
       if (!user) {
         throw new Error('Credenciales inválidas');
