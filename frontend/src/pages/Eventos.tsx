@@ -91,10 +91,6 @@ export default function Eventos() {
     console.log('Eventos cargados:', filteredEvents.length);
     setEvents(filteredEvents);
   };
-      setEvents(initialEvents);
-      localStorage.setItem('demo_events', JSON.stringify(MOCK_EVENTS));
-    }
-  };
 
   // Filter events
   const filteredEvents = events.filter((event) => {
