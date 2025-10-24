@@ -348,6 +348,81 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
           </CardHeader>
           {showAddForm && (
             <CardContent className="space-y-4">
+              {/* Ingredient Control System */}
+              {event.foodDetails?.cantidadDePlatos && (
+                <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm font-medium flex items-center gap-2">
+                      <ChefHat className="h-4 w-4" />
+                      Guía de Compras Automática
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div>
+                      <Label>Seleccionar Plato del Menú</Label>
+                      <Select
+                        value={selectedDish}
+                        onValueChange={setSelectedDish}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecciona un plato para ver insumos sugeridos" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {DISH_INGREDIENTS.map((dish) => (
+                            <SelectItem key={dish.dishId} value={dish.dishId}>
+                              {dish.dishName}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {showIngredientGuide && suggestedIngredients.length > 0 && (
+                      <div className="mt-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <p className="text-sm font-medium">
+                            Insumos sugeridos para {event.foodDetails.cantidadDePlatos} porciones:
+                          </p>
+                          <Badge variant="outline" className="bg-primary/10">
+                            Guía de Compra
+                          </Badge>
+                        </div>
+                        <div className="max-h-60 overflow-y-auto space-y-2">
+                          {suggestedIngredients.map((ingredient, idx) => (
+                            <div
+                              key={idx}
+                              className="flex items-center justify-between p-2 bg-background rounded border text-sm"
+                            >
+                              <div className="flex-1">
+                                <p className="font-medium">{ingredient.name}</p>
+                                <p className="text-xs text-muted-foreground">
+                                  Cantidad máxima: {ingredient.totalQuantity.toFixed(2)} {ingredient.unit}
+                                </p>
+                              </div>
+                              <div className="text-right">
+                                <p className="font-semibold text-primary">
+                                  S/ {ingredient.totalCost.toFixed(2)}
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                  S/ {ingredient.estimatedCost.toFixed(2)}/{ingredient.unit}
+                                </p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        <Alert className="mt-3">
+                          <AlertDescription className="text-xs">
+                            💡 <strong>Tip:</strong> Estas son cantidades máximas sugeridas basadas en el menú seleccionado.
+                            Usa esta guía para registrar tus compras reales.
+                          </AlertDescription>
+                        </Alert>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Expense Registration Form */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label>Categoría *</Label>
@@ -388,16 +463,6 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
                 </div>
               </div>
 
-              <div>
-                <Label>Descripción *</Label>
-                <Textarea
-                  placeholder="Describe el gasto..."
-                  value={newExpense.description}
-                  onChange={(e) => setNewExpense({ ...newExpense, description: e.target.value })}
-                  rows={2}
-                />
-              </div>
-
               <div className="grid grid-cols-3 gap-4">
                 <div>
                   <Label>Cantidad</Label>
@@ -405,7 +470,7 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
                     type="number"
                     value={newExpense.quantity}
                     onChange={(e) => {
-                      const quantity = parseInt(e.target.value);
+                      const quantity = parseInt(e.target.value) || 0;
                       setNewExpense({
                         ...newExpense,
                         quantity,
@@ -422,7 +487,7 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
                     step="0.01"
                     value={newExpense.unitPrice}
                     onChange={(e) => {
-                      const unitPrice = parseFloat(e.target.value);
+                      const unitPrice = parseFloat(e.target.value) || 0;
                       setNewExpense({
                         ...newExpense,
                         unitPrice,
@@ -438,7 +503,7 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
                     type="number"
                     step="0.01"
                     value={newExpense.amount}
-                    onChange={(e) => setNewExpense({ ...newExpense, amount: parseFloat(e.target.value) })}
+                    onChange={(e) => setNewExpense({ ...newExpense, amount: parseFloat(e.target.value) || 0 })}
                     className="font-bold"
                   />
                 </div>
