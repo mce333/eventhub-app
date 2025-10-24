@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon } from 'lucide-react';
 import { Event } from '@/types/events';
+import { MOCK_EVENTS } from '@/lib/mockData';
 import {
   Tooltip,
   TooltipContent,
@@ -9,16 +10,24 @@ import {
 } from "@/components/ui/tooltip";
 
 interface EventCalendarProps {
-  events: Event[];
+  events?: Event[];
 }
 
-export function EventCalendar({ events }: EventCalendarProps) {
+export function EventCalendar({ events: propEvents }: EventCalendarProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [allEvents, setAllEvents] = useState<Event[]>([]);
+
+  // Cargar eventos de localStorage y combinar con MOCK_EVENTS
+  useEffect(() => {
+    const storedEvents = JSON.parse(localStorage.getItem('demo_events') || '[]');
+    const combined = [...MOCK_EVENTS, ...storedEvents];
+    setAllEvents(propEvents || combined);
+  }, [propEvents]);
 
   // Obtener eventos del mes actual
   const getEventsForDate = (date: Date): Event[] => {
     const dateStr = date.toISOString().split('T')[0];
-    return events.filter(event => event.date === dateStr);
+    return allEvents.filter(event => event.date === dateStr);
   };
 
   // Obtener información del mes
