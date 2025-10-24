@@ -90,13 +90,19 @@ export interface EventFurniture {
 }
 
 export interface EventStaff {
-  id: number;
+  id?: number;
   name: string;
   role: string;
-  hours: number;
+  roleId?: string; // ID del rol predeterminado
+  hours?: number;
+  plates?: number; // Para servicio de servido (tarifa por plato)
   hourlyRate: number;
   totalCost: number;
   contact: string;
+  userId?: number; // ID del usuario del sistema si tiene acceso
+  hasSystemAccess?: boolean; // Indica si se le dará acceso al sistema
+  systemEmail?: string; // Email para acceso al sistema
+  systemPassword?: string; // Contraseña temporal
 }
 
 export interface AuditLog {
