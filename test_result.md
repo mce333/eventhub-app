@@ -144,6 +144,18 @@ frontend:
         agent: "main"
         comment: "MAJOR UPDATE - Fixed EventExpensesTab.tsx: 1) Fixed property mismatch (quantity/unitPrice vs cantidad/costoUnitario), 2) Integrated automatic ingredient control system with dish selection and suggested quantities, 3) Removed description field as requested, 4) Added test event in MOCK_EVENTS (id: 1, assigned to Juan id: 4). Ready for retesting with real event data."
 
+  - task: "Ingredient Control System Integration"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/events/EventExpensesTab.tsx, /app/frontend/src/lib/ingredientsData.ts"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Integrated automatic ingredient control system: 1) Added dish selector with 8 predefined dishes (Pollo a la Parrilla, Carne Asada, Pescado Frito, etc.), 2) Shows suggested ingredient quantities based on event's cantidadDePlatos, 3) Displays maximum quantities and estimated costs per ingredient, 4) Acts as purchasing guide for users. Removed description field as requested by user."
+
   - task: "Event Dashboard Expense Information"
     implemented: true
     working: true
