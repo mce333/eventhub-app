@@ -47,25 +47,27 @@ export default function EventoDetalle() {
   }, [id]);
 
   const loadEvent = () => {
-    const storedEvents = localStorage.getItem('demo_events');
-    if (storedEvents) {
-      const events: Event[] = JSON.parse(storedEvents);
-      const foundEvent = events.find(e => e.id === parseInt(id || '0'));
-      
-      if (foundEvent) {
-        // Check if user has permission to view this event
-        if (!canViewEvent(user, foundEvent)) {
-          toast.error('No tienes permiso para ver este evento');
-          navigate('/eventos');
-          return;
-        }
-        
-        setEvent(foundEvent);
-        setEditedEvent(foundEvent);
-      } else {
-        toast.error('Evento no encontrado');
+    // Buscar en demo_events primero
+    const storedEvents = JSON.parse(localStorage.getItem('demo_events') || '[]');
+    
+    // Combinar con MOCK_EVENTS
+    const allEvents = [...MOCK_EVENTS, ...storedEvents];
+    
+    const foundEvent = allEvents.find(e => e.id === parseInt(id || '0'));
+    
+    if (foundEvent) {
+      // Check if user has permission to view this event
+      if (!canViewEvent(user, foundEvent)) {
+        toast.error('No tienes permiso para ver este evento');
         navigate('/eventos');
+        return;
       }
+      
+      setEvent(foundEvent);
+      setEditedEvent(foundEvent);
+    } else {
+      toast.error('Evento no encontrado');
+      navigate('/eventos');
     }
   };
 
