@@ -4,6 +4,7 @@ import { Header } from "@/components/dashboard/Header";
 import { MetricCard } from "@/components/dashboard/MetricCard";
 import { EventCard } from "@/components/dashboard/EventCard";
 import { EventCalendar } from "@/components/dashboard/EventCalendar";
+import { ChatbotHelper } from "@/components/dashboard/ChatbotHelper";
 import { useAuth } from "@/contexts/AuthContext";
 import { MOCK_DASHBOARD_DATA, MOCK_EVENTS } from "@/lib/mockData";
 import { useEffect, useMemo } from "react";
