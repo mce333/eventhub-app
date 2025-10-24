@@ -179,6 +179,9 @@ frontend:
       - working: true
         agent: "testing"
         comment: "✅ Login functionality working correctly for both user types. Demo user cards are clickable and redirect properly. Encargado de Compras redirects to /eventos with 'Registrar Gastos' interface. Juan Pérez redirects to /eventos with 'Mis Eventos Asignados' interface."
+      - working: true
+        agent: "testing"
+        comment: "✅ CONFIRMED - Admin authentication via demo card works perfectly. Admin successfully logs in, reaches dashboard, and can navigate to /eventos without being redirected to login. Authentication persistence is working correctly."
 
   - task: "Events Page Role-Based Content"
     implemented: true
