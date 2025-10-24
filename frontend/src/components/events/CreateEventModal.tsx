@@ -562,7 +562,7 @@ export function CreateEventModal({ open, onClose }: CreateEventModalProps) {
                     <Label>Cantidad de Platos *</Label>
                     <Input
                       type="number"
-                      placeholder="150"
+                      placeholder="Número de platos"
                       value={formData.foodDetails?.cantidadDePlatos || ''}
                       onChange={(e) =>
                         setFormData({
