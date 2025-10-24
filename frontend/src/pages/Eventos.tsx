@@ -424,6 +424,9 @@ export default function Eventos() {
           loadEvents();
         }} 
       />
+
+      {/* Chatbot Helper */}
+      <ChatbotHelper />
     </div>
   );
 }
