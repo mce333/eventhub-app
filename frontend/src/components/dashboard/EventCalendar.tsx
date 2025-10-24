@@ -184,11 +184,11 @@ export function EventCalendar({ events: propEvents }: EventCalendarProps) {
       {/* Legend - Simplified */}
       <div className="flex items-center justify-center gap-4 mt-4 pt-3 border-t border-border">
         <div className="flex items-center gap-1.5">
-          <div className="w-3 h-3 rounded bg-green-500/20 border border-green-500/50" />
+          <div className="w-3 h-3 rounded bg-green-600/40 border-2 border-green-500" />
           <span className="text-xs text-muted-foreground">Libre</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <div className="w-3 h-3 rounded bg-purple-500/20 border border-purple-500/50" />
+          <div className="w-3 h-3 rounded bg-purple-600/40 border-2 border-purple-500" />
           <span className="text-xs text-muted-foreground">Reservado</span>
         </div>
       </div>
