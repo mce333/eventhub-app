@@ -93,7 +93,7 @@ export function EventCalendar({ events }: EventCalendarProps) {
             <p className="font-semibold text-purple-400">{event.name}</p>
             <div className="text-xs text-muted-foreground space-y-0.5">
               <p>👥 {event.attendees} personas</p>
-              <p>💰 Adelanto: S/ {event.contract.pagoAdelantado.toLocaleString()}</p>
+              <p>💰 Adelanto: S/ {(event.financial?.advancePayment || 0).toLocaleString()}</p>
               <p>📍 {event.location}</p>
               {event.status === 'confirmed' && (
                 <p className="text-green-400">✓ Confirmado</p>
