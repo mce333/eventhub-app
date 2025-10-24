@@ -234,15 +234,23 @@ export function CreateEventModal({ open, onClose }: CreateEventModalProps) {
 
       console.log('Nuevo evento creado:', newEvent);
 
+      // Obtener IDs de personal con acceso al sistema
+      const staffWithAccess = (formData.staff || [])
+        .filter(s => s.hasSystemAccess && s.userId)
+        .map(s => s.userId!);
+
+      // Agregar assignedServiceUsers al evento
+      newEvent.assignedServiceUsers = staffWithAccess;
+
       const existingEvents = JSON.parse(localStorage.getItem('demo_events') || '[]');
       const updatedEvents = [...existingEvents, newEvent];
       localStorage.setItem('demo_events', JSON.stringify(updatedEvents));
       
-      // Update assigned events for service users
-      if (selectedServiceUsers.length > 0) {
+      // Update assigned events for service users with system access
+      if (staffWithAccess.length > 0) {
         const storedUsers = JSON.parse(localStorage.getItem('demo_users') || JSON.stringify(DEMO_USERS));
         const updatedUsers = storedUsers.map((u: any) => {
-          if (selectedServiceUsers.includes(u.id)) {
+          if (staffWithAccess.includes(u.id)) {
             return {
               ...u,
               assignedEventIds: [...(u.assignedEventIds || []), newEventId],
@@ -254,6 +262,7 @@ export function CreateEventModal({ open, onClose }: CreateEventModalProps) {
       }
       
       console.log('Total de eventos:', updatedEvents.length);
+      console.log('Personal con acceso:', staffWithAccess);
 
       toast.success('¡Evento creado exitosamente!');
       
