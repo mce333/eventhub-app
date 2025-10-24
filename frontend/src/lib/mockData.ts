@@ -105,8 +105,66 @@ export const MOCK_CLIENTS: EventClient[] = [
   { id: 3, name: 'Carlos Ruiz', email: 'carlos@email.com', phone: '+54 11 2345 6789' },
 ];
 
-// Mock Events - Vacío para empezar desde cero
-export const MOCK_EVENTS: Event[] = [];
+// Mock Events - 1 evento de prueba para testing
+export const MOCK_EVENTS: Event[] = [
+  {
+    id: 1,
+    name: 'Evento de Prueba',
+    description: 'Evento para probar el sistema de gastos',
+    type: 'boda',
+    status: 'confirmed',
+    date: '2025-02-15',
+    endDate: '2025-02-15',
+    location: 'Salón Principal',
+    venue: 'Local de Eventos',
+    attendees: 100,
+    maxAttendees: 150,
+    client: {
+      id: 1,
+      name: 'Cliente',
+      last_name: 'Prueba',
+      phone: '+51 999 999 999',
+      email: 'cliente@test.com',
+      address: 'Dirección Test 123',
+      document_type: 'DNI',
+      document_number: '12345678',
+    },
+    serviceType: 'con_comida',
+    foodDetails: {
+      cantidadDePlatos: 100,
+      tipoMenu: 'buffet',
+      precioPorPlato: 50,
+    },
+    financial: {
+      budget: 10000,
+      totalIncome: 5000,
+      totalExpenses: 0,
+      balance: 5000,
+      advancePayment: 5000,
+      pendingPayment: 5000,
+    },
+    contract: {
+      tipoContrato: 'privado',
+      precioTotal: 10000,
+      pagoAdelantado: 5000,
+      saldoPendiente: 5000,
+      fechaFirma: '2025-01-15',
+    },
+    assignedServiceUsers: [4], // Juan asignado
+    payments: [],
+    expenses: [],
+    decoration: [],
+    furniture: [],
+    staff: [],
+    timeline: [],
+    tags: [],
+    createdBy: 1,
+    createdByName: 'Admin Sistema',
+    createdAt: '2025-01-15',
+    updatedAt: '2025-01-15',
+    imageUrl: 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=800',
+  },
+];
 
 export const MOCK_DASHBOARD_DATA: Record<number, DashboardMetrics> = {
   1: { // Admin
