@@ -89,24 +89,19 @@ export function EventCalendar({ events: propEvents }: EventCalendarProps) {
     if (dateEvents.length === 0) {
       return (
         <div className="text-sm">
-          <p className="font-semibold text-green-400">Fecha disponible</p>
-          <p className="text-xs text-muted-foreground mt-1">Sin eventos programados</p>
+          <p className="font-semibold">Disponible</p>
         </div>
       );
     }
     
     return (
-      <div className="space-y-2 min-w-[200px]">
+      <div className="space-y-2 min-w-[180px]">
         {dateEvents.map(event => (
-          <div key={event.id} className="text-sm space-y-1">
-            <p className="font-semibold text-purple-400">{event.name}</p>
-            <div className="text-xs text-muted-foreground space-y-0.5">
-              <p>👥 {event.attendees} personas</p>
-              <p>💰 Adelanto: S/ {(event.financial?.advancePayment || 0).toLocaleString()}</p>
-              <p>📍 {event.location}</p>
-              {event.status === 'confirmed' && (
-                <p className="text-green-400">✓ Confirmado</p>
-              )}
+          <div key={event.id} className="text-sm space-y-0.5">
+            <p className="font-semibold">{event.name}</p>
+            <div className="text-xs text-muted-foreground">
+              <p>{event.attendees} personas</p>
+              <p>S/ {(event.financial?.advancePayment || 0).toLocaleString()}</p>
             </div>
           </div>
         ))}
@@ -115,45 +110,39 @@ export function EventCalendar({ events: propEvents }: EventCalendarProps) {
   };
 
   return (
-    <div className="bg-gradient-card rounded-xl p-6 border border-border animate-fade-in">
+    <div className="bg-gradient-card rounded-xl p-6 border border-border">
       {/* Header */}
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <CalendarIcon className="w-5 h-5 text-primary" />
-            <h3 className="text-lg font-semibold text-foreground">Calendario de Eventos</h3>
-          </div>
-          <p className="text-sm text-muted-foreground">Fechas disponibles y reservadas</p>
-        </div>
+      <div className="mb-4 flex items-center justify-between">
+        <h3 className="text-lg font-semibold text-foreground">Calendario</h3>
         
         <div className="flex items-center gap-2">
           <button
             onClick={previousMonth}
-            className="p-2 hover:bg-muted rounded-lg transition-colors"
+            className="p-1.5 hover:bg-muted rounded-lg transition-colors"
             aria-label="Mes anterior"
           >
-            <ChevronLeft className="w-5 h-5" />
+            <ChevronLeft className="w-4 h-4" />
           </button>
           
-          <div className="min-w-[140px] text-center">
-            <span className="font-semibold text-foreground">
+          <div className="min-w-[120px] text-center">
+            <span className="text-sm font-medium text-foreground">
               {monthNames[month]} {year}
             </span>
           </div>
           
           <button
             onClick={nextMonth}
-            className="p-2 hover:bg-muted rounded-lg transition-colors"
+            className="p-1.5 hover:bg-muted rounded-lg transition-colors"
             aria-label="Mes siguiente"
           >
-            <ChevronRight className="w-5 h-5" />
+            <ChevronRight className="w-4 h-4" />
           </button>
         </div>
       </div>
 
       {/* Calendar Grid */}
       <TooltipProvider>
-        <div className="grid grid-cols-7 gap-2">
+        <div className="grid grid-cols-7 gap-1">
           {/* Week days header */}
           {weekDays.map(day => (
             <div
@@ -172,12 +161,12 @@ export function EventCalendar({ events: propEvents }: EventCalendarProps) {
                   <TooltipTrigger asChild>
                     <div
                       className={`
-                        w-full h-full rounded-lg border-2 transition-all cursor-pointer
-                        flex items-center justify-center
+                        w-full h-full rounded-md transition-all cursor-pointer
+                        flex items-center justify-center text-sm
                         ${getCellStyle(day)}
                       `}
                     >
-                      <span className="text-sm font-medium">{day}</span>
+                      {day}
                     </div>
                   </TooltipTrigger>
                   <TooltipContent side="top" className="bg-popover border-border">
@@ -192,14 +181,14 @@ export function EventCalendar({ events: propEvents }: EventCalendarProps) {
         </div>
       </TooltipProvider>
 
-      {/* Legend */}
-      <div className="flex items-center justify-center gap-6 mt-6 pt-4 border-t border-border">
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded bg-green-500/20 border-2 border-green-500/50" />
-          <span className="text-xs text-muted-foreground">Disponible</span>
+      {/* Legend - Simplified */}
+      <div className="flex items-center justify-center gap-4 mt-4 pt-3 border-t border-border">
+        <div className="flex items-center gap-1.5">
+          <div className="w-3 h-3 rounded bg-green-500/20 border border-green-500/50" />
+          <span className="text-xs text-muted-foreground">Libre</span>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded bg-purple-500/20 border-2 border-purple-500/50" />
+        <div className="flex items-center gap-1.5">
+          <div className="w-3 h-3 rounded bg-purple-500/20 border border-purple-500/50" />
           <span className="text-xs text-muted-foreground">Reservado</span>
         </div>
       </div>
