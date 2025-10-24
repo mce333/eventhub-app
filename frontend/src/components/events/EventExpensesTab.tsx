@@ -99,40 +99,52 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
     } : undefined;
 
     // Update event in localStorage
-    const storedEvents = localStorage.getItem('demo_events');
-    if (storedEvents) {
-      const events: Event[] = JSON.parse(storedEvents);
-      const index = events.findIndex(e => e.id === event.id);
+    const storedEvents = JSON.parse(localStorage.getItem('demo_events') || '[]');
+    const index = storedEvents.findIndex((e: Event) => e.id === event.id);
+    
+    if (index !== -1) {
+      // Event exists in demo_events, update it
+      storedEvents[index].expenses = [...(storedEvents[index].expenses || []), expense];
+      storedEvents[index].financial.totalExpenses += expense.amount;
+      storedEvents[index].financial.balance -= expense.amount;
       
-      if (index !== -1) {
-        events[index].expenses = [...(events[index].expenses || []), expense];
-        events[index].financial.totalExpenses += expense.amount;
-        events[index].financial.balance -= expense.amount;
-        
-        if (auditLog) {
-          events[index].auditLog = [...(events[index].auditLog || []), auditLog];
-        }
-        
-        localStorage.setItem('demo_events', JSON.stringify(events));
-        
-        if (isSuspicious) {
-          toast.warning('Gasto registrado - Actividad marcada como sospechosa');
-        } else {
-          toast.success('Gasto registrado correctamente');
-        }
-        
-        setShowAddForm(false);
-        setNewExpense({
-          category: '',
-          description: '',
-          amount: 0,
-          quantity: 1,
-          unitPrice: 0,
-          paymentMethod: 'efectivo',
-        });
-        onUpdate();
+      if (auditLog) {
+        storedEvents[index].auditLog = [...(storedEvents[index].auditLog || []), auditLog];
       }
+      
+      localStorage.setItem('demo_events', JSON.stringify(storedEvents));
+    } else {
+      // Event is from MOCK_EVENTS, add it to demo_events with the expense
+      const updatedEvent = {
+        ...event,
+        expenses: [...(event.expenses || []), expense],
+        financial: {
+          ...event.financial,
+          totalExpenses: (event.financial?.totalExpenses || 0) + expense.amount,
+          balance: (event.financial?.balance || 0) - expense.amount,
+        },
+        auditLog: auditLog ? [...(event.auditLog || []), auditLog] : event.auditLog,
+      };
+      storedEvents.push(updatedEvent);
+      localStorage.setItem('demo_events', JSON.stringify(storedEvents));
     }
+    
+    if (isSuspicious) {
+      toast.warning('Gasto registrado - Actividad marcada como sospechosa');
+    } else {
+      toast.success('Gasto registrado correctamente');
+    }
+    
+    setShowAddForm(false);
+    setNewExpense({
+      category: '',
+      description: '',
+      amount: 0,
+      quantity: 1,
+      unitPrice: 0,
+      paymentMethod: 'efectivo',
+    });
+    onUpdate();
   };
 
   const updatePredefinedExpense = (expenseId: number, field: 'quantity' | 'unitPrice', value: number) => {
