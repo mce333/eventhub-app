@@ -350,10 +350,13 @@ export function CreateEventModal({ open, onClose }: CreateEventModalProps) {
         {
           name: '',
           role: '',
+          roleId: '',
           hours: 0,
+          plates: 0,
           hourlyRate: 0,
           totalCost: 0,
           contact: '',
+          hasSystemAccess: false,
         },
       ],
     });
@@ -370,15 +373,45 @@ export function CreateEventModal({ open, onClose }: CreateEventModalProps) {
     });
   };
 
-  const updateStaff = (index: number, field: keyof EventStaff, value: string | number) => {
+  const updateStaff = (index: number, field: keyof EventStaff, value: string | number | boolean) => {
     const updated = [...(formData.staff || [])];
     updated[index] = {
       ...updated[index],
       [field]: value,
     };
     
+    // Si cambia el roleId, actualizar tarifa predeterminada y tipo de tarifa
+    if (field === 'roleId' && typeof value === 'string') {
+      const defaultRate = getDefaultRate(value);
+      const rateType = getRateType(value);
+      const canAccess = canRoleHaveSystemAccess(value);
+      const roleName = STAFF_ROLES.find(r => r.id === value)?.name || '';
+      
+      updated[index].role = roleName;
+      updated[index].hourlyRate = defaultRate;
+      updated[index].hasSystemAccess = canAccess ? updated[index].hasSystemAccess : false;
+      
+      // Calcular costo según tipo de tarifa
+      if (rateType === 'perPlate' && formData.foodDetails?.cantidadDePlatos) {
+        updated[index].plates = formData.foodDetails.cantidadDePlatos;
+        updated[index].totalCost = defaultRate * formData.foodDetails.cantidadDePlatos;
+      } else {
+        updated[index].hours = updated[index].hours || 8; // Default 8 horas
+        updated[index].totalCost = defaultRate * (updated[index].hours || 8);
+      }
+    }
+    
+    // Recalcular costo si cambian horas o tarifa
     if (field === 'hours' || field === 'hourlyRate') {
-      updated[index].totalCost = updated[index].hours * updated[index].hourlyRate;
+      const rateType = updated[index].roleId ? getRateType(updated[index].roleId!) : 'hourly';
+      if (rateType === 'hourly') {
+        updated[index].totalCost = (updated[index].hours || 0) * (updated[index].hourlyRate || 0);
+      }
+    }
+    
+    // Recalcular costo si cambian platos o tarifa
+    if (field === 'plates' || (field === 'hourlyRate' && updated[index].roleId && getRateType(updated[index].roleId!) === 'perPlate')) {
+      updated[index].totalCost = (updated[index].plates || 0) * (updated[index].hourlyRate || 0);
     }
     
     setFormData({ ...formData, staff: updated });
