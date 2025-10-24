@@ -31,6 +31,7 @@ import { getServiceUsers } from '@/lib/permissions';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { getEventImageByType } from '@/lib/eventImages';
+import { cn } from '@/lib/utils';
 
 interface CreateEventModalProps {
   open: boolean;
