@@ -52,10 +52,13 @@ export default function EventoDetalle() {
     // Buscar en demo_events primero
     const storedEvents = JSON.parse(localStorage.getItem('demo_events') || '[]');
     
-    // Combinar con MOCK_EVENTS
-    const allEvents = [...MOCK_EVENTS, ...storedEvents];
+    // Buscar primero en localStorage
+    let foundEvent = storedEvents.find((e: Event) => e.id === parseInt(id || '0'));
     
-    const foundEvent = allEvents.find(e => e.id === parseInt(id || '0'));
+    // Si no está en localStorage, buscar en MOCK_EVENTS
+    if (!foundEvent) {
+      foundEvent = MOCK_EVENTS.find(e => e.id === parseInt(id || '0'));
+    }
     
     if (foundEvent) {
       // Check if user has permission to view this event
