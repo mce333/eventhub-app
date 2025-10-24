@@ -28,7 +28,7 @@ export function Sidebar() {
             <Calendar className="w-6 h-6 text-white" />
           </div>
           <div>
-            <h1 className="text-lg font-bold text-foreground">EventHub</h1>
+            <h1 className="text-lg font-bold text-foreground">Sistema de Control</h1>
             <p className="text-xs text-muted-foreground">Panel de Control</p>
           </div>
         </div>
