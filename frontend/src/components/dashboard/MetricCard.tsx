@@ -5,12 +5,13 @@ interface MetricCardProps {
   title: string;
   value: string | number;
   change?: string;
+  extraInfo?: string;
   changeType?: "positive" | "negative" | "neutral";
   icon: LucideIcon;
   trend?: "up" | "down" | "stable";
 }
 
-export function MetricCard({ title, value, change, changeType = "neutral", icon: Icon, trend }: MetricCardProps) {
+export function MetricCard({ title, value, change, extraInfo, changeType = "neutral", icon: Icon, trend }: MetricCardProps) {
   return (
     <div className="group relative bg-gradient-card rounded-xl p-6 border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-card overflow-hidden animate-fade-in">
       <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-glow opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -49,6 +50,11 @@ export function MetricCard({ title, value, change, changeType = "neutral", icon:
               )}
             >
               {change}
+            </p>
+          )}
+          {extraInfo && (
+            <p className="text-xs text-muted-foreground">
+              {extraInfo}
             </p>
           )}
         </div>
