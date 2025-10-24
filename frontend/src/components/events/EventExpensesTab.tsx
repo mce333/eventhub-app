@@ -72,14 +72,18 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
 
     const expense: EventExpense = {
       id: Date.now(),
-      category: newExpense.category,
+      eventId: event.id,
+      category: newExpense.category as any,
       description: newExpense.description,
+      cantidad: newExpense.quantity,
+      costoUnitario: newExpense.unitPrice,
       amount: newExpense.amount,
-      date: new Date().toISOString(),
+      date: new Date().toISOString().split('T')[0],
       registeredBy: user?.id || 0,
       registeredByName: `${user?.name} ${user?.last_name}`,
-      paymentMethod: newExpense.paymentMethod,
-      status: 'pending',
+      registeredAt: new Date().toISOString(),
+      paymentMethod: newExpense.paymentMethod as any,
+      status: 'pending' as any,
       isPredetermined: false,
     };
 
