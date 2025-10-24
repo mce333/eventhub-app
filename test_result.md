@@ -102,15 +102,51 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Testing chatbot functionality for different user roles - Encargado de Compras should NOT have chatbot, Juan Pérez should HAVE chatbot"
+user_problem_statement: "Testing critical event management functionality: 1) Create event without default values (no '150' in quantity, no 'Quinceañera de María' placeholder, no '150' in plates), 2) Juan Pérez can register expenses, 3) Event dashboard shows expense information"
 
 frontend:
+  - task: "Create Event Form - No Default Values"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/events/CreateEventModal.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Need to test that event creation form does not have default values like '150' in quantity fields or 'Quinceañera de María' as placeholder text"
+
+  - task: "Juan Pérez Expense Registration"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/events/EventExpensesTab.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Need to test that Juan Pérez can be assigned to events and can register expenses in the Gastos tab"
+
+  - task: "Event Dashboard Expense Information"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/EventoDetalle.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Need to test that event dashboard shows expense information including Total Gastos Registrados card and expense forms"
+
   - task: "Chatbot Role-Based Access Control"
     implemented: true
     working: true
     file: "/app/frontend/src/components/dashboard/ChatbotHelper.tsx"
     stuck_count: 0
-    priority: "high"
+    priority: "medium"
     needs_retesting: false
     status_history:
       - working: true
@@ -122,7 +158,7 @@ frontend:
     working: true
     file: "/app/frontend/src/pages/Login.tsx"
     stuck_count: 0
-    priority: "high"
+    priority: "medium"
     needs_retesting: false
     status_history:
       - working: true
