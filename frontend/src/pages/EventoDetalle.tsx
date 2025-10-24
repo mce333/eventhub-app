@@ -311,6 +311,9 @@ export default function EventoDetalle() {
           </div>
         </main>
       </div>
+      
+      {/* Chatbot Helper */}
+      <ChatbotHelper />
     </div>
   );
 }
