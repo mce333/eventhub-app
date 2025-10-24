@@ -46,14 +46,27 @@ const PAYMENT_METHODS = [
 export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
   const { user } = useAuth();
   const [showAddForm, setShowAddForm] = useState(false);
+  const [selectedDish, setSelectedDish] = useState<string>('');
+  const [suggestedIngredients, setSuggestedIngredients] = useState<any[]>([]);
+  const [showIngredientGuide, setShowIngredientGuide] = useState(false);
   const [newExpense, setNewExpense] = useState({
     category: '',
-    description: '',
     amount: 0,
     quantity: 1,
     unitPrice: 0,
     paymentMethod: 'efectivo',
   });
+
+  // Calculate suggested ingredients when dish and portions are selected
+  useEffect(() => {
+    if (selectedDish && event.foodDetails?.cantidadDePlatos) {
+      const calculation = calculateTotalIngredients(selectedDish, event.foodDetails.cantidadDePlatos);
+      if (calculation) {
+        setSuggestedIngredients(calculation.ingredients);
+        setShowIngredientGuide(true);
+      }
+    }
+  }, [selectedDish, event.foodDetails?.cantidadDePlatos]);
 
   const canEdit = canEditExpenses(user, event);
   const isSuspicious = isSuspiciousExpenseEdit(user);
