@@ -149,15 +149,18 @@ frontend:
 
   - task: "Ingredient Control System Integration"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/frontend/src/components/events/EventExpensesTab.tsx, /app/frontend/src/lib/ingredientsData.ts"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Integrated automatic ingredient control system: 1) Added dish selector with 8 predefined dishes (Pollo a la Parrilla, Carne Asada, Pescado Frito, etc.), 2) Shows suggested ingredient quantities based on event's cantidadDePlatos, 3) Displays maximum quantities and estimated costs per ingredient, 4) Acts as purchasing guide for users. Removed description field as requested by user."
+      - working: true
+        agent: "testing"
+        comment: "✅ PASSED - Ingredient control system working perfectly. 'Guía de Compras Automática' section visible, dish selector functional, selected 'Pollo a la Parrilla' and verified suggested ingredients appear: Cuarto de pollo (100 unidad, S/ 850), Papa (200 unidad, S/ 50), Tomate (100 unidad, S/ 30), Lechuga (5000 gramos, S/ 20). Calculations correct for 100 portions. Description field correctly removed. Auto-calculation working (100 * 8.5 = 850)."
 
   - task: "Event Dashboard Expense Information"
     implemented: true
