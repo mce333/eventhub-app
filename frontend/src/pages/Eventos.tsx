@@ -42,6 +42,7 @@ import { getUserRole, hasPermission, canViewEvent } from '@/lib/permissions';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { CreateEventModal } from '@/components/events/CreateEventModal';
+import { ChatbotHelper } from '@/components/dashboard/ChatbotHelper';
 
 const statusConfig: Record<EventStatus, { label: string; color: string }> = {
   draft: { label: 'Borrador', color: 'bg-muted/10 text-muted-foreground border-muted/20' },
