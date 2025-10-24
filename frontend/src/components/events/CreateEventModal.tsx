@@ -477,7 +477,7 @@ export function CreateEventModal({ open, onClose }: CreateEventModalProps) {
               <Label>Cantidad de Personas *</Label>
               <Input
                 type="number"
-                placeholder="150"
+                placeholder="Número de asistentes"
                 value={formData.maxAttendees || ''}
                 onChange={(e) => setFormData({ ...formData, maxAttendees: parseInt(e.target.value) })}
               />
