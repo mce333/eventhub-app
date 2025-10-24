@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { ArrowLeft, Edit, Save, X, AlertTriangle } from 'lucide-react';
 import { Event, EventStatus } from '@/types/events';
+import { MOCK_EVENTS } from '@/lib/mockData';
 import { useAuth } from '@/contexts/AuthContext';
 import { getUserRole, hasPermission, canViewEvent, canEditExpenses } from '@/lib/permissions';
 import { toast } from 'sonner';
