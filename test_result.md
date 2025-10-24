@@ -122,7 +122,7 @@ frontend:
 
   - task: "Juan Pérez Expense Registration"
     implemented: true
-    working: false
+    working: true
     file: "/app/frontend/src/components/events/EventExpensesTab.tsx"
     stuck_count: 3
     priority: "high"
@@ -146,6 +146,9 @@ frontend:
       - working: false
         agent: "testing"
         comment: "❌ PARTIAL SUCCESS - Fixed Juan's assignedEventIds to [1] in mockData.ts. Juan can now access 'Evento de Prueba' and Gastos tab loads correctly (no black screen). Expense form works: category selection, cantidad/precio fields, auto-calculation to 850, 'Gasto registrado correctamente' toast appears. HOWEVER, expense does not appear in 'Gastos Adicionales' list after registration. localStorage shows null for demo_events, indicating expense save/refresh logic issue. Core UI and ingredient system working, but expense persistence failing."
+      - working: true
+        agent: "testing"
+        comment: "✅ EXPENSE PERSISTENCE FIX VERIFIED - EventoDetalle.tsx fix is working! Comprehensive testing completed: TEST 1 ✅ Juan registers expense (Pollo, S/850) - appears immediately in list with correct details. TEST 2 ✅ Expense persists after page reload - still visible after F5. TEST 3 ✅ Second expense (Otros, S/600) registers correctly - both expenses show, total = S/1,450. localStorage.demo_events contains both expenses with correct data. Core functionality WORKING. MINOR ISSUE: main.tsx clears demo_events on new session start (line 8), preventing cross-session visibility. Admin cannot see Juan's expenses in new session. Recommend removing or modifying localStorage cleanup logic in main.tsx for production use."
 
   - task: "Ingredient Control System Integration"
     implemented: true
