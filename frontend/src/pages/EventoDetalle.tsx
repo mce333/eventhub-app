@@ -113,8 +113,6 @@ export default function EventoDetalle() {
     setIsEditing(false);
     toast.success('Evento actualizado correctamente');
   };
-    }
-  };
 
   const handleCancel = () => {
     setEditedEvent(event);
