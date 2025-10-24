@@ -124,9 +124,9 @@ frontend:
     implemented: true
     working: false
     file: "/app/frontend/src/components/events/EventExpensesTab.tsx"
-    stuck_count: 1
+    stuck_count: 2
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
@@ -137,6 +137,9 @@ frontend:
       - working: false
         agent: "testing"
         comment: "✅ AUTHENTICATION FIXED - Admin can now access /eventos successfully! However, Juan Pérez still needs testing for expense registration functionality. The previous authentication issue that affected Admin has been resolved."
+      - working: false
+        agent: "testing"
+        comment: "❌ CRITICAL ISSUE - Cannot test Gastos functionality because there are NO EVENTS in the system. MOCK_EVENTS array is empty (line 109 in mockData.ts), and event creation is not working properly due to modal overlay issues. Admin can login and access /eventos page, but it shows 'No se encontraron eventos'. Direct navigation to /eventos/1, /eventos/2, /eventos/3 all redirect back to /eventos. The Gastos tab cannot be accessed without existing events."
 
   - task: "Event Dashboard Expense Information"
     implemented: true
