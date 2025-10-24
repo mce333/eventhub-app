@@ -75,39 +75,44 @@ export default function EventoDetalle() {
   const handleSave = () => {
     if (!editedEvent) return;
 
-    const storedEvents = localStorage.getItem('demo_events');
-    if (storedEvents) {
-      const events: Event[] = JSON.parse(storedEvents);
-      const index = events.findIndex(e => e.id === editedEvent.id);
-      
-      if (index !== -1) {
-        // Add audit log entry
-        const updatedEvent = {
-          ...editedEvent,
-          updatedAt: new Date().toISOString(),
-          auditLog: [
-            ...(editedEvent.auditLog || []),
-            {
-              id: Date.now(),
-              eventId: editedEvent.id,
-              userId: user?.id || 1,
-              userName: `${user?.name} ${user?.last_name}`,
-              userRole: user?.role?.name || 'admin',
-              action: 'updated' as const,
-              section: 'evento',
-              description: 'Información del evento actualizada',
-              timestamp: new Date().toISOString(),
-              changes: {},
-            },
-          ],
-        };
+    const storedEvents = JSON.parse(localStorage.getItem('demo_events') || '[]');
+    const index = storedEvents.findIndex((e: Event) => e.id === editedEvent.id);
+    
+    // Add audit log entry
+    const updatedEvent = {
+      ...editedEvent,
+      updatedAt: new Date().toISOString(),
+      auditLog: [
+        ...(editedEvent.auditLog || []),
+        {
+          id: Date.now(),
+          eventId: editedEvent.id,
+          userId: user?.id || 1,
+          userName: `${user?.name} ${user?.last_name}`,
+          userRole: user?.role?.name || 'admin',
+          action: 'updated' as const,
+          section: 'evento',
+          description: 'Información del evento actualizada',
+          timestamp: new Date().toISOString(),
+          changes: {},
+        },
+      ],
+    };
 
-        events[index] = updatedEvent;
-        localStorage.setItem('demo_events', JSON.stringify(events));
-        setEvent(updatedEvent);
-        setIsEditing(false);
-        toast.success('Evento actualizado correctamente');
-      }
+    if (index !== -1) {
+      // Update existing event in demo_events
+      storedEvents[index] = updatedEvent;
+      localStorage.setItem('demo_events', JSON.stringify(storedEvents));
+    } else {
+      // Event is from MOCK_EVENTS, add it to demo_events
+      storedEvents.push(updatedEvent);
+      localStorage.setItem('demo_events', JSON.stringify(storedEvents));
+    }
+    
+    setEvent(updatedEvent);
+    setIsEditing(false);
+    toast.success('Evento actualizado correctamente');
+  };
     }
   };
 
