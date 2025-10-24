@@ -26,30 +26,34 @@ export default function Dashboard() {
 
   // Calcular métricas actualizadas
   const metrics = useMemo(() => {
+    // Cargar eventos de localStorage y combinar con MOCK_EVENTS
+    const storedEvents = JSON.parse(localStorage.getItem('demo_events') || '[]');
+    const allEvents = [...MOCK_EVENTS, ...storedEvents];
+    
     const now = new Date();
     const currentMonth = now.getMonth();
     const currentYear = now.getFullYear();
     
     // Eventos de este mes
-    const eventosEsteMes = MOCK_EVENTS.filter(event => {
+    const eventosEsteMes = allEvents.filter(event => {
       const eventDate = new Date(event.date);
       return eventDate.getMonth() === currentMonth && eventDate.getFullYear() === currentYear;
     }).length;
     
     // Eventos realizados (completados)
-    const eventosRealizados = MOCK_EVENTS.filter(event => event.status === 'completed').length;
+    const eventosRealizados = allEvents.filter(event => event.status === 'completed').length;
     
     // Eventos por realizar (confirmados o en progreso)
-    const eventosPorRealizar = MOCK_EVENTS.filter(event => 
+    const eventosPorRealizar = allEvents.filter(event => 
       event.status === 'confirmed' || event.status === 'in_progress'
     ).length;
     
     // Calcular ingresos del mes
-    const ingresosEventosRealizados = MOCK_EVENTS
+    const ingresosEventosRealizados = allEvents
       .filter(event => event.status === 'completed')
       .reduce((sum, event) => sum + (event.financial?.totalIncome || 0), 0);
     
-    const adelantosEventosPorRealizar = MOCK_EVENTS
+    const adelantosEventosPorRealizar = allEvents
       .filter(event => event.status === 'confirmed' || event.status === 'in_progress')
       .reduce((sum, event) => sum + (event.financial?.advancePayment || 0), 0);
     
