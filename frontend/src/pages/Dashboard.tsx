@@ -1,12 +1,12 @@
-import { Calendar, TrendingUp, Users, DollarSign } from "lucide-react";
+import { Calendar, CheckCircle2, Clock, DollarSign } from "lucide-react";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { Header } from "@/components/dashboard/Header";
 import { MetricCard } from "@/components/dashboard/MetricCard";
 import { EventCard } from "@/components/dashboard/EventCard";
-import { StatChart } from "@/components/dashboard/StatChart";
+import { EventCalendar } from "@/components/dashboard/EventCalendar";
 import { useAuth } from "@/contexts/AuthContext";
-import { MOCK_DASHBOARD_DATA } from "@/lib/mockData";
-import { useEffect } from "react";
+import { MOCK_DASHBOARD_DATA, MOCK_EVENTS } from "@/lib/mockData";
+import { useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { getUserRole, hasPermission } from "@/lib/permissions";
 
