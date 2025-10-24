@@ -230,8 +230,11 @@ metadata:
 
 test_plan:
   current_focus:
-    - "localStorage Cleanup Logic in main.tsx"
-  stuck_tasks: []
+    - "Cross-Session Expense Visibility (CRITICAL)"
+    - "Dashboard Route (404 Error)"
+    - "Chatbot Visibility Issues"
+  stuck_tasks:
+    - "Cross-Session Expense Visibility"
   test_all: false
   test_priority: "high_first"
 
@@ -252,3 +255,5 @@ agent_communication:
     message: "✅ MAJOR PROGRESS + ❌ CRITICAL BUG FOUND - Fixed Juan's assignedEventIds=[1] in mockData.ts. Testing Results: ✅ Juan can access 'Evento de Prueba', ✅ Gastos tab loads (no black screen), ✅ Ingredient control system working perfectly (Guía de Compras Automática shows ingredients for 100 portions), ✅ Description field removed, ✅ Auto-calculation works (100*8.5=850), ✅ Toast 'Gasto registrado correctamente' appears. ❌ CRITICAL: Expense does NOT appear in 'Gastos Adicionales' list after registration. localStorage.demo_events is null, indicating expense save/refresh logic failing. The onUpdate() callback or localStorage persistence is broken for MOCK_EVENTS."
   - agent: "testing"
     message: "🎉 EXPENSE PERSISTENCE FIX VERIFIED! Comprehensive 4-test verification completed. ✅ TEST 1: Juan registers expense (Pollo, S/850) - appears immediately, shows correct category/amount/registeredBy. ✅ TEST 2: Expense persists after page reload - still visible after F5. ✅ TEST 3: Second expense (Otros, S/600) - both expenses accumulate correctly, total = S/1,450. ✅ localStorage.demo_events NOT null, contains both expenses. EventoDetalle.tsx fix is WORKING - prioritizes localStorage over MOCK_EVENTS correctly. ⚠️ MINOR ISSUE FOUND: main.tsx line 8 clears demo_events on new session start (sessionStorage check). This prevents cross-session data visibility - Admin in new session cannot see Juan's expenses. Recommend removing/modifying localStorage cleanup for production. Core functionality WORKING as intended!"
+  - agent: "testing"
+    message: "❌ FINAL COMPREHENSIVE TEST RESULTS - CRITICAL ISSUES FOUND: TEST 1 (Cross-Session Expense Visibility): ❌ FAILED - Juan can register expenses successfully (S/1,500 with Lomo Saltado ingredients), expense appears immediately in his session, BUT Admin cannot see Juan's expenses in a new session. localStorage is empty when Admin logs in, indicating cross-session persistence is NOT working. TEST 2 (Dashboard): ❌ FAILED - /dashboard route returns 404 error. TEST 3 (Chatbot): ❌ FAILED - Chatbot NOT visible for Admin on dashboard (404 page). TEST 4 (Event Creation): ✅ PASSED - No default values in form fields. TEST 5 (Ingredients): PARTIAL - Could not complete due to login issues. CRITICAL: The main.tsx localStorage cleanup code is commented out correctly, but expenses still don't persist across sessions. This suggests a deeper issue with how localStorage is being managed or cleared."
