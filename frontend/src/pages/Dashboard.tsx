@@ -47,11 +47,11 @@ export default function Dashboard() {
     // Calcular ingresos del mes
     const ingresosEventosRealizados = MOCK_EVENTS
       .filter(event => event.status === 'completed')
-      .reduce((sum, event) => sum + event.contract.precioTotal, 0);
+      .reduce((sum, event) => sum + (event.financial?.totalIncome || 0), 0);
     
     const adelantosEventosPorRealizar = MOCK_EVENTS
       .filter(event => event.status === 'confirmed' || event.status === 'in_progress')
-      .reduce((sum, event) => sum + event.contract.pagoAdelantado, 0);
+      .reduce((sum, event) => sum + (event.financial?.advancePayment || 0), 0);
     
     const ingresosTotalesMes = ingresosEventosRealizados + adelantosEventosPorRealizar;
     
