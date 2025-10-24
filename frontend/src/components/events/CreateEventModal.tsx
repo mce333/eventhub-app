@@ -30,7 +30,7 @@ import { DEMO_USERS } from '@/lib/mockData';
 import { getServiceUsers } from '@/lib/permissions';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { cn } from '@/lib/utils';
+import { getEventImageByType } from '@/lib/eventImages';
 
 interface CreateEventModalProps {
   open: boolean;
