@@ -122,11 +122,11 @@ frontend:
 
   - task: "Juan Pérez Expense Registration"
     implemented: true
-    working: false
+    working: "NA"
     file: "/app/frontend/src/components/events/EventExpensesTab.tsx"
     stuck_count: 2
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: "NA"
         agent: "main"
@@ -140,6 +140,9 @@ frontend:
       - working: false
         agent: "testing"
         comment: "❌ CRITICAL ISSUE - Cannot test Gastos functionality because there are NO EVENTS in the system. MOCK_EVENTS array is empty (line 109 in mockData.ts), and event creation is not working properly due to modal overlay issues. Admin can login and access /eventos page, but it shows 'No se encontraron eventos'. Direct navigation to /eventos/1, /eventos/2, /eventos/3 all redirect back to /eventos. The Gastos tab cannot be accessed without existing events."
+      - working: "NA"
+        agent: "main"
+        comment: "MAJOR UPDATE - Fixed EventExpensesTab.tsx: 1) Fixed property mismatch (quantity/unitPrice vs cantidad/costoUnitario), 2) Integrated automatic ingredient control system with dish selection and suggested quantities, 3) Removed description field as requested, 4) Added test event in MOCK_EVENTS (id: 1, assigned to Juan id: 4). Ready for retesting with real event data."
 
   - task: "Event Dashboard Expense Information"
     implemented: true
