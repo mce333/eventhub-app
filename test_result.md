@@ -222,6 +222,7 @@ metadata:
 test_plan:
   current_focus:
     - "Juan Pérez Expense Registration"
+    - "Ingredient Control System Integration"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
