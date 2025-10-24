@@ -435,7 +435,7 @@ export function CreateEventModal({ open, onClose }: CreateEventModalProps) {
             <div>
               <Label>Título del Evento *</Label>
               <Input
-                placeholder="Ej: Quinceañera de María"
+                placeholder="Nombre del evento"
                 value={formData.name || ''}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               />
