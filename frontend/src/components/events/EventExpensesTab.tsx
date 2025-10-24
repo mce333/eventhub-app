@@ -156,9 +156,11 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
     }
     
     setShowAddForm(false);
+    setSelectedDish('');
+    setSuggestedIngredients([]);
+    setShowIngredientGuide(false);
     setNewExpense({
       category: '',
-      description: '',
       amount: 0,
       quantity: 1,
       unitPrice: 0,
