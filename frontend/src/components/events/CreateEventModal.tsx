@@ -200,6 +200,7 @@ export function CreateEventModal({ open, onClose }: CreateEventModalProps) {
           pendingPayment: totalPrice - (formData.contract?.pagoAdelantado || 0),
         },
         expenses: predeterminedExpenses,
+        payments: [],
         decoration: decorationItems.map((item, idx) => ({
           id: idx + 1,
           item: item.package,
