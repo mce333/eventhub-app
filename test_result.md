@@ -206,3 +206,5 @@ agent_communication:
     message: "✅ TESTING COMPLETE - All chatbot functionality tests passed successfully. Both TEST 3 (Encargado de Compras NO chatbot) and TEST 4 (Juan Pérez HAS chatbot) completed with PASS results. The role-based access control for the chatbot is working correctly as implemented in ChatbotHelper.tsx. Fixed minor import issue during testing. Screenshots and detailed logs available."
   - agent: "main"
     message: "Updated test_result.md with new critical testing requirements: 1) Verify event creation form has no default values, 2) Test Juan Pérez expense registration functionality, 3) Verify event dashboard shows expense information properly. All tasks marked as high priority and need testing."
+  - agent: "testing"
+    message: "✅ TESTING COMPLETED - Mixed results: TEST 1 PASSED (no default values in create event form), TEST 2 & 3 FAILED due to authentication/routing issues. Both Admin and Juan get redirected to login when trying to access events, preventing testing of expense functionality. Critical issue: Users cannot stay authenticated when navigating to /eventos - they get redirected to /login."
