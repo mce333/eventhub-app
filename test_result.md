@@ -122,11 +122,11 @@ frontend:
 
   - task: "Juan Pérez Expense Registration"
     implemented: true
-    working: "NA"
+    working: false
     file: "/app/frontend/src/components/events/EventExpensesTab.tsx"
-    stuck_count: 2
+    stuck_count: 3
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
@@ -143,6 +143,9 @@ frontend:
       - working: "NA"
         agent: "main"
         comment: "MAJOR UPDATE - Fixed EventExpensesTab.tsx: 1) Fixed property mismatch (quantity/unitPrice vs cantidad/costoUnitario), 2) Integrated automatic ingredient control system with dish selection and suggested quantities, 3) Removed description field as requested, 4) Added test event in MOCK_EVENTS (id: 1, assigned to Juan id: 4). Ready for retesting with real event data."
+      - working: false
+        agent: "testing"
+        comment: "❌ PARTIAL SUCCESS - Fixed Juan's assignedEventIds to [1] in mockData.ts. Juan can now access 'Evento de Prueba' and Gastos tab loads correctly (no black screen). Expense form works: category selection, cantidad/precio fields, auto-calculation to 850, 'Gasto registrado correctamente' toast appears. HOWEVER, expense does not appear in 'Gastos Adicionales' list after registration. localStorage shows null for demo_events, indicating expense save/refresh logic issue. Core UI and ingredient system working, but expense persistence failing."
 
   - task: "Ingredient Control System Integration"
     implemented: true
