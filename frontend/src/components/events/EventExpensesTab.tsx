@@ -78,16 +78,19 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
   const totalExpenses = event.expenses?.reduce((sum, e) => sum + e.amount, 0) || 0;
 
   const handleAddExpense = () => {
-    if (!newExpense.category || !newExpense.description || newExpense.amount <= 0) {
+    if (!newExpense.category || newExpense.amount <= 0) {
       toast.error('Por favor completa todos los campos requeridos');
       return;
     }
+
+    // Get description from selected category
+    const categoryLabel = EXPENSE_CATEGORIES.find(c => c.value === newExpense.category)?.label || newExpense.category;
 
     const expense: EventExpense = {
       id: Date.now(),
       eventId: event.id,
       category: newExpense.category as any,
-      description: newExpense.description,
+      description: categoryLabel,
       cantidad: newExpense.quantity,
       costoUnitario: newExpense.unitPrice,
       amount: newExpense.amount,
