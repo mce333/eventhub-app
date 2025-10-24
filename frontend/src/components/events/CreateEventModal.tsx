@@ -875,125 +875,192 @@ export function CreateEventModal({ open, onClose }: CreateEventModalProps) {
       case 5:
         return (
           <div className="space-y-4">
-            {/* Service Users Section */}
-            <Card className="border-primary/30 bg-primary/5">
-              <CardHeader>
-                <CardTitle className="text-base flex items-center gap-2">
-                  <Users className="h-5 w-5" />
-                  Personal de Servicio (Usuarios del Sistema)
-                </CardTitle>
-                <CardDescription>
-                  Selecciona usuarios que tendrán acceso para registrar gastos en este evento
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {serviceUsers.map((serviceUser) => (
-                  <div
-                    key={serviceUser.id}
-                    className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors"
-                  >
-                    <div className="flex items-center gap-3">
-                      <Checkbox
-                        checked={selectedServiceUsers.includes(serviceUser.id)}
-                        onCheckedChange={() => toggleServiceUser(serviceUser.id)}
-                      />
-                      <div>
-                        <p className="font-medium">{serviceUser.name} {serviceUser.last_name}</p>
-                        <p className="text-xs text-muted-foreground">{serviceUser.email}</p>
-                      </div>
-                    </div>
-                    {selectedServiceUsers.includes(serviceUser.id) && (
-                      <Badge variant="outline" className="bg-success/10 text-success border-success/20">
-                        Asignado
-                      </Badge>
-                    )}
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-
-            {/* Temporary Staff Section */}
+            {/* Personal Temporal Section - ÚNICO LUGAR PARA AGREGAR PERSONAL */}
             <Card>
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div>
-                    <CardTitle className="text-base">Personal Temporal</CardTitle>
+                    <CardTitle className="text-base">Personal del Evento</CardTitle>
                     <CardDescription>
-                      Personal sin cuenta en el sistema (mozos, limpieza, etc.)
+                      Agrega el personal necesario para el evento. Los roles de Coordinador y Encargado de Compras pueden tener acceso al sistema.
                     </CardDescription>
                   </div>
                   <Button type="button" onClick={addStaff} size="sm">
                     <Plus className="h-4 w-4 mr-2" />
-                    Agregar
+                    Agregar Personal
                   </Button>
                 </div>
               </CardHeader>
               <CardContent>
-                {formData.staff && formData.staff.filter(s => !s.userId).length > 0 ? (
-                  <div className="space-y-3">
-                    {formData.staff.filter(s => !s.userId).map((person, index) => {
-                      const actualIndex = formData.staff!.indexOf(person);
+                {formData.staff && formData.staff.length > 0 ? (
+                  <div className="space-y-4">
+                    {formData.staff.map((person, index) => {
+                      const rateType = person.roleId ? getRateType(person.roleId) : 'hourly';
+                      const canAccess = person.roleId ? canRoleHaveSystemAccess(person.roleId) : false;
+                      
                       return (
-                        <Card key={actualIndex}>
-                          <CardContent className="pt-6 space-y-3">
-                            <div className="flex items-start justify-between">
-                              <div className="flex-1 grid grid-cols-2 gap-3">
-                                <div>
-                                  <Label>Nombre</Label>
-                                  <Input
-                                    placeholder="Juan Pérez"
-                                    value={person.name}
-                                    onChange={(e) => updateStaff(actualIndex, 'name', e.target.value)}
-                                  />
+                        <Card key={index} className="border-2">
+                          <CardContent className="pt-6 space-y-4">
+                            <div className="flex items-start justify-between gap-4">
+                              <div className="flex-1 space-y-4">
+                                {/* Fila 1: Nombre y Rol */}
+                                <div className="grid grid-cols-2 gap-3">
+                                  <div>
+                                    <Label>Nombre *</Label>
+                                    <Input
+                                      placeholder="Juan Pérez"
+                                      value={person.name}
+                                      onChange={(e) => updateStaff(index, 'name', e.target.value)}
+                                    />
+                                  </div>
+                                  <div>
+                                    <Label>Rol *</Label>
+                                    <Select
+                                      value={person.roleId || ''}
+                                      onValueChange={(value) => updateStaff(index, 'roleId', value)}
+                                    >
+                                      <SelectTrigger>
+                                        <SelectValue placeholder="Selecciona un rol" />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        {STAFF_ROLES.map((role) => (
+                                          <SelectItem key={role.id} value={role.id}>
+                                            <div className="flex flex-col">
+                                              <span>{role.name}</span>
+                                              <span className="text-xs text-muted-foreground">
+                                                S/ {role.defaultRate}/{role.rateType === 'hourly' ? 'hora' : 'plato'}
+                                              </span>
+                                            </div>
+                                          </SelectItem>
+                                        ))}
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
                                 </div>
-                                <div>
-                                  <Label>Rol</Label>
-                                  <Input
-                                    placeholder="Mesero"
-                                    value={person.role}
-                                    onChange={(e) => updateStaff(actualIndex, 'role', e.target.value)}
-                                  />
+
+                                {/* Fila 2: Tarifa y Cantidad */}
+                                <div className="grid grid-cols-3 gap-3">
+                                  {rateType === 'hourly' ? (
+                                    <>
+                                      <div>
+                                        <Label>Horas</Label>
+                                        <Input
+                                          type="number"
+                                          value={person.hours || 0}
+                                          onChange={(e) => updateStaff(index, 'hours', parseInt(e.target.value) || 0)}
+                                        />
+                                      </div>
+                                      <div>
+                                        <Label>Tarifa/Hora (S/)</Label>
+                                        <Input
+                                          type="number"
+                                          step="0.01"
+                                          value={person.hourlyRate || 0}
+                                          onChange={(e) => updateStaff(index, 'hourlyRate', parseFloat(e.target.value) || 0)}
+                                        />
+                                      </div>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <div>
+                                        <Label>Platos</Label>
+                                        <Input
+                                          type="number"
+                                          value={person.plates || 0}
+                                          onChange={(e) => updateStaff(index, 'plates', parseInt(e.target.value) || 0)}
+                                        />
+                                      </div>
+                                      <div>
+                                        <Label>Tarifa/Plato (S/)</Label>
+                                        <Input
+                                          type="number"
+                                          step="0.01"
+                                          value={person.hourlyRate || 0}
+                                          onChange={(e) => updateStaff(index, 'hourlyRate', parseFloat(e.target.value) || 0)}
+                                        />
+                                      </div>
+                                    </>
+                                  )}
+                                  <div>
+                                    <Label>Costo Total</Label>
+                                    <Input
+                                      type="number"
+                                      value={person.totalCost || 0}
+                                      disabled
+                                      className="bg-muted font-bold"
+                                    />
+                                  </div>
                                 </div>
+
+                                {/* Fila 3: Contacto */}
                                 <div>
-                                  <Label>Horas</Label>
-                                  <Input
-                                    type="number"
-                                    value={person.hours}
-                                    onChange={(e) =>
-                                      updateStaff(actualIndex, 'hours', parseInt(e.target.value))
-                                    }
-                                  />
-                                </div>
-                                <div>
-                                  <Label>Tarifa/Hora</Label>
-                                  <Input
-                                    type="number"
-                                    step="0.01"
-                                    value={person.hourlyRate}
-                                    onChange={(e) =>
-                                      updateStaff(actualIndex, 'hourlyRate', parseFloat(e.target.value))
-                                    }
-                                  />
-                                </div>
-                                <div>
-                                  <Label>Contacto</Label>
+                                  <Label>Contacto *</Label>
                                   <Input
                                     placeholder="+51 999 999 999"
                                     value={person.contact}
-                                    onChange={(e) => updateStaff(actualIndex, 'contact', e.target.value)}
+                                    onChange={(e) => updateStaff(index, 'contact', e.target.value)}
                                   />
                                 </div>
-                                <div>
-                                  <Label>Costo Total</Label>
-                                  <Input type="number" value={person.totalCost} disabled className="bg-muted" />
-                                </div>
+
+                                {/* Opción de acceso al sistema (solo para Coordinador y Encargado de Compras) */}
+                                {canAccess && (
+                                  <div className="border-t pt-4 space-y-3">
+                                    <div className="flex items-center space-x-2">
+                                      <Checkbox
+                                        id={`access-${index}`}
+                                        checked={person.hasSystemAccess || false}
+                                        onCheckedChange={(checked) => updateStaff(index, 'hasSystemAccess', checked as boolean)}
+                                      />
+                                      <label
+                                        htmlFor={`access-${index}`}
+                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                      >
+                                        Conceder acceso al sistema
+                                      </label>
+                                    </div>
+                                    
+                                    {person.hasSystemAccess && (
+                                      <Card className="bg-primary/5 border-primary/20">
+                                        <CardContent className="pt-4 space-y-3">
+                                          <div className="grid grid-cols-2 gap-3">
+                                            <div>
+                                              <Label className="text-xs">Email de acceso</Label>
+                                              <Input
+                                                type="email"
+                                                placeholder="usuario@email.com"
+                                                value={person.systemEmail || ''}
+                                                onChange={(e) => updateStaff(index, 'systemEmail', e.target.value)}
+                                                className="h-9"
+                                              />
+                                            </div>
+                                            <div>
+                                              <Label className="text-xs">Contraseña temporal</Label>
+                                              <Input
+                                                type="text"
+                                                placeholder="Pass123"
+                                                value={person.systemPassword || ''}
+                                                onChange={(e) => updateStaff(index, 'systemPassword', e.target.value)}
+                                                className="h-9"
+                                              />
+                                            </div>
+                                          </div>
+                                          <p className="text-xs text-muted-foreground">
+                                            💡 Esta persona podrá acceder al sistema para registrar gastos del evento
+                                          </p>
+                                        </CardContent>
+                                      </Card>
+                                    )}
+                                  </div>
+                                )}
                               </div>
+                              
+                              {/* Botón eliminar */}
                               <Button
                                 type="button"
                                 variant="ghost"
                                 size="icon"
-                                onClick={() => removeStaff(actualIndex)}
-                                className="ml-2"
+                                onClick={() => removeStaff(index)}
+                                className="shrink-0"
                               >
                                 <Trash2 className="h-4 w-4 text-destructive" />
                               </Button>
@@ -1004,8 +1071,10 @@ export function CreateEventModal({ open, onClose }: CreateEventModalProps) {
                     })}
                   </div>
                 ) : (
-                  <div className="py-8 text-center text-muted-foreground">
-                    <p>No hay personal temporal agregado</p>
+                  <div className="py-12 text-center text-muted-foreground">
+                    <Users className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                    <p>No hay personal agregado</p>
+                    <p className="text-sm mt-1">Haz clic en "Agregar Personal" para comenzar</p>
                   </div>
                 )}
               </CardContent>
@@ -1013,12 +1082,17 @@ export function CreateEventModal({ open, onClose }: CreateEventModalProps) {
 
             {/* Total Cost Card */}
             {formData.staff && formData.staff.length > 0 && (
-              <Card className="bg-primary/5 border-primary/20">
+              <Card className="bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
                 <CardContent className="p-4">
                   <div className="flex justify-between items-center">
-                    <span className="font-semibold">Costo Total de Personal:</span>
-                    <span className="text-xl font-bold text-primary">
-                      S/ {(formData.staff || []).reduce((sum, p) => sum + p.totalCost, 0).toFixed(2)}
+                    <div>
+                      <p className="text-sm text-muted-foreground">Costo Total de Personal</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {formData.staff.length} persona{formData.staff.length !== 1 ? 's' : ''} contratada{formData.staff.length !== 1 ? 's' : ''}
+                      </p>
+                    </div>
+                    <span className="text-2xl font-bold text-primary">
+                      S/ {(formData.staff || []).reduce((sum, p) => sum + (p.totalCost || 0), 0).toFixed(2)}
                     </span>
                   </div>
                 </CardContent>
