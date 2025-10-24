@@ -203,9 +203,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Create Event Form - No Default Values"
     - "Juan Pérez Expense Registration"
-    - "Event Dashboard Expense Information"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
