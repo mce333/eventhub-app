@@ -92,40 +92,41 @@ export default function Dashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <MetricCard
                 title="Eventos Este Mes"
-                value={dashboardData.totalEvents}
+                value={metrics.eventosEsteMes}
                 change="+12% vs mes anterior"
                 changeType="positive"
                 icon={Calendar}
                 trend="up"
               />
               <MetricCard
-                title="Ingresos Totales"
-                value={`€${dashboardData.totalRevenue.toLocaleString()}`}
+                title="Eventos Realizados"
+                value={metrics.eventosRealizados}
                 change="+8.2% vs mes anterior"
+                changeType="positive"
+                icon={CheckCircle2}
+                trend="up"
+              />
+              <MetricCard
+                title="Eventos por Realizar"
+                value={metrics.eventosPorRealizar}
+                change="+5.4% vs mes anterior"
+                changeType="positive"
+                icon={Clock}
+                trend="up"
+              />
+              <MetricCard
+                title="Ingresos del Mes"
+                value={`S/ ${metrics.ingresosTotalesMes.toLocaleString()}`}
+                change={`Realizados: S/ ${metrics.ingresosEventosRealizados.toLocaleString()}`}
+                extraInfo={`Adelantos: S/ ${metrics.adelantosEventosPorRealizar.toLocaleString()}`}
                 changeType="positive"
                 icon={DollarSign}
                 trend="up"
               />
-              <MetricCard
-                title="Eventos Activos"
-                value={dashboardData.activeEvents}
-                change="+5.4% vs mes anterior"
-                changeType="positive"
-                icon={Users}
-                trend="up"
-              />
-              <MetricCard
-                title="Ocupación Media"
-                value="87%"
-                change="-2.1% vs mes anterior"
-                changeType="negative"
-                icon={TrendingUp}
-                trend="down"
-              />
             </div>
 
-            {/* Chart Section */}
-            <StatChart data={dashboardData.monthlyStats} />
+            {/* Calendar Section */}
+            <EventCalendar events={MOCK_EVENTS} />
 
             {/* Upcoming Events */}
             <div className="space-y-4">
