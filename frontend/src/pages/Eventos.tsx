@@ -74,30 +74,23 @@ export default function Eventos() {
   }, []);
 
   const loadEvents = () => {
-    const storedEvents = localStorage.getItem('demo_events');
-    if (storedEvents) {
-      const parsedEvents: Event[] = JSON.parse(storedEvents);
-      
-      // Filter events based on user role
-      let filteredEvents = parsedEvents;
-      
-      if (isServicio && user) {
-        // Service users only see events they're assigned to
-        const assignedEventIds = (user as any).assignedEventIds || [];
-        filteredEvents = parsedEvents.filter(event => 
-          canViewEvent(user, event)
-        );
-      }
-      
-      console.log('Eventos cargados:', filteredEvents);
-      setEvents(filteredEvents);
-    } else {
-      // Initialize with mock events
-      console.log('Inicializando con eventos mock');
-      const initialEvents = isServicio && user
-        ? MOCK_EVENTS.filter(event => canViewEvent(user, event))
-        : MOCK_EVENTS;
-      
+    // Cargar eventos guardados en localStorage
+    const storedEvents = JSON.parse(localStorage.getItem('demo_events') || '[]');
+    
+    // Combinar MOCK_EVENTS con eventos guardados
+    const allEvents = [...MOCK_EVENTS, ...storedEvents];
+    
+    // Filter events based on user role
+    let filteredEvents = allEvents;
+    
+    if (isServicio && user) {
+      // Service users only see events they're assigned to
+      filteredEvents = allEvents.filter(event => canViewEvent(user, event));
+    }
+    
+    console.log('Eventos cargados:', filteredEvents.length);
+    setEvents(filteredEvents);
+  };
       setEvents(initialEvents);
       localStorage.setItem('demo_events', JSON.stringify(MOCK_EVENTS));
     }
