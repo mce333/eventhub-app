@@ -297,7 +297,7 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
                         <Label className="text-xs">Cantidad</Label>
                         <Input
                           type="number"
-                          value={expense.quantity || 1}
+                          value={expense.cantidad || 1}
                           onChange={(e) => updatePredefinedExpense(expense.id, 'quantity', parseInt(e.target.value))}
                           className="h-8"
                         />
@@ -307,7 +307,7 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
                         <Input
                           type="number"
                           step="0.01"
-                          value={expense.unitPrice || 0}
+                          value={expense.costoUnitario || 0}
                           onChange={(e) => updatePredefinedExpense(expense.id, 'unitPrice', parseFloat(e.target.value))}
                           className="h-8"
                         />
