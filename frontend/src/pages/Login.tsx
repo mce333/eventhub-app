@@ -21,7 +21,7 @@ export default function Login() {
 
     try {
       await login({ email, password });
-      toast.success('¡Bienvenido a EventHub!');
+      toast.success('¡Bienvenido al Sistema!');
       navigate('/');
     } catch (error) {
       toast.error('Credenciales incorrectas');
@@ -34,7 +34,7 @@ export default function Login() {
     setIsLoading(true);
     try {
       await login({ email: demoEmail, password: demoPassword });
-      toast.success('¡Bienvenido a EventHub!');
+      toast.success('¡Bienvenido al Sistema!');
       navigate('/');
     } catch (error) {
       toast.error('Error al iniciar sesión');
