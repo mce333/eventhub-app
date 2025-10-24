@@ -93,24 +93,18 @@ export default function Dashboard() {
               <MetricCard
                 title="Eventos Este Mes"
                 value={metrics.eventosEsteMes}
-                change="+12% vs mes anterior"
-                changeType="positive"
                 icon={Calendar}
                 trend="up"
               />
               <MetricCard
                 title="Eventos Realizados"
                 value={metrics.eventosRealizados}
-                change="+8.2% vs mes anterior"
-                changeType="positive"
                 icon={CheckCircle2}
                 trend="up"
               />
               <MetricCard
                 title="Eventos por Realizar"
                 value={metrics.eventosPorRealizar}
-                change="+5.4% vs mes anterior"
-                changeType="positive"
                 icon={Clock}
                 trend="up"
               />
@@ -119,14 +113,13 @@ export default function Dashboard() {
                 value={`S/ ${metrics.ingresosTotalesMes.toLocaleString()}`}
                 change={`Realizados: S/ ${metrics.ingresosEventosRealizados.toLocaleString()}`}
                 extraInfo={`Adelantos: S/ ${metrics.adelantosEventosPorRealizar.toLocaleString()}`}
-                changeType="positive"
                 icon={DollarSign}
                 trend="up"
               />
             </div>
 
             {/* Calendar Section */}
-            <EventCalendar events={MOCK_EVENTS} />
+            <EventCalendar />
 
             {/* Upcoming Events */}
             <div className="space-y-4">
