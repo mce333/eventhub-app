@@ -19,6 +19,7 @@ import { EventDecorationTab } from '@/components/events/EventDecorationTab';
 import { EventStaffTab } from '@/components/events/EventStaffTab';
 import { EventExpensesTab } from '@/components/events/EventExpensesTab';
 import { EventGalleryTab } from '@/components/events/EventGalleryTab';
+import { ChatbotHelper } from '@/components/dashboard/ChatbotHelper';
 
 const statusConfig: Record<EventStatus, { label: string; color: string }> = {
   draft: { label: 'Borrador', color: 'bg-muted/10 text-muted-foreground border-muted/20' },
