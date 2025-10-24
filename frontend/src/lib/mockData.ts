@@ -1,102 +1,94 @@
-import { User } from '@/types/auth.types';
-import { Event, EventClient, EventExpense, EventDecoration, EventFurniture, EventStaff } from '@/types/events';
+import { User, UserRole } from '@/types/auth.types';
+import { Event, EventClient } from '@/types/events';
 
+// Mock User Roles
+export const ROLES: UserRole[] = [
+  { id: 1, name: 'admin', displayName: 'Administrador' },
+  { id: 2, name: 'socio', displayName: 'Socio' },
+  { id: 3, name: 'encargado_compras', displayName: 'Encargado de Compras' },
+  { id: 4, name: 'servicio', displayName: 'Personal de Servicio' },
+];
+
+// Mock Users (Demo mode)
 export interface MockUser extends User {
   password: string;
   assignedEventIds?: number[];
 }
 
-// Extended user list with service role users
 export const DEMO_USERS: MockUser[] = [
   {
     id: 1,
+    email: 'admin@eventhub.com',
+    password: 'admin123',
     name: 'Admin',
     last_name: 'Sistema',
-    email: 'admin@eventhub.com',
-    password: 'Admin123!',
-    is_verified: true,
-    is_blocked: false,
-    role: { id: 1, name: 'admin' },
-    language: 'es',
-    nationality: 'España',
-    created_at: new Date('2024-01-15'),
-    updated_at: new Date('2024-01-15'),
+    role: ROLES[0],
+    phone: '+51 999 888 777',
+    address: 'Oficina Central',
+    document_type: 'DNI',
+    document_number: '12345678',
+    birth_date: '1990-01-01',
+    gender: 'Masculino',
+    nationality: 'Perú',
+    created_at: new Date('2024-01-01'),
+    updated_at: new Date('2024-01-01'),
     assignedEventIds: [],
   },
   {
     id: 2,
-    name: 'Socio',
-    last_name: 'Principal',
     email: 'socio@eventhub.com',
-    password: 'Socio123!',
-    is_verified: true,
-    is_blocked: false,
-    role: { id: 2, name: 'socio' },
-    language: 'es',
-    nationality: 'España',
-    created_at: new Date('2024-01-15'),
-    updated_at: new Date('2024-01-15'),
+    password: 'socio123',
+    name: 'Carlos',
+    last_name: 'Socio',
+    role: ROLES[1],
+    phone: '+51 999 777 666',
+    address: 'Av. Principal 456',
+    document_type: 'DNI',
+    document_number: '23456789',
+    birth_date: '1985-06-15',
+    gender: 'Masculino',
+    nationality: 'Perú',
+    created_at: new Date('2024-01-05'),
+    updated_at: new Date('2024-01-05'),
     assignedEventIds: [],
   },
   {
     id: 3,
-    name: 'Encargado',
-    last_name: 'Compras',
     email: 'compras@eventhub.com',
-    password: 'Compras123!',
-    is_verified: true,
-    is_blocked: false,
-    role: { id: 3, name: 'encargado_compras' },
-    language: 'es',
-    nationality: 'España',
-    created_at: new Date('2024-01-15'),
-    updated_at: new Date('2024-01-15'),
+    password: 'compras123',
+    name: 'María',
+    last_name: 'Compras',
+    role: ROLES[2],
+    phone: '+51 999 666 555',
+    address: 'Calle Secundaria 789',
+    document_type: 'DNI',
+    document_number: '34567890',
+    birth_date: '1992-03-20',
+    gender: 'Femenino',
+    nationality: 'Perú',
+    created_at: new Date('2024-01-10'),
+    updated_at: new Date('2024-01-10'),
     assignedEventIds: [],
   },
-  // Service role user - Solo Juan para pruebas
   {
     id: 4,
+    email: 'juan@eventhub.com',
+    password: 'juan123',
     name: 'Juan',
     last_name: 'Pérez',
-    email: 'juan@eventhub.com',
-    password: 'Juan123!',
-    is_verified: true,
-    is_blocked: false,
-    role: { id: 4, name: 'servicio' },
-    language: 'es',
+    role: ROLES[3],
+    phone: '+51 999 555 444',
+    address: 'Jr. Los Pinos 321',
+    document_type: 'DNI',
+    document_number: '45678901',
+    birth_date: '1995-09-10',
+    gender: 'Masculino',
     nationality: 'Perú',
     created_at: new Date('2024-01-15'),
     updated_at: new Date('2024-01-15'),
-    assignedEventIds: [1], // Assigned to "Evento de Prueba"
+    assignedEventIds: [1, 2, 3], // Asignado a eventos ficticios
   },
 ];
-
-export interface DashboardMetrics {
-  totalEvents: number;
-  activeEvents: number;
-  totalRevenue: number;
-  totalExpenses: number;
-  upcomingEvents: Array<{
-    id: number;
-    name: string;
-    date: string;
-    location: string;
-    attendees: number;
-    status: 'upcoming' | 'active' | 'completed';
-  }>;
-  recentActivity: Array<{
-    id: number;
-    type: 'event' | 'payment' | 'expense';
-    description: string;
-    date: string;
-    amount?: number;
-  }>;
-  monthlyStats: Array<{
-    month: string;
-    revenue: number;
-    expenses: number;
-  }>;
-}
 
 // Mock Clients
 export const MOCK_CLIENTS: EventClient[] = [
@@ -105,35 +97,152 @@ export const MOCK_CLIENTS: EventClient[] = [
   { id: 3, name: 'Carlos Ruiz', email: 'carlos@email.com', phone: '+54 11 2345 6789' },
 ];
 
-// Mock Events - 1 evento de prueba para testing
+// Mock Events - EVENTOS FICTICIOS PARA MÉTRICAS
 export const MOCK_EVENTS: Event[] = [
+  // Evento del mes pasado (completado)
   {
     id: 1,
-    name: 'Evento de Prueba',
-    description: 'Evento para probar el sistema de gastos',
+    name: 'Boda de Rosa y Miguel',
+    description: 'Ceremonia y recepción en jardín',
     type: 'boda',
-    status: 'confirmed',
-    date: '2025-02-15',
-    endDate: '2025-02-15',
-    location: 'Salón Principal',
+    status: 'completed',
+    date: '2025-05-15',
+    endDate: '2025-05-15',
+    location: 'Salón Jardín Principal',
     venue: 'Local de Eventos',
-    attendees: 100,
-    maxAttendees: 150,
+    attendees: 150,
+    maxAttendees: 200,
     client: {
       id: 1,
-      name: 'Cliente',
-      last_name: 'Prueba',
-      phone: '+51 999 999 999',
-      email: 'cliente@test.com',
-      address: 'Dirección Test 123',
+      name: 'Rosa',
+      last_name: 'García',
+      phone: '+51 999 111 222',
+      email: 'rosa@email.com',
+      address: 'Lima Centro',
       document_type: 'DNI',
-      document_number: '12345678',
+      document_number: '98765432',
     },
     serviceType: 'con_comida',
     foodDetails: {
-      cantidadDePlatos: 100,
+      cantidadDePlatos: 150,
       tipoMenu: 'buffet',
-      precioPorPlato: 50,
+      precioPorPlato: 65,
+    },
+    financial: {
+      budget: 15000,
+      totalIncome: 15000,
+      totalExpenses: 8500,
+      balance: 6500,
+      advancePayment: 7500,
+      pendingPayment: 0,
+    },
+    contract: {
+      tipoContrato: 'privado',
+      precioTotal: 15000,
+      pagoAdelantado: 7500,
+      saldoPendiente: 0,
+      fechaFirma: '2025-04-15',
+    },
+    assignedServiceUsers: [4],
+    payments: [],
+    expenses: [],
+    decoration: [],
+    furniture: [],
+    staff: [],
+    timeline: [],
+    tags: [],
+    createdBy: 1,
+    createdByName: 'Admin Sistema',
+    createdAt: '2025-04-15',
+    updatedAt: '2025-05-16',
+    imageUrl: 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=800',
+  },
+  // Evento de este mes (confirmado - próximo)
+  {
+    id: 2,
+    name: 'Quinceañera de Valeria',
+    description: 'Fiesta de 15 años con tema princesa',
+    type: 'quince_años',
+    status: 'confirmed',
+    date: '2025-06-22',
+    endDate: '2025-06-22',
+    location: 'Salón Imperial',
+    venue: 'Local de Eventos',
+    attendees: 120,
+    maxAttendees: 150,
+    client: {
+      id: 2,
+      name: 'Valeria',
+      last_name: 'Torres',
+      phone: '+51 999 333 444',
+      email: 'valeria@email.com',
+      address: 'San Isidro',
+      document_type: 'DNI',
+      document_number: '87654321',
+    },
+    serviceType: 'con_comida',
+    foodDetails: {
+      cantidadDePlatos: 120,
+      tipoMenu: 'criollo',
+      precioPorPlato: 55,
+    },
+    financial: {
+      budget: 12000,
+      totalIncome: 6000,
+      totalExpenses: 2500,
+      balance: 3500,
+      advancePayment: 6000,
+      pendingPayment: 6000,
+    },
+    contract: {
+      tipoContrato: 'privado',
+      precioTotal: 12000,
+      pagoAdelantado: 6000,
+      saldoPendiente: 6000,
+      fechaFirma: '2025-05-22',
+    },
+    assignedServiceUsers: [4],
+    payments: [],
+    expenses: [],
+    decoration: [],
+    furniture: [],
+    staff: [],
+    timeline: [],
+    tags: [],
+    createdBy: 1,
+    createdByName: 'Admin Sistema',
+    createdAt: '2025-05-22',
+    updatedAt: '2025-05-22',
+    imageUrl: 'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=800',
+  },
+  // Evento del mes que viene (confirmado)
+  {
+    id: 3,
+    name: 'Cumpleaños Corporativo Tech Solutions',
+    description: 'Aniversario 10 años de la empresa',
+    type: 'corporativo',
+    status: 'confirmed',
+    date: '2025-07-10',
+    endDate: '2025-07-10',
+    location: 'Salón Ejecutivo',
+    venue: 'Local de Eventos',
+    attendees: 80,
+    maxAttendees: 100,
+    client: {
+      id: 3,
+      name: 'Tech Solutions',
+      last_name: 'SAC',
+      phone: '+51 999 555 666',
+      email: 'contacto@techsolutions.com',
+      address: 'San Borja',
+      document_type: 'RUC',
+      document_number: '20123456789',
+    },
+    serviceType: 'con_comida',
+    foodDetails: {
+      cantidadDePlatos: 80,
+      tipoMenu: 'gourmet',
+      precioPorPlato: 75,
     },
     financial: {
       budget: 10000,
@@ -144,13 +253,13 @@ export const MOCK_EVENTS: Event[] = [
       pendingPayment: 5000,
     },
     contract: {
-      tipoContrato: 'privado',
+      tipoContrato: 'corporativo',
       precioTotal: 10000,
       pagoAdelantado: 5000,
       saldoPendiente: 5000,
-      fechaFirma: '2025-01-15',
+      fechaFirma: '2025-06-10',
     },
-    assignedServiceUsers: [4], // Juan asignado
+    assignedServiceUsers: [4],
     payments: [],
     expenses: [],
     decoration: [],
@@ -160,67 +269,23 @@ export const MOCK_EVENTS: Event[] = [
     tags: [],
     createdBy: 1,
     createdByName: 'Admin Sistema',
-    createdAt: '2025-01-15',
-    updatedAt: '2025-01-15',
-    imageUrl: 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=800',
+    createdAt: '2025-06-10',
+    updatedAt: '2025-06-10',
+    imageUrl: 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=800',
   },
 ];
 
-export const MOCK_DASHBOARD_DATA: Record<number, DashboardMetrics> = {
+export const MOCK_DASHBOARD_DATA: Record<number, any> = {
   1: { // Admin
     totalEvents: 25,
     activeEvents: 8,
     totalRevenue: 145800,
     totalExpenses: 87200,
-    upcomingEvents: [
-      { id: 1, name: 'Conferencia Tech 2025', date: '2025-01-15', location: 'Sala Principal', attendees: 245, status: 'upcoming' },
-      { id: 2, name: 'Concierto Jazz Night', date: '2025-01-20', location: 'Auditorio Norte', attendees: 180, status: 'upcoming' },
-      { id: 3, name: 'Gala Benéfica Anual', date: '2025-01-25', location: 'Salón Imperial', attendees: 420, status: 'upcoming' },
-    ],
-    recentActivity: [
-      { id: 1, type: 'event', description: 'Nuevo evento creado: Conferencia Tech', date: '2025-01-10' },
-      { id: 2, type: 'payment', description: 'Pago recibido', date: '2025-01-09', amount: 25000 },
-      { id: 3, type: 'expense', description: 'Gasto registrado: Catering', date: '2025-01-08', amount: 2500 },
-    ],
-    monthlyStats: [
-      { month: 'Ene', revenue: 12000, expenses: 7000 },
-      { month: 'Feb', revenue: 15000, expenses: 8500 },
-      { month: 'Mar', revenue: 18000, expenses: 9200 },
-      { month: 'Abr', revenue: 14000, expenses: 7800 },
-      { month: 'May', revenue: 16500, expenses: 8900 },
-      { month: 'Jun', revenue: 19000, expenses: 10200 },
-    ],
   },
   2: { // Socio - Same as admin
     totalEvents: 25,
     activeEvents: 8,
     totalRevenue: 145800,
     totalExpenses: 87200,
-    upcomingEvents: [
-      { id: 1, name: 'Conferencia Tech 2025', date: '2025-01-15', location: 'Sala Principal', attendees: 245, status: 'upcoming' },
-      { id: 2, name: 'Concierto Jazz Night', date: '2025-01-20', location: 'Auditorio Norte', attendees: 180, status: 'upcoming' },
-      { id: 3, name: 'Gala Benéfica Anual', date: '2025-01-25', location: 'Salón Imperial', attendees: 420, status: 'upcoming' },
-    ],
-    recentActivity: [
-      { id: 1, type: 'event', description: 'Nuevo evento creado: Conferencia Tech', date: '2025-01-10' },
-      { id: 2, type: 'payment', description: 'Pago recibido', date: '2025-01-09', amount: 25000 },
-    ],
-    monthlyStats: [
-      { month: 'Ene', revenue: 12000, expenses: 7000 },
-      { month: 'Feb', revenue: 15000, expenses: 8500 },
-      { month: 'Mar', revenue: 18000, expenses: 9200 },
-      { month: 'Abr', revenue: 14000, expenses: 7800 },
-      { month: 'May', revenue: 16500, expenses: 8900 },
-      { month: 'Jun', revenue: 19000, expenses: 10200 },
-    ],
-  },
-  3: { // Encargado Compras - NO dashboard access
-    totalEvents: 0,
-    activeEvents: 0,
-    totalRevenue: 0,
-    totalExpenses: 0,
-    upcomingEvents: [],
-    recentActivity: [],
-    monthlyStats: [],
   },
 };
