@@ -105,8 +105,8 @@ export const MOCK_CLIENTS: EventClient[] = [
   { id: 3, name: 'Carlos Ruiz', email: 'carlos@email.com', phone: '+54 11 2345 6789' },
 ];
 
-// Mock Events with expanded structure
-export const MOCK_EVENTS: Event[] = [
+// Mock Events - Vacío para empezar desde cero
+export const MOCK_EVENTS: Event[] = [];
   {
     id: 1,
     name: 'Conferencia Tech 2025',
