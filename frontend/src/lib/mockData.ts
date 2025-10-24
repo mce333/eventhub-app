@@ -67,7 +67,7 @@ export const DEMO_USERS: MockUser[] = [
     nationality: 'Perú',
     created_at: new Date('2024-01-15'),
     updated_at: new Date('2024-01-15'),
-    assignedEventIds: [],
+    assignedEventIds: [1], // Assigned to "Evento de Prueba"
   },
 ];
 
