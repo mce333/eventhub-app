@@ -89,7 +89,7 @@ class EventsService {
   async getById(id: number): Promise<Event> {
     if (isDemoMode) {
       await simulateNetworkDelay();
-      const event = this.events.find(e => e.id === id);
+      const event = this.getEventsFromStorage().find(e => e.id === id);
       if (!event) {
         throw new Error('Evento no encontrado');
       }
