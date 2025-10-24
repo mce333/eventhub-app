@@ -148,32 +148,57 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
   };
 
   const updatePredefinedExpense = (expenseId: number, field: 'quantity' | 'unitPrice', value: number) => {
-    const storedEvents = localStorage.getItem('demo_events');
-    if (storedEvents) {
-      const events: Event[] = JSON.parse(storedEvents);
-      const index = events.findIndex(e => e.id === event.id);
-      
-      if (index !== -1) {
-        const expenseIndex = events[index].expenses?.findIndex(e => e.id === expenseId);
-        if (expenseIndex !== undefined && expenseIndex !== -1 && events[index].expenses) {
-          const expense = events[index].expenses![expenseIndex];
-          const oldAmount = expense.amount;
-          
-          if (field === 'quantity') {
-            expense.quantity = value;
-          } else {
-            expense.unitPrice = value;
-          }
-          
-          expense.amount = (expense.quantity || 1) * (expense.unitPrice || 0);
-          
-          const difference = expense.amount - oldAmount;
-          events[index].financial.totalExpenses += difference;
-          events[index].financial.balance -= difference;
-          
-          localStorage.setItem('demo_events', JSON.stringify(events));
-          onUpdate();
+    const storedEvents = JSON.parse(localStorage.getItem('demo_events') || '[]');
+    const index = storedEvents.findIndex((e: Event) => e.id === event.id);
+    
+    if (index !== -1) {
+      const expenseIndex = storedEvents[index].expenses?.findIndex((e: EventExpense) => e.id === expenseId);
+      if (expenseIndex !== undefined && expenseIndex !== -1 && storedEvents[index].expenses) {
+        const expense = storedEvents[index].expenses![expenseIndex];
+        const oldAmount = expense.amount;
+        
+        if (field === 'quantity') {
+          expense.cantidad = value;
+        } else {
+          expense.costoUnitario = value;
         }
+        
+        expense.amount = (expense.cantidad || 1) * (expense.costoUnitario || 0);
+        
+        const difference = expense.amount - oldAmount;
+        storedEvents[index].financial.totalExpenses += difference;
+        storedEvents[index].financial.balance -= difference;
+        
+        localStorage.setItem('demo_events', JSON.stringify(storedEvents));
+        onUpdate();
+      }
+    } else {
+      // Event from MOCK_EVENTS - add to demo_events with update
+      const updatedEvent = { ...event };
+      const expenseIndex = updatedEvent.expenses?.findIndex((e: EventExpense) => e.id === expenseId);
+      
+      if (expenseIndex !== undefined && expenseIndex !== -1 && updatedEvent.expenses) {
+        const expense = updatedEvent.expenses[expenseIndex];
+        const oldAmount = expense.amount;
+        
+        if (field === 'quantity') {
+          expense.cantidad = value;
+        } else {
+          expense.costoUnitario = value;
+        }
+        
+        expense.amount = (expense.cantidad || 1) * (expense.costoUnitario || 0);
+        
+        const difference = expense.amount - oldAmount;
+        updatedEvent.financial = {
+          ...updatedEvent.financial,
+          totalExpenses: (updatedEvent.financial?.totalExpenses || 0) + difference,
+          balance: (updatedEvent.financial?.balance || 0) - difference,
+        };
+        
+        storedEvents.push(updatedEvent);
+        localStorage.setItem('demo_events', JSON.stringify(storedEvents));
+        onUpdate();
       }
     }
   };
