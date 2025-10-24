@@ -24,6 +24,47 @@ export default function Dashboard() {
 
   const dashboardData = MOCK_DASHBOARD_DATA[user?.id || 1];
 
+  // Calcular métricas actualizadas
+  const metrics = useMemo(() => {
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    
+    // Eventos de este mes
+    const eventosEsteMes = MOCK_EVENTS.filter(event => {
+      const eventDate = new Date(event.date);
+      return eventDate.getMonth() === currentMonth && eventDate.getFullYear() === currentYear;
+    }).length;
+    
+    // Eventos realizados (completados)
+    const eventosRealizados = MOCK_EVENTS.filter(event => event.status === 'completed').length;
+    
+    // Eventos por realizar (confirmados o en progreso)
+    const eventosPorRealizar = MOCK_EVENTS.filter(event => 
+      event.status === 'confirmed' || event.status === 'in_progress'
+    ).length;
+    
+    // Calcular ingresos del mes
+    const ingresosEventosRealizados = MOCK_EVENTS
+      .filter(event => event.status === 'completed')
+      .reduce((sum, event) => sum + event.contract.precioTotal, 0);
+    
+    const adelantosEventosPorRealizar = MOCK_EVENTS
+      .filter(event => event.status === 'confirmed' || event.status === 'in_progress')
+      .reduce((sum, event) => sum + event.contract.pagoAdelantado, 0);
+    
+    const ingresosTotalesMes = ingresosEventosRealizados + adelantosEventosPorRealizar;
+    
+    return {
+      eventosEsteMes,
+      eventosRealizados,
+      eventosPorRealizar,
+      ingresosTotalesMes,
+      ingresosEventosRealizados,
+      adelantosEventosPorRealizar
+    };
+  }, []);
+
   if (!hasPermission(userRole, 'canViewDashboard')) {
     return null; // Will redirect
   }
