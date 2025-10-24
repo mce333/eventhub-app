@@ -1,9 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
   SelectContent,
@@ -16,8 +15,9 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Event, EventExpense } from '@/types/events';
 import { useAuth } from '@/contexts/AuthContext';
 import { canEditExpenses, isSuspiciousExpenseEdit, getUserRole } from '@/lib/permissions';
-import { Receipt, Plus, AlertTriangle, TrendingUp } from 'lucide-react';
+import { Receipt, Plus, AlertTriangle, TrendingUp, ChefHat } from 'lucide-react';
 import { toast } from 'sonner';
+import { DISH_INGREDIENTS, calculateTotalIngredients, DishIngredients } from '@/lib/ingredientsData';
 
 interface EventExpensesTabProps {
   event: Event;
