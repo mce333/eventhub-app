@@ -76,10 +76,10 @@ export function EventCalendar({ events: propEvents }: EventCalendarProps) {
     const isToday = date.toDateString() === today.toDateString();
     
     if (dateEvents.length > 0) {
-      return `bg-purple-500/20 border-purple-500/50 hover:bg-purple-500/30 ${isToday ? 'ring-2 ring-primary' : ''}`;
+      return `bg-purple-600/40 border-2 border-purple-500 hover:bg-purple-600/60 ${isToday ? 'ring-2 ring-yellow-400' : ''}`;
     }
     
-    return `bg-green-500/10 border-green-500/30 hover:bg-green-500/20 ${isToday ? 'ring-2 ring-primary' : ''}`;
+    return `bg-green-600/30 border border-green-500/60 hover:bg-green-600/40 ${isToday ? 'ring-2 ring-yellow-400' : ''}`;
   };
 
   const renderTooltipContent = (day: number) => {
