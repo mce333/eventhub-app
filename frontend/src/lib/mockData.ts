@@ -53,7 +53,7 @@ export const DEMO_USERS: MockUser[] = [
     updated_at: new Date('2024-01-15'),
     assignedEventIds: [],
   },
-  // Service role users
+  // Service role user - Solo Juan para pruebas
   {
     id: 4,
     name: 'Juan',
@@ -67,52 +67,7 @@ export const DEMO_USERS: MockUser[] = [
     nationality: 'Perú',
     created_at: new Date('2024-01-15'),
     updated_at: new Date('2024-01-15'),
-    assignedEventIds: [1], // Assigned to event 1
-  },
-  {
-    id: 5,
-    name: 'Jorge',
-    last_name: 'Ramírez',
-    email: 'jorge@eventhub.com',
-    password: 'Jorge123!',
-    is_verified: true,
-    is_blocked: false,
-    role: { id: 4, name: 'servicio' },
-    language: 'es',
-    nationality: 'Perú',
-    created_at: new Date('2024-01-15'),
-    updated_at: new Date('2024-01-15'),
-    assignedEventIds: [2], // Assigned to event 2
-  },
-  {
-    id: 6,
-    name: 'María',
-    last_name: 'López',
-    email: 'maria@eventhub.com',
-    password: 'Maria123!',
-    is_verified: true,
-    is_blocked: false,
-    role: { id: 4, name: 'servicio' },
-    language: 'es',
-    nationality: 'Perú',
-    created_at: new Date('2024-01-15'),
-    updated_at: new Date('2024-01-15'),
-    assignedEventIds: [3], // Assigned to event 3
-  },
-  {
-    id: 7,
-    name: 'Carlos',
-    last_name: 'García',
-    email: 'carlos@eventhub.com',
-    password: 'Carlos123!',
-    is_verified: true,
-    is_blocked: false,
-    role: { id: 4, name: 'servicio' },
-    language: 'es',
-    nationality: 'Perú',
-    created_at: new Date('2024-01-15'),
-    updated_at: new Date('2024-01-15'),
-    assignedEventIds: [], // Not assigned to any event yet
+    assignedEventIds: [],
   },
 ];
 
