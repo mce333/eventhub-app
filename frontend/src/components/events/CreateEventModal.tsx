@@ -176,6 +176,7 @@ export function CreateEventModal({ open, onClose }: CreateEventModalProps) {
         attendees: 0,
         status: 'draft' as const,
         description: formData.description || '',
+        imageUrl: getEventImageByType(formData.type!),
         serviceType: formData.serviceType!,
         foodDetails: formData.foodDetails,
         rentalDetails: formData.rentalDetails,
