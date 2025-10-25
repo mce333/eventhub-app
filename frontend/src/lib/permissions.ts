@@ -127,6 +127,8 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission> = {
     canManageStaff: false,
     canViewSpaces: false,
     canManageSpaces: false,
+    canViewWarehouse: true,
+    canManageWarehouse: true,
   },
 };
 
