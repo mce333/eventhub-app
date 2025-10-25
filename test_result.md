@@ -183,6 +183,21 @@ frontend:
         agent: "testing"
         comment: "✅ RESOLVED - Admin authentication and /eventos access is now working correctly. Admin can successfully navigate to eventos page, access event creation form, and the dashboard shows proper event management interface with statistics cards and 'Nuevo Evento' functionality."
 
+  - task: "Main Dashboard Login and Metrics Display"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/pages/Dashboard.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "❌ FAILED - Dashboard page crashes after login with error 'Cannot read properties of undefined (reading map)' at Dashboard.tsx:36. Black screen displayed after successful login. Root cause: Dashboard component trying to call .map() on undefined data (dashboardData.upcomingEvents not defined in MOCK_DASHBOARD_DATA)."
+      - working: true
+        agent: "testing"
+        comment: "✅ FULLY WORKING - Comprehensive testing completed. Login flow: Admin card click → successful authentication → redirect to dashboard (/). Dashboard displays correctly with NO black screen. All 4 metrics showing: 'Eventos Este Mes' (0), 'Eventos Realizados' (1), 'Eventos por Realizar' (2), 'Ingresos del Mes' (S/ 26,000 with breakdown showing Realizados: S/ 15,000 and Adelantos: S/ 11,000). Calendar component visible and functional (October 2025). No JavaScript errors. Authentication persistence working. The upcomingEvents issue has been resolved - component properly handles undefined with optional chaining and fallback to empty state message."
+
   - task: "Chatbot Role-Based Access Control"
     implemented: true
     working: true
