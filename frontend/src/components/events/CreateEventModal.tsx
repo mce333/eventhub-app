@@ -407,6 +407,17 @@ export function CreateEventModal({ open, onClose }: CreateEventModalProps) {
       updated[index].hourlyRate = defaultRate;
       updated[index].hasSystemAccess = canAccess ? updated[index].hasSystemAccess : false;
       
+      // Auto-llenar email y password según el rol
+      if (value === 'coordinador') {
+        updated[index].systemEmail = 'coordinador@eventhub.com';
+        updated[index].systemPassword = 'coord123';
+        updated[index].userId = 2; // ID del usuario Coordinador
+      } else if (value === 'encargado_compras') {
+        updated[index].systemEmail = 'compras@eventhub.com';
+        updated[index].systemPassword = 'compras123';
+        updated[index].userId = 3; // ID del usuario Encargado de Compras
+      }
+      
       // Calcular costo según tipo de tarifa
       if (rateType === 'perPlate' && formData.foodDetails?.cantidadDePlatos) {
         updated[index].plates = formData.foodDetails.cantidadDePlatos;
@@ -414,6 +425,20 @@ export function CreateEventModal({ open, onClose }: CreateEventModalProps) {
       } else {
         updated[index].hours = updated[index].hours || 8; // Default 8 horas
         updated[index].totalCost = defaultRate * (updated[index].hours || 8);
+      }
+    }
+    
+    // Si se activa hasSystemAccess, asegurarse de que tenga credenciales
+    if (field === 'hasSystemAccess' && value === true && updated[index].roleId) {
+      const roleId = updated[index].roleId!;
+      if (roleId === 'coordinador') {
+        updated[index].systemEmail = 'coordinador@eventhub.com';
+        updated[index].systemPassword = 'coord123';
+        updated[index].userId = 2;
+      } else if (roleId === 'encargado_compras') {
+        updated[index].systemEmail = 'compras@eventhub.com';
+        updated[index].systemPassword = 'compras123';
+        updated[index].userId = 3;
       }
     }
     
