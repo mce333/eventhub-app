@@ -88,16 +88,32 @@ export const MOCK_CLIENTS: EventClient[] = [
 // Mock Events - VACÍO, los eventos se crearán en localStorage
 export const MOCK_EVENTS: Event[] = [];
 
+export const MOCK_DASHBOARD_DATA: Record<number, any> = {
+  1: { // Admin
+    totalEvents: 25,
+    activeEvents: 8,
+    totalRevenue: 145800,
+    totalExpenses: 87200,
+  },
+  2: { // Socio - Same as admin
+    totalEvents: 25,
+    activeEvents: 8,
+    totalRevenue: 145800,
+    totalExpenses: 87200,
+  },
+};
+
 // Función para inicializar eventos de ejemplo en localStorage (solo la primera vez)
 export function initializeSampleEvents() {
   const hasInitialized = localStorage.getItem('events_initialized');
   
   // Solo inicializar si no se ha hecho antes
   if (!hasInitialized) {
-    console.log('Inicializando 10 eventos de ejemplo...');
+    console.log('🎯 Inicializando 10 eventos de ejemplo con fechas correctas...');
     
     const sampleEvents: Event[] = [
-      // 1. Evento pasado - Completado
+      // EVENTOS COMPLETADOS (pasados - antes de octubre 2025)
+      // 1. Mayo - Completado
       {
         id: 1001,
         name: 'Boda de Rosa y Miguel',
@@ -141,7 +157,7 @@ export function initializeSampleEvents() {
           saldoPendiente: 0,
           fechaFirma: '2025-04-15',
         },
-        assignedServiceUsers: [2, 3], // Coordinador y Encargado de Compras
+        assignedServiceUsers: [2, 3],
         payments: [],
         expenses: [],
         decoration: [],
@@ -155,13 +171,13 @@ export function initializeSampleEvents() {
         updatedAt: '2025-05-16',
         imageUrl: 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=800',
       },
-      // 2. Evento futuro - Confirmado
+      // 2. Junio - Completado
       {
         id: 1002,
         name: 'Quinceañera de Valeria',
         description: 'Fiesta de 15 años con tema princesa',
         type: 'quince_años',
-        status: 'confirmed',
+        status: 'completed',
         date: '2025-06-28',
         endDate: '2025-06-28',
         location: 'Local Praga',
@@ -186,17 +202,17 @@ export function initializeSampleEvents() {
         },
         financial: {
           budget: 12000,
-          totalIncome: 6000,
-          totalExpenses: 0,
-          balance: 6000,
+          totalIncome: 12000,
+          totalExpenses: 6800,
+          balance: 5200,
           advancePayment: 6000,
-          pendingPayment: 6000,
+          pendingPayment: 0,
         },
         contract: {
           tipoContrato: 'privado',
           precioTotal: 12000,
           pagoAdelantado: 6000,
-          saldoPendiente: 6000,
+          saldoPendiente: 0,
           fechaFirma: '2025-05-28',
         },
         assignedServiceUsers: [2],
@@ -210,16 +226,16 @@ export function initializeSampleEvents() {
         createdBy: 1,
         createdByName: 'Admin Sistema',
         createdAt: '2025-05-28',
-        updatedAt: '2025-05-28',
+        updatedAt: '2025-06-29',
         imageUrl: 'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=800',
       },
-      // 3. Evento corporativo
+      // 3. Julio - Completado
       {
         id: 1003,
         name: 'Aniversario Tech Solutions',
         description: 'Celebración 10 años de la empresa',
         type: 'corporativo',
-        status: 'confirmed',
+        status: 'completed',
         date: '2025-07-10',
         endDate: '2025-07-10',
         location: 'Local Solaz',
@@ -244,17 +260,17 @@ export function initializeSampleEvents() {
         },
         financial: {
           budget: 10000,
-          totalIncome: 5000,
-          totalExpenses: 0,
-          balance: 5000,
+          totalIncome: 10000,
+          totalExpenses: 5200,
+          balance: 4800,
           advancePayment: 5000,
-          pendingPayment: 5000,
+          pendingPayment: 0,
         },
         contract: {
           tipoContrato: 'corporativo',
           precioTotal: 10000,
           pagoAdelantado: 5000,
-          saldoPendiente: 5000,
+          saldoPendiente: 0,
           fechaFirma: '2025-06-10',
         },
         assignedServiceUsers: [3],
@@ -268,18 +284,18 @@ export function initializeSampleEvents() {
         createdBy: 1,
         createdByName: 'Admin Sistema',
         createdAt: '2025-06-10',
-        updatedAt: '2025-06-10',
+        updatedAt: '2025-07-11',
         imageUrl: 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=800',
       },
-      // 4. Cumpleaños adulto
+      // 4. Agosto - Completado
       {
         id: 1004,
         name: 'Cumpleaños de Carlos (50 años)',
         description: 'Fiesta sorpresa de cumpleaños',
         type: 'cumpleaños',
-        status: 'confirmed',
-        date: '2025-07-20',
-        endDate: '2025-07-20',
+        status: 'completed',
+        date: '2025-08-20',
+        endDate: '2025-08-20',
         location: 'Local Praga',
         venue: 'Local Praga',
         attendees: 75,
@@ -302,18 +318,18 @@ export function initializeSampleEvents() {
         },
         financial: {
           budget: 8000,
-          totalIncome: 4000,
-          totalExpenses: 0,
-          balance: 4000,
+          totalIncome: 8000,
+          totalExpenses: 4300,
+          balance: 3700,
           advancePayment: 4000,
-          pendingPayment: 4000,
+          pendingPayment: 0,
         },
         contract: {
           tipoContrato: 'privado',
           precioTotal: 8000,
           pagoAdelantado: 4000,
-          saldoPendiente: 4000,
-          fechaFirma: '2025-06-20',
+          saldoPendiente: 0,
+          fechaFirma: '2025-07-20',
         },
         assignedServiceUsers: [2, 3],
         payments: [],
@@ -325,53 +341,53 @@ export function initializeSampleEvents() {
         tags: [],
         createdBy: 1,
         createdByName: 'Admin Sistema',
-        createdAt: '2025-06-20',
-        updatedAt: '2025-06-20',
+        createdAt: '2025-07-20',
+        updatedAt: '2025-08-21',
         imageUrl: 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=800',
       },
-      // 5. Bautizo
+      // 5. Septiembre - Completado
       {
         id: 1005,
-        name: 'Bautizo de Sofía',
-        description: 'Ceremonia religiosa y recepción',
-        type: 'otro',
-        status: 'confirmed',
-        date: '2025-08-05',
-        endDate: '2025-08-05',
-        location: 'Local Solaz',
-        venue: 'Local Solaz',
-        attendees: 60,
-        maxAttendees: 70,
+        name: 'Quinceañera de Isabella',
+        description: 'Fiesta temática vintage',
+        type: 'quince_años',
+        status: 'completed',
+        date: '2025-09-10',
+        endDate: '2025-09-10',
+        location: 'Local Praga',
+        venue: 'Local Praga',
+        attendees: 110,
+        maxAttendees: 120,
         client: {
           id: 5,
-          name: 'Ana',
-          last_name: 'Ramírez',
-          phone: '+51 999 222 333',
-          email: 'ana.ramirez@email.com',
-          address: 'Surco',
+          name: 'Patricia',
+          last_name: 'Flores',
+          phone: '+51 999 888 999',
+          email: 'patricia.flores@email.com',
+          address: 'Barranco',
           document_type: 'DNI',
-          document_number: '23456789',
+          document_number: '56789012',
         },
         serviceType: 'con_comida',
         foodDetails: {
-          cantidadDePlatos: 60,
-          tipoMenu: 'criollo',
-          precioPorPlato: 50,
+          cantidadDePlatos: 110,
+          tipoMenu: 'buffet',
+          precioPorPlato: 58,
         },
         financial: {
-          budget: 5500,
-          totalIncome: 2750,
-          totalExpenses: 0,
-          balance: 2750,
-          advancePayment: 2750,
-          pendingPayment: 2750,
+          budget: 11000,
+          totalIncome: 11000,
+          totalExpenses: 5900,
+          balance: 5100,
+          advancePayment: 5500,
+          pendingPayment: 0,
         },
         contract: {
           tipoContrato: 'privado',
-          precioTotal: 5500,
-          pagoAdelantado: 2750,
-          saldoPendiente: 2750,
-          fechaFirma: '2025-07-05',
+          precioTotal: 11000,
+          pagoAdelantado: 5500,
+          saldoPendiente: 0,
+          fechaFirma: '2025-08-10',
         },
         assignedServiceUsers: [2],
         payments: [],
@@ -383,19 +399,21 @@ export function initializeSampleEvents() {
         tags: [],
         createdBy: 1,
         createdByName: 'Admin Sistema',
-        createdAt: '2025-07-05',
-        updatedAt: '2025-07-05',
-        imageUrl: 'https://images.unsplash.com/photo-1464347744102-11db6282f854?w=800',
+        createdAt: '2025-08-10',
+        updatedAt: '2025-09-11',
+        imageUrl: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=800',
       },
-      // 6. Boda grande
+      
+      // EVENTOS CONFIRMADOS (futuros - octubre en adelante)
+      // 6. Noviembre - Confirmado
       {
         id: 1006,
         name: 'Boda de Andrea y Javier',
         description: 'Ceremonia y banquete de lujo',
         type: 'boda',
         status: 'confirmed',
-        date: '2025-08-15',
-        endDate: '2025-08-15',
+        date: '2025-11-15',
+        endDate: '2025-11-15',
         location: 'Local Praga',
         venue: 'Local Praga',
         attendees: 220,
@@ -429,7 +447,7 @@ export function initializeSampleEvents() {
           precioTotal: 25000,
           pagoAdelantado: 12500,
           saldoPendiente: 12500,
-          fechaFirma: '2025-07-15',
+          fechaFirma: '2025-10-15',
         },
         assignedServiceUsers: [2, 3],
         payments: [],
@@ -441,25 +459,83 @@ export function initializeSampleEvents() {
         tags: [],
         createdBy: 1,
         createdByName: 'Admin Sistema',
-        createdAt: '2025-07-15',
-        updatedAt: '2025-07-15',
+        createdAt: '2025-10-15',
+        updatedAt: '2025-10-15',
         imageUrl: 'https://images.unsplash.com/photo-1519167758481-83f29da8a36f?w=800',
       },
-      // 7. Evento corporativo pequeño
+      // 7. Noviembre - Confirmado
       {
         id: 1007,
+        name: 'Bautizo de Sofía',
+        description: 'Ceremonia religiosa y recepción',
+        type: 'otro',
+        status: 'confirmed',
+        date: '2025-11-05',
+        endDate: '2025-11-05',
+        location: 'Local Solaz',
+        venue: 'Local Solaz',
+        attendees: 60,
+        maxAttendees: 70,
+        client: {
+          id: 7,
+          name: 'Ana',
+          last_name: 'Ramírez',
+          phone: '+51 999 222 333',
+          email: 'ana.ramirez@email.com',
+          address: 'Surco',
+          document_type: 'DNI',
+          document_number: '23456789',
+        },
+        serviceType: 'con_comida',
+        foodDetails: {
+          cantidadDePlatos: 60,
+          tipoMenu: 'criollo',
+          precioPorPlato: 50,
+        },
+        financial: {
+          budget: 5500,
+          totalIncome: 2750,
+          totalExpenses: 0,
+          balance: 2750,
+          advancePayment: 2750,
+          pendingPayment: 2750,
+        },
+        contract: {
+          tipoContrato: 'privado',
+          precioTotal: 5500,
+          pagoAdelantado: 2750,
+          saldoPendiente: 2750,
+          fechaFirma: '2025-10-05',
+        },
+        assignedServiceUsers: [2],
+        payments: [],
+        expenses: [],
+        decoration: [],
+        furniture: [],
+        staff: [],
+        timeline: [],
+        tags: [],
+        createdBy: 1,
+        createdByName: 'Admin Sistema',
+        createdAt: '2025-10-05',
+        updatedAt: '2025-10-05',
+        imageUrl: 'https://images.unsplash.com/photo-1464347744102-11db6282f854?w=800',
+      },
+      // 8. Diciembre - Confirmado
+      {
+        id: 1008,
         name: 'Reunión Anual Directorio',
         description: 'Almuerzo ejecutivo',
         type: 'corporativo',
         status: 'confirmed',
-        date: '2025-06-25',
-        endDate: '2025-06-25',
+        date: '2025-12-05',
+        endDate: '2025-12-05',
         location: 'Local Solaz',
         venue: 'Local Solaz',
         attendees: 40,
         maxAttendees: 50,
         client: {
-          id: 7,
+          id: 8,
           name: 'Inversiones',
           last_name: 'Peru SAC',
           phone: '+51 999 666 777',
@@ -487,7 +563,7 @@ export function initializeSampleEvents() {
           precioTotal: 6000,
           pagoAdelantado: 3000,
           saldoPendiente: 3000,
-          fechaFirma: '2025-05-25',
+          fechaFirma: '2025-11-05',
         },
         assignedServiceUsers: [3],
         payments: [],
@@ -499,77 +575,19 @@ export function initializeSampleEvents() {
         tags: [],
         createdBy: 1,
         createdByName: 'Admin Sistema',
-        createdAt: '2025-05-25',
-        updatedAt: '2025-05-25',
+        createdAt: '2025-11-05',
+        updatedAt: '2025-11-05',
         imageUrl: 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=800',
       },
-      // 8. Quinceañera
-      {
-        id: 1008,
-        name: 'Quinceañera de Isabella',
-        description: 'Fiesta temática vintage',
-        type: 'quince_años',
-        status: 'confirmed',
-        date: '2025-09-10',
-        endDate: '2025-09-10',
-        location: 'Local Praga',
-        venue: 'Local Praga',
-        attendees: 110,
-        maxAttendees: 120,
-        client: {
-          id: 8,
-          name: 'Patricia',
-          last_name: 'Flores',
-          phone: '+51 999 888 999',
-          email: 'patricia.flores@email.com',
-          address: 'Barranco',
-          document_type: 'DNI',
-          document_number: '56789012',
-        },
-        serviceType: 'con_comida',
-        foodDetails: {
-          cantidadDePlatos: 110,
-          tipoMenu: 'buffet',
-          precioPorPlato: 58,
-        },
-        financial: {
-          budget: 11000,
-          totalIncome: 5500,
-          totalExpenses: 0,
-          balance: 5500,
-          advancePayment: 5500,
-          pendingPayment: 5500,
-        },
-        contract: {
-          tipoContrato: 'privado',
-          precioTotal: 11000,
-          pagoAdelantado: 5500,
-          saldoPendiente: 5500,
-          fechaFirma: '2025-08-10',
-        },
-        assignedServiceUsers: [2],
-        payments: [],
-        expenses: [],
-        decoration: [],
-        furniture: [],
-        staff: [],
-        timeline: [],
-        tags: [],
-        createdBy: 1,
-        createdByName: 'Admin Sistema',
-        createdAt: '2025-08-10',
-        updatedAt: '2025-08-10',
-        imageUrl: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=800',
-      },
-      // 9. Cumpleaños infantil
+      // 9. Diciembre - Confirmado
       {
         id: 1009,
         name: 'Cumpleaños de Mateo (7 años)',
         description: 'Fiesta temática superhéroes',
         type: 'cumpleaños',
         status: 'confirmed',
-        date: '2025-07-05',
-        endDate: '2025-07-05',
+        date: '2025-12-15',
+        endDate: '2025-12-15',
         location: 'Local Solaz',
         venue: 'Local Solaz',
         attendees: 50,
@@ -603,7 +621,7 @@ export function initializeSampleEvents() {
           precioTotal: 4500,
           pagoAdelantado: 2250,
           saldoPendiente: 2250,
-          fechaFirma: '2025-06-05',
+          fechaFirma: '2025-11-15',
         },
         assignedServiceUsers: [2, 3],
         payments: [],
@@ -615,19 +633,19 @@ export function initializeSampleEvents() {
         tags: [],
         createdBy: 1,
         createdByName: 'Admin Sistema',
-        createdAt: '2025-06-05',
-        updatedAt: '2025-06-05',
+        createdAt: '2025-11-15',
+        updatedAt: '2025-11-15',
         imageUrl: 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=800',
       },
-      // 10. Evento pasado - Completado
+      // 10. Enero 2026 - Confirmado
       {
         id: 1010,
-        name: 'Graduación Promoción 2025',
+        name: 'Graduación Promoción 2026',
         description: 'Ceremonia y cena de gala',
         type: 'otro',
-        status: 'completed',
-        date: '2025-05-10',
-        endDate: '2025-05-10',
+        status: 'confirmed',
+        date: '2026-01-20',
+        endDate: '2026-01-20',
         location: 'Local Praga',
         venue: 'Local Praga',
         attendees: 150,
@@ -650,18 +668,18 @@ export function initializeSampleEvents() {
         },
         financial: {
           budget: 13000,
-          totalIncome: 13000,
-          totalExpenses: 7200,
-          balance: 5800,
+          totalIncome: 6500,
+          totalExpenses: 0,
+          balance: 6500,
           advancePayment: 6500,
-          pendingPayment: 0,
+          pendingPayment: 6500,
         },
         contract: {
           tipoContrato: 'corporativo',
           precioTotal: 13000,
           pagoAdelantado: 6500,
-          saldoPendiente: 0,
-          fechaFirma: '2025-04-10',
+          saldoPendiente: 6500,
+          fechaFirma: '2025-12-20',
         },
         assignedServiceUsers: [2, 3],
         payments: [],
@@ -673,8 +691,8 @@ export function initializeSampleEvents() {
         tags: [],
         createdBy: 1,
         createdByName: 'Admin Sistema',
-        createdAt: '2025-04-10',
-        updatedAt: '2025-05-11',
+        createdAt: '2025-12-20',
+        updatedAt: '2025-12-20',
         imageUrl: 'https://images.unsplash.com/photo-1523580494863-6f3031224c94?w=800',
       },
     ];
@@ -687,29 +705,16 @@ export function initializeSampleEvents() {
     const users = JSON.parse(localStorage.getItem('demo_users') || JSON.stringify(DEMO_USERS));
     const updatedUsers = users.map((u: any) => {
       if (u.id === 2) { // Coordinador
-        return { ...u, assignedEventIds: [1001, 1002, 1004, 1005, 1008, 1009, 1010] };
+        return { ...u, assignedEventIds: [1001, 1002, 1004, 1005, 1006, 1007, 1009, 1010] };
       } else if (u.id === 3) { // Encargado de Compras
-        return { ...u, assignedEventIds: [1001, 1003, 1004, 1007, 1009, 1010] };
+        return { ...u, assignedEventIds: [1001, 1003, 1004, 1006, 1008, 1009, 1010] };
       }
       return u;
     });
     localStorage.setItem('demo_users', JSON.stringify(updatedUsers));
     
     console.log('✅ 10 eventos de ejemplo inicializados correctamente');
+    console.log('📅 5 eventos completados (mayo-septiembre 2025)');
+    console.log('📅 5 eventos confirmados (noviembre 2025 - enero 2026)');
   }
 }
-
-export const MOCK_DASHBOARD_DATA: Record<number, any> = {
-  1: { // Admin
-    totalEvents: 25,
-    activeEvents: 8,
-    totalRevenue: 145800,
-    totalExpenses: 87200,
-  },
-  2: { // Socio - Same as admin
-    totalEvents: 25,
-    activeEvents: 8,
-    totalRevenue: 145800,
-    totalExpenses: 87200,
-  },
-};
