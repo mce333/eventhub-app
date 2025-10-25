@@ -24,11 +24,11 @@ export function EventCalendar({ events: propEvents }: EventCalendarProps) {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showReserveModal, setShowReserveModal] = useState(false);
 
-  // Cargar eventos de localStorage y combinar con MOCK_EVENTS
+  // Cargar eventos de localStorage
   useEffect(() => {
     const storedEvents = JSON.parse(localStorage.getItem('demo_events') || '[]');
-    const combined = [...MOCK_EVENTS, ...storedEvents];
-    setAllEvents(propEvents || combined);
+    console.log('📅 Calendario: eventos cargados:', storedEvents.length);
+    setAllEvents(propEvents || storedEvents);
   }, [propEvents]);
 
   // Obtener eventos del mes actual
