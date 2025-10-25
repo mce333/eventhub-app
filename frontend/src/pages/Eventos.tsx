@@ -122,7 +122,6 @@ export default function Eventos() {
       toast.success('Evento eliminado correctamente');
     }
   };
-  };
 
   const handleDuplicate = (event: Event) => {
     const newEvent = {
