@@ -1068,25 +1068,25 @@ export function CreateEventModal({ open, onClose }: CreateEventModalProps) {
                                               <Label className="text-xs">Email de acceso</Label>
                                               <Input
                                                 type="email"
-                                                placeholder="usuario@email.com"
                                                 value={person.systemEmail || ''}
-                                                onChange={(e) => updateStaff(index, 'systemEmail', e.target.value)}
-                                                className="h-9"
+                                                readOnly
+                                                disabled
+                                                className="h-9 bg-muted"
                                               />
                                             </div>
                                             <div>
-                                              <Label className="text-xs">Contraseña temporal</Label>
+                                              <Label className="text-xs">Contraseña</Label>
                                               <Input
                                                 type="text"
-                                                placeholder="Pass123"
                                                 value={person.systemPassword || ''}
-                                                onChange={(e) => updateStaff(index, 'systemPassword', e.target.value)}
-                                                className="h-9"
+                                                readOnly
+                                                disabled
+                                                className="h-9 bg-muted"
                                               />
                                             </div>
                                           </div>
                                           <p className="text-xs text-muted-foreground">
-                                            💡 Esta persona podrá acceder al sistema para registrar gastos del evento
+                                            ✅ Credenciales asignadas automáticamente según el rol seleccionado
                                           </p>
                                         </CardContent>
                                       </Card>
