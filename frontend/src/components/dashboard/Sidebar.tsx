@@ -1,4 +1,4 @@
-import { LayoutDashboard, Calendar, Users, Settings, TrendingUp, MapPin } from "lucide-react";
+import { LayoutDashboard, Calendar, Users, Settings, TrendingUp, Package } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
