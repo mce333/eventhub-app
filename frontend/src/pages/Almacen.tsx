@@ -21,6 +21,13 @@ interface InventoryItem {
   ubicacion: string;
   estado: 'disponible' | 'en_uso' | 'mantenimiento';
   notas?: string;
+  // Auditoría
+  registradoPor: string;
+  registradoRol: string;
+  registradoFecha: string;
+  modificadoPor?: string;
+  modificadoRol?: string;
+  modificadoFecha?: string;
 }
 
 const CATEGORIAS = [
