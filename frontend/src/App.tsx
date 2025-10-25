@@ -62,6 +62,22 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/clientes"
+        element={
+          <ProtectedRoute>
+            <Clientes />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/almacen"
+        element={
+          <ProtectedRoute>
+            <Almacen />
+          </ProtectedRoute>
+        }
+      />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
