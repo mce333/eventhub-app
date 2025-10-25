@@ -1,21 +1,28 @@
 import { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Calendar as CalendarIcon } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Plus, Eye, Clock } from 'lucide-react';
 import { Event } from '@/types/events';
 import { MOCK_EVENTS } from '@/lib/mockData';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { CreateEventModal } from '@/components/events/CreateEventModal';
+import { ReserveDateModal } from '@/components/events/ReserveDateModal';
 
 interface EventCalendarProps {
   events?: Event[];
 }
 
 export function EventCalendar({ events: propEvents }: EventCalendarProps) {
+  const navigate = useNavigate();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [allEvents, setAllEvents] = useState<Event[]>([]);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showReserveModal, setShowReserveModal] = useState(false);
 
   // Cargar eventos de localStorage y combinar con MOCK_EVENTS
   useEffect(() => {
