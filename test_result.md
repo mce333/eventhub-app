@@ -264,14 +264,16 @@ frontend:
 metadata:
   created_by: "testing_agent"
   version: "1.0"
-  test_sequence: 1
+  test_sequence: 2
   run_ui: true
 
 test_plan:
   current_focus:
-    - "Cross-Session Expense Visibility (CRITICAL)"
+    - "Expense Registration - Auto-calculation and Persistence"
+    - "Event Creation Functionality"
   stuck_tasks:
-    - "Cross-Session Expense Visibility"
+    - "Expense Registration - Auto-calculation and Persistence"
+    - "Event Creation Functionality"
   test_all: false
   test_priority: "high_first"
 
