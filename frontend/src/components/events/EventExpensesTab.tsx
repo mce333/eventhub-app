@@ -46,9 +46,12 @@ const PAYMENT_METHODS = [
 export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
   const { user } = useAuth();
   const [showAddForm, setShowAddForm] = useState(false);
-  const [selectedDish, setSelectedDish] = useState<string>('');
+  const [selectedDish, setSelectedDish] = useState<string>(() => {
+    // Cargar plato guardado del localStorage para este evento
+    const saved = localStorage.getItem(`event_${event.id}_selected_dish`);
+    return saved || '';
+  });
   const [suggestedIngredients, setSuggestedIngredients] = useState<any[]>([]);
-  const [showIngredientGuide, setShowIngredientGuide] = useState(false);
   const [newExpense, setNewExpense] = useState({
     category: '',
     amount: 0,
@@ -57,16 +60,17 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
     paymentMethod: 'efectivo',
   });
 
-  // Calculate suggested ingredients when dish and portions are selected
+  // Calculate suggested ingredients when dish changes
   useEffect(() => {
     if (selectedDish && event.foodDetails?.cantidadDePlatos) {
       const calculation = calculateTotalIngredients(selectedDish, event.foodDetails.cantidadDePlatos);
       if (calculation) {
         setSuggestedIngredients(calculation.ingredients);
-        setShowIngredientGuide(true);
+        // Guardar plato seleccionado en localStorage
+        localStorage.setItem(`event_${event.id}_selected_dish`, selectedDish);
       }
     }
-  }, [selectedDish, event.foodDetails?.cantidadDePlatos]);
+  }, [selectedDish, event.foodDetails?.cantidadDePlatos, event.id]);
 
   const canEdit = canEditExpenses(user, event);
   const isSuspicious = isSuspiciousExpenseEdit(user);
