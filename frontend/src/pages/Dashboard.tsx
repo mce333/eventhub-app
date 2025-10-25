@@ -27,9 +27,10 @@ export default function Dashboard() {
 
   // Calcular métricas actualizadas
   const metrics = useMemo(() => {
-    // Cargar eventos de localStorage y combinar con MOCK_EVENTS
+    // Cargar eventos SOLO de localStorage
     const storedEvents = JSON.parse(localStorage.getItem('demo_events') || '[]');
-    const allEvents = [...MOCK_EVENTS, ...storedEvents];
+    
+    console.log('📊 Dashboard: eventos cargados:', storedEvents.length);
     
     const now = new Date();
     const currentMonth = now.getMonth();
