@@ -183,6 +183,30 @@ frontend:
         agent: "testing"
         comment: "✅ RESOLVED - Admin authentication and /eventos access is now working correctly. Admin can successfully navigate to eventos page, access event creation form, and the dashboard shows proper event management interface with statistics cards and 'Nuevo Evento' functionality."
 
+  - task: "Expense Registration - Auto-calculation and Persistence"
+    implemented: true
+    working: false
+    file: "/app/frontend/src/components/events/EventExpensesTab.tsx"
+    stuck_count: 1
+    priority: "critical"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "❌ CRITICAL FAILURE - Comprehensive testing revealed expense registration is COMPLETELY BROKEN for ALL events (both example events and newly created events). ISSUES FOUND: 1) Auto-calculation NOT working - Total field shows '0' instead of calculated value (cantidad * precio). When filling form with JavaScript, onChange/onInput events do not trigger the calculation logic. 2) Expense persistence FAILING - After clicking 'Registrar Gasto', expense does NOT appear in 'Gastos Adicionales' list. localStorage shows 0 gastos, indicating expense is NOT being saved. 3) The handleAddExpense function in EventExpensesTab.tsx (lines 84-174) appears to save to localStorage, but the expense is not persisting. Tested on event ID 1001 'Boda de Rosa y Miguel' with foodDetails present. ROOT CAUSE: The newExpense.amount calculation relies on onChange events which are not firing when form is filled programmatically. Even when filled manually, the expense save logic is failing."
+
+  - task: "Event Creation Functionality"
+    implemented: true
+    working: false
+    file: "/app/frontend/src/components/events/CreateEventModal.tsx"
+    stuck_count: 1
+    priority: "critical"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "❌ CRITICAL FAILURE - Event creation is COMPLETELY BROKEN. Tested creating new event 'Test Nuevo' with all required fields (Nombre, Tipo=Boda, Fecha=2026-02-15, Asistentes=100, Local=Solaz, Con comida, Platos=100, Tipo menú=Buffet, Precio=55, Cliente=Test/test@test.com/999999999, Adelanto=5000). After clicking 'Crear Evento' button, the event does NOT appear in localStorage. Page redirects back to login screen. The handleSubmit function in CreateEventModal.tsx (lines 140-286) should save event to localStorage and redirect to /eventos, but this is failing. Possible causes: 1) Form validation failing silently, 2) Error during event object creation, 3) localStorage.setItem failing, 4) Redirect happening before save completes. Event with name 'Test Nuevo' was NOT found in localStorage after creation attempt."
+
   - task: "Main Dashboard Login and Metrics Display"
     implemented: true
     working: true
