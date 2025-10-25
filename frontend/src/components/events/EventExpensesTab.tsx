@@ -160,9 +160,6 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
     }
     
     setShowAddForm(false);
-    setSelectedDish('');
-    setSuggestedIngredients([]);
-    setShowIngredientGuide(false);
     setNewExpense({
       category: '',
       amount: 0,
@@ -170,6 +167,8 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
       unitPrice: 0,
       paymentMethod: 'efectivo',
     });
+    
+    console.log('✅ Gasto registrado, llamando onUpdate()...');
     onUpdate();
   };
 
