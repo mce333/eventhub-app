@@ -301,8 +301,12 @@ export function EventCalendar({ events: propEvents }: EventCalendarProps) {
             <span className="text-xs text-muted-foreground">Disponible</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <div className="w-3 h-3 rounded bg-purple-600/40 border-2 border-purple-500" />
+            <div className="w-3 h-3 rounded bg-orange-600/40 border-2 border-orange-500" />
             <span className="text-xs text-muted-foreground">Reservado</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <div className="w-3 h-3 rounded bg-red-600/40 border-2 border-red-500" />
+            <span className="text-xs text-muted-foreground">Confirmado</span>
           </div>
         </div>
       </div>
