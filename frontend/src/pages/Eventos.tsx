@@ -75,21 +75,20 @@ export default function Eventos() {
   }, []);
 
   const loadEvents = () => {
-    // Cargar eventos guardados en localStorage
+    // Cargar SOLO eventos guardados en localStorage
     const storedEvents = JSON.parse(localStorage.getItem('demo_events') || '[]');
     
-    // Combinar MOCK_EVENTS con eventos guardados
-    const allEvents = [...MOCK_EVENTS, ...storedEvents];
+    console.log('📊 Eventos cargados desde localStorage:', storedEvents.length);
     
     // Filter events based on user role
-    let filteredEvents = allEvents;
+    let filteredEvents = storedEvents;
     
     if (isServicio && user) {
       // Service users only see events they're assigned to
-      filteredEvents = allEvents.filter(event => canViewEvent(user, event));
+      filteredEvents = storedEvents.filter(event => canViewEvent(user, event));
+      console.log('🔒 Eventos filtrados para servicio:', filteredEvents.length);
     }
     
-    console.log('Eventos cargados:', filteredEvents.length);
     setEvents(filteredEvents);
   };
 
