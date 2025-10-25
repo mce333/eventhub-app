@@ -52,6 +52,8 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission> = {
     canManageStaff: true,
     canViewSpaces: true,
     canManageSpaces: true,
+    canViewWarehouse: true,
+    canManageWarehouse: true,
   },
   socio: {
     canViewDashboard: true,
@@ -75,6 +77,8 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission> = {
     canManageStaff: true,
     canViewSpaces: true,
     canManageSpaces: true,
+    canViewWarehouse: false,
+    canManageWarehouse: false,
   },
   encargado_compras: {
     canViewDashboard: false,
@@ -98,6 +102,8 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission> = {
     canManageStaff: false,
     canViewSpaces: false,
     canManageSpaces: false,
+    canViewWarehouse: false,
+    canManageWarehouse: false,
   },
   servicio: {
     canViewDashboard: false,
