@@ -116,39 +116,150 @@ export function EventCalendar({ events: propEvents }: EventCalendarProps) {
     );
   };
 
-  return (
-    <div className="bg-gradient-card rounded-xl p-6 border border-border">
-      {/* Header */}
-      <div className="mb-4 flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-foreground">Calendario</h3>
-        
-        <div className="flex items-center gap-2">
-          <button
-            onClick={previousMonth}
-            className="p-1.5 hover:bg-muted rounded-lg transition-colors"
-            aria-label="Mes anterior"
-          >
-            <ChevronLeft className="w-4 h-4" />
-          </button>
-          
-          <div className="min-w-[120px] text-center">
-            <span className="text-sm font-medium text-foreground">
-              {monthNames[month]} {year}
-            </span>
-          </div>
-          
-          <button
-            onClick={nextMonth}
-            className="p-1.5 hover:bg-muted rounded-lg transition-colors"
-            aria-label="Mes siguiente"
-          >
-            <ChevronRight className="w-4 h-4" />
-          </button>
-        </div>
-      </div>
+  const renderDayContent = (day: number) => {
+    const date = new Date(year, month, day);
+    const dateEvents = getEventsForDate(date);
+    const hasEvents = dateEvents.length > 0;
 
-      {/* Calendar Grid */}
-      <TooltipProvider>
+    return (
+      <Popover>
+        <PopoverTrigger asChild>
+          <div
+            className={`
+              w-full h-full rounded-md transition-all cursor-pointer
+              flex items-center justify-center text-sm font-medium
+              ${getCellStyle(day)}
+            `}
+          >
+            {day}
+          </div>
+        </PopoverTrigger>
+        <PopoverContent className="w-72 p-0" align="center">
+          <div className="p-4 space-y-3">
+            {/* Fecha */}
+            <div className="flex items-center gap-2 pb-2 border-b">
+              <CalendarIcon className="h-4 w-4 text-primary" />
+              <p className="font-semibold">{`${day} de ${monthNames[month]}, ${year}`}</p>
+            </div>
+
+            {hasEvents ? (
+              /* Fecha ocupada - mostrar eventos y botón ver detalles */
+              <>
+                <div className="space-y-2">
+                  {dateEvents.map(event => (
+                    <div key={event.id} className="p-3 bg-muted/50 rounded-lg space-y-1">
+                      <p className="font-medium text-sm">{event.name}</p>
+                      <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                        <span>{event.attendees} personas</span>
+                        <span>S/ {(event.financial?.advancePayment || 0).toLocaleString()}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {dateEvents.length === 1 && (
+                  <Button
+                    onClick={() => navigate(`/eventos/${dateEvents[0].id}`)}
+                    className="w-full"
+                    size="sm"
+                  >
+                    <Eye className="h-4 w-4 mr-2" />
+                    Ver Detalles
+                  </Button>
+                )}
+
+                {dateEvents.length > 1 && (
+                  <Button
+                    onClick={() => navigate('/eventos')}
+                    className="w-full"
+                    size="sm"
+                  >
+                    <Eye className="h-4 w-4 mr-2" />
+                    Ver Todos los Eventos
+                  </Button>
+                )}
+              </>
+            ) : (
+              /* Fecha disponible - mostrar opciones */
+              <>
+                <div className="py-2">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <div className="h-2 w-2 rounded-full bg-green-500" />
+                    <span>Fecha disponible</span>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Button
+                    onClick={() => {
+                      setSelectedDate(date);
+                      setShowCreateModal(true);
+                    }}
+                    className="w-full bg-primary"
+                    size="sm"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Crear Evento Completo
+                  </Button>
+
+                  <Button
+                    onClick={() => {
+                      setSelectedDate(date);
+                      setShowReserveModal(true);
+                    }}
+                    variant="outline"
+                    className="w-full"
+                    size="sm"
+                  >
+                    <Clock className="h-4 w-4 mr-2" />
+                    Reservar Fecha Rápida
+                  </Button>
+                </div>
+
+                <p className="text-xs text-muted-foreground text-center pt-2">
+                  Puedes crear un evento completo o hacer una reserva rápida
+                </p>
+              </>
+            )}
+          </div>
+        </PopoverContent>
+      </Popover>
+    );
+  };
+
+  return (
+    <>
+      <div className="bg-gradient-card rounded-xl p-6 border border-border">
+        {/* Header */}
+        <div className="mb-4 flex items-center justify-between">
+          <h3 className="text-lg font-semibold text-foreground">Calendario Interactivo</h3>
+          
+          <div className="flex items-center gap-2">
+            <button
+              onClick={previousMonth}
+              className="p-1.5 hover:bg-muted rounded-lg transition-colors"
+              aria-label="Mes anterior"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            
+            <div className="min-w-[120px] text-center">
+              <span className="text-sm font-medium text-foreground">
+                {monthNames[month]} {year}
+              </span>
+            </div>
+            
+            <button
+              onClick={nextMonth}
+              className="p-1.5 hover:bg-muted rounded-lg transition-colors"
+              aria-label="Mes siguiente"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+
+        {/* Calendar Grid */}
         <div className="grid grid-cols-7 gap-1">
           {/* Week days header */}
           {weekDays.map(day => (
@@ -164,41 +275,44 @@ export function EventCalendar({ events: propEvents }: EventCalendarProps) {
           {calendarDays.map((day, index) => (
             <div key={index} className="aspect-square">
               {day !== null ? (
-                <Tooltip delayDuration={200}>
-                  <TooltipTrigger asChild>
-                    <div
-                      className={`
-                        w-full h-full rounded-md transition-all cursor-pointer
-                        flex items-center justify-center text-sm
-                        ${getCellStyle(day)}
-                      `}
-                    >
-                      {day}
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent side="top" className="bg-popover border-border">
-                    {renderTooltipContent(day)}
-                  </TooltipContent>
-                </Tooltip>
+                renderDayContent(day)
               ) : (
                 <div className="w-full h-full" />
               )}
             </div>
           ))}
         </div>
-      </TooltipProvider>
 
-      {/* Legend - Simplified */}
-      <div className="flex items-center justify-center gap-4 mt-4 pt-3 border-t border-border">
-        <div className="flex items-center gap-1.5">
-          <div className="w-3 h-3 rounded bg-green-600/40 border-2 border-green-500" />
-          <span className="text-xs text-muted-foreground">Libre</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <div className="w-3 h-3 rounded bg-purple-600/40 border-2 border-purple-500" />
-          <span className="text-xs text-muted-foreground">Reservado</span>
+        {/* Legend */}
+        <div className="flex items-center justify-center gap-4 mt-4 pt-3 border-t border-border">
+          <div className="flex items-center gap-1.5">
+            <div className="w-3 h-3 rounded bg-green-600/40 border-2 border-green-500" />
+            <span className="text-xs text-muted-foreground">Disponible</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <div className="w-3 h-3 rounded bg-purple-600/40 border-2 border-purple-500" />
+            <span className="text-xs text-muted-foreground">Reservado</span>
+          </div>
         </div>
       </div>
-    </div>
+
+      {/* Modales */}
+      <CreateEventModal 
+        open={showCreateModal} 
+        onClose={() => {
+          setShowCreateModal(false);
+          setSelectedDate(null);
+        }} 
+      />
+      
+      <ReserveDateModal
+        open={showReserveModal}
+        onClose={() => {
+          setShowReserveModal(false);
+          setSelectedDate(null);
+        }}
+        selectedDate={selectedDate}
+      />
+    </>
   );
 }
