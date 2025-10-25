@@ -33,6 +33,8 @@ export const DEMO_USERS: MockUser[] = [
     created_at: new Date('2024-01-01'),
     updated_at: new Date('2024-01-01'),
     assignedEventIds: [],
+    is_verified: true,
+    is_blocked: false,
   },
   {
     id: 2,
@@ -51,6 +53,8 @@ export const DEMO_USERS: MockUser[] = [
     created_at: new Date('2024-01-05'),
     updated_at: new Date('2024-01-05'),
     assignedEventIds: [],
+    is_verified: true,
+    is_blocked: false,
   },
   {
     id: 3,
@@ -69,6 +73,8 @@ export const DEMO_USERS: MockUser[] = [
     created_at: new Date('2024-01-10'),
     updated_at: new Date('2024-01-10'),
     assignedEventIds: [],
+    is_verified: true,
+    is_blocked: false,
   },
   {
     id: 4,
@@ -87,6 +93,8 @@ export const DEMO_USERS: MockUser[] = [
     created_at: new Date('2024-01-15'),
     updated_at: new Date('2024-01-15'),
     assignedEventIds: [1, 2, 3], // Asignado a eventos ficticios
+    is_verified: true,
+    is_blocked: false,
   },
 ];
 
