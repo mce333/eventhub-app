@@ -83,9 +83,20 @@ export function EventCalendar({ events: propEvents }: EventCalendarProps) {
     const isToday = date.toDateString() === today.toDateString();
     
     if (dateEvents.length > 0) {
-      return `bg-purple-600/40 border-2 border-purple-500 hover:bg-purple-600/60 ${isToday ? 'ring-2 ring-yellow-400' : ''}`;
+      // Verificar si es reserva rápida o evento completo
+      const hasReservation = dateEvents.some(e => e.tags?.includes('reserva'));
+      const hasFullEvent = dateEvents.some(e => !e.tags?.includes('reserva'));
+      
+      if (hasFullEvent) {
+        // Rojo = Evento completo confirmado
+        return `bg-red-600/40 border-2 border-red-500 hover:bg-red-600/60 ${isToday ? 'ring-2 ring-yellow-400' : ''}`;
+      } else if (hasReservation) {
+        // Naranja = Solo reserva rápida
+        return `bg-orange-600/40 border-2 border-orange-500 hover:bg-orange-600/60 ${isToday ? 'ring-2 ring-yellow-400' : ''}`;
+      }
     }
     
+    // Verde = Disponible
     return `bg-green-600/30 border border-green-500/60 hover:bg-green-600/40 ${isToday ? 'ring-2 ring-yellow-400' : ''}`;
   };
 
