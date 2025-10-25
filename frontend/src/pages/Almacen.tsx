@@ -305,6 +305,21 @@ export default function Almacen() {
                           <p className="text-xs text-muted-foreground">{item.notas}</p>
                         </div>
                       )}
+                      
+                      {/* Auditoría */}
+                      <div className="pt-3 border-t space-y-1">
+                        <p className="text-xs font-medium text-muted-foreground">Auditoría:</p>
+                        <div className="text-xs text-muted-foreground">
+                          <p>Registrado: {item.registradoPor} ({item.registradoRol})</p>
+                          <p>{item.registradoFecha}</p>
+                        </div>
+                        {item.modificadoPor && (
+                          <div className="text-xs text-muted-foreground mt-1 pt-1 border-t">
+                            <p>Modificado: {item.modificadoPor} ({item.modificadoRol})</p>
+                            <p>{item.modificadoFecha}</p>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
