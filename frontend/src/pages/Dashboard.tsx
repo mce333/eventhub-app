@@ -37,25 +37,25 @@ export default function Dashboard() {
     const currentYear = now.getFullYear();
     
     // Eventos de este mes
-    const eventosEsteMes = allEvents.filter(event => {
+    const eventosEsteMes = storedEvents.filter(event => {
       const eventDate = new Date(event.date);
       return eventDate.getMonth() === currentMonth && eventDate.getFullYear() === currentYear;
     }).length;
     
     // Eventos realizados (completados)
-    const eventosRealizados = allEvents.filter(event => event.status === 'completed').length;
+    const eventosRealizados = storedEvents.filter(event => event.status === 'completed').length;
     
     // Eventos por realizar (confirmados o en progreso)
-    const eventosPorRealizar = allEvents.filter(event => 
+    const eventosPorRealizar = storedEvents.filter(event => 
       event.status === 'confirmed' || event.status === 'in_progress'
     ).length;
     
     // Calcular ingresos del mes
-    const ingresosEventosRealizados = allEvents
+    const ingresosEventosRealizados = storedEvents
       .filter(event => event.status === 'completed')
       .reduce((sum, event) => sum + (event.financial?.totalIncome || 0), 0);
     
-    const adelantosEventosPorRealizar = allEvents
+    const adelantosEventosPorRealizar = storedEvents
       .filter(event => event.status === 'confirmed' || event.status === 'in_progress')
       .reduce((sum, event) => sum + (event.financial?.advancePayment || 0), 0);
     
