@@ -190,7 +190,7 @@ export const MOCK_EVENTS: Event[] = [
     },
     serviceType: 'con_comida',
     foodDetails: {
-      cantidadDePlatos: 120,
+      cantidadDePlatos: 135,
       tipoMenu: 'criollo',
       precioPorPlato: 55,
     },
