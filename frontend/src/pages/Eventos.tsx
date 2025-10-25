@@ -112,11 +112,16 @@ export default function Eventos() {
 
   const handleDelete = (id: number) => {
     if (confirm('¿Estás seguro de eliminar este evento?')) {
-      const updatedEvents = events.filter((e) => e.id !== id);
-      setEvents(updatedEvents);
+      // Eliminar de localStorage
+      const storedEvents = JSON.parse(localStorage.getItem('demo_events') || '[]');
+      const updatedEvents = storedEvents.filter((e: Event) => e.id !== id);
       localStorage.setItem('demo_events', JSON.stringify(updatedEvents));
+      
+      // Recargar eventos
+      loadEvents();
       toast.success('Evento eliminado correctamente');
     }
+  };
   };
 
   const handleDuplicate = (event: Event) => {
