@@ -139,22 +139,29 @@ export default function Dashboard() {
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {dashboardData.upcomingEvents.map((event) => (
-                  <EventCard 
-                    key={event.id} 
-                    title={event.name}
-                    date={new Date(event.date).toLocaleDateString('es-ES', { 
-                      day: 'numeric', 
-                      month: 'long', 
-                      year: 'numeric' 
-                    })}
-                    time="10:00 - 18:00"
-                    location={event.location}
-                    attendees={event.attendees}
-                    capacity={event.attendees + 50}
-                    status={event.status}
-                  />
-                ))}
+                {dashboardData?.upcomingEvents && dashboardData.upcomingEvents.length > 0 ? (
+                  dashboardData.upcomingEvents.map((event) => (
+                    <EventCard 
+                      key={event.id} 
+                      title={event.name}
+                      date={new Date(event.date).toLocaleDateString('es-ES', { 
+                        day: 'numeric', 
+                        month: 'long', 
+                        year: 'numeric' 
+                      })}
+                      time="10:00 - 18:00"
+                      location={event.location}
+                      attendees={event.attendees}
+                      capacity={event.attendees + 50}
+                      status={event.status}
+                    />
+                  ))
+                ) : (
+                  <div className="col-span-full py-12 text-center text-muted-foreground">
+                    <Calendar className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                    <p>No hay eventos próximos</p>
+                  </div>
+                )}
               </div>
             </div>
           </div>
