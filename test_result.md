@@ -246,8 +246,6 @@ metadata:
 test_plan:
   current_focus:
     - "Cross-Session Expense Visibility (CRITICAL)"
-    - "Dashboard Route (404 Error)"
-    - "Chatbot Visibility Issues"
   stuck_tasks:
     - "Cross-Session Expense Visibility"
   test_all: false
