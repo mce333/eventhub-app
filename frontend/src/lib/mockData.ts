@@ -132,7 +132,7 @@ export const MOCK_EVENTS: Event[] = [
     },
     serviceType: 'con_comida',
     foodDetails: {
-      cantidadDePlatos: 150,
+      cantidadDePlatos: 180,
       tipoMenu: 'buffet',
       precioPorPlato: 65,
     },
