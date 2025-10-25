@@ -7,6 +7,8 @@ import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
 import Eventos from './pages/Eventos';
 import EventoDetalle from './pages/EventoDetalle';
+import Clientes from './pages/Clientes';
+import Almacen from './pages/Almacen';
 import NotFound from './pages/NotFound';
 import { useAuth } from '@/contexts/AuthContext';
 
