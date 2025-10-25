@@ -116,9 +116,9 @@ export const MOCK_EVENTS: Event[] = [
     status: 'completed',
     date: '2025-05-15',
     endDate: '2025-05-15',
-    location: 'Salón Jardín Principal',
-    venue: 'Local de Eventos',
-    attendees: 150,
+    location: 'Local Solaz',
+    venue: 'Local Solaz',
+    attendees: 180,
     maxAttendees: 200,
     client: {
       id: 1,
