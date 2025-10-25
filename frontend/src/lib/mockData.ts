@@ -174,9 +174,9 @@ export const MOCK_EVENTS: Event[] = [
     status: 'confirmed',
     date: '2025-06-22',
     endDate: '2025-06-22',
-    location: 'Salón Imperial',
-    venue: 'Local de Eventos',
-    attendees: 120,
+    location: 'Local Praga',
+    venue: 'Local Praga',
+    attendees: 135,
     maxAttendees: 150,
     client: {
       id: 2,
