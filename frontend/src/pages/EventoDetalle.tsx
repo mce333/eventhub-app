@@ -49,18 +49,16 @@ export default function EventoDetalle() {
   }, [id]);
 
   const loadEvent = () => {
-    // Buscar en demo_events primero
+    // Buscar SOLO en localStorage
     const storedEvents = JSON.parse(localStorage.getItem('demo_events') || '[]');
     
-    // Buscar primero en localStorage
-    let foundEvent = storedEvents.find((e: Event) => e.id === parseInt(id || '0'));
+    console.log('🔍 Buscando evento ID:', id);
+    console.log('📦 Total eventos en localStorage:', storedEvents.length);
     
-    // Si no está en localStorage, buscar en MOCK_EVENTS
-    if (!foundEvent) {
-      foundEvent = MOCK_EVENTS.find(e => e.id === parseInt(id || '0'));
-    }
+    const foundEvent = storedEvents.find((e: Event) => e.id === parseInt(id || '0'));
     
     if (foundEvent) {
+      console.log('✅ Evento encontrado:', foundEvent.name);
       // Check if user has permission to view this event
       if (!canViewEvent(user, foundEvent)) {
         toast.error('No tienes permiso para ver este evento');
@@ -71,6 +69,7 @@ export default function EventoDetalle() {
       setEvent(foundEvent);
       setEditedEvent(foundEvent);
     } else {
+      console.log('❌ Evento no encontrado');
       toast.error('Evento no encontrado');
       navigate('/eventos');
     }
