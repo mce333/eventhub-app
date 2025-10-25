@@ -85,183 +85,21 @@ export const MOCK_CLIENTS: EventClient[] = [
   { id: 3, name: 'Carlos Ruiz', email: 'carlos@email.com', phone: '+54 11 2345 6789' },
 ];
 
-// Mock Events - EVENTOS FICTICIOS PARA MÉTRICAS
-export const MOCK_EVENTS: Event[] = [
-  // Evento del mes pasado (completado)
-  {
-    id: 1,
-    name: 'Boda de Rosa y Miguel',
-    description: 'Ceremonia y recepción en jardín',
-    type: 'boda',
-    status: 'completed',
-    date: '2025-05-15',
-    endDate: '2025-05-15',
-    location: 'Local Solaz',
-    venue: 'Local Solaz',
-    attendees: 180,
-    maxAttendees: 200,
-    client: {
-      id: 1,
-      name: 'Rosa',
-      last_name: 'García',
-      phone: '+51 999 111 222',
-      email: 'rosa@email.com',
-      address: 'Lima Centro',
-      document_type: 'DNI',
-      document_number: '98765432',
-    },
-    serviceType: 'con_comida',
-    foodDetails: {
-      cantidadDePlatos: 180,
-      tipoMenu: 'buffet',
-      precioPorPlato: 65,
-    },
-    financial: {
-      budget: 15000,
-      totalIncome: 15000,
-      totalExpenses: 8500,
-      balance: 6500,
-      advancePayment: 7500,
-      pendingPayment: 0,
-    },
-    contract: {
-      tipoContrato: 'privado',
-      precioTotal: 15000,
-      pagoAdelantado: 7500,
-      saldoPendiente: 0,
-      fechaFirma: '2025-04-15',
-    },
-    assignedServiceUsers: [4],
-    payments: [],
-    expenses: [],
-    decoration: [],
-    furniture: [],
-    staff: [],
-    timeline: [],
-    tags: [],
-    createdBy: 1,
-    createdByName: 'Admin Sistema',
-    createdAt: '2025-04-15',
-    updatedAt: '2025-05-16',
-    imageUrl: 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=800',
-  },
-  // Evento de este mes (confirmado - próximo)
-  {
-    id: 2,
-    name: 'Quinceañera de Valeria',
-    description: 'Fiesta de 15 años con tema princesa',
-    type: 'quince_años',
-    status: 'confirmed',
-    date: '2025-06-22',
-    endDate: '2025-06-22',
-    location: 'Local Praga',
-    venue: 'Local Praga',
-    attendees: 135,
-    maxAttendees: 150,
-    client: {
-      id: 2,
-      name: 'Valeria',
-      last_name: 'Torres',
-      phone: '+51 999 333 444',
-      email: 'valeria@email.com',
-      address: 'San Isidro',
-      document_type: 'DNI',
-      document_number: '87654321',
-    },
-    serviceType: 'con_comida',
-    foodDetails: {
-      cantidadDePlatos: 135,
-      tipoMenu: 'criollo',
-      precioPorPlato: 55,
-    },
-    financial: {
-      budget: 12000,
-      totalIncome: 6000,
-      totalExpenses: 2500,
-      balance: 3500,
-      advancePayment: 6000,
-      pendingPayment: 6000,
-    },
-    contract: {
-      tipoContrato: 'privado',
-      precioTotal: 12000,
-      pagoAdelantado: 6000,
-      saldoPendiente: 6000,
-      fechaFirma: '2025-05-22',
-    },
-    assignedServiceUsers: [4],
-    payments: [],
-    expenses: [],
-    decoration: [],
-    furniture: [],
-    staff: [],
-    timeline: [],
-    tags: [],
-    createdBy: 1,
-    createdByName: 'Admin Sistema',
-    createdAt: '2025-05-22',
-    updatedAt: '2025-05-22',
-    imageUrl: 'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=800',
-  },
-  // Evento del mes que viene (confirmado)
-  {
-    id: 3,
-    name: 'Cumpleaños Corporativo Tech Solutions',
-    description: 'Aniversario 10 años de la empresa',
-    type: 'corporativo',
-    status: 'confirmed',
-    date: '2025-07-10',
-    endDate: '2025-07-10',
-    location: 'Local Solaz',
-    venue: 'Local Solaz',
-    attendees: 95,
-    maxAttendees: 100,
-    client: {
-      id: 3,
-      name: 'Tech Solutions',
-      last_name: 'SAC',
-      phone: '+51 999 555 666',
-      email: 'contacto@techsolutions.com',
-      address: 'San Borja',
-      document_type: 'RUC',
-      document_number: '20123456789',
-    },
-    serviceType: 'con_comida',
-    foodDetails: {
-      cantidadDePlatos: 95,
-      tipoMenu: 'gourmet',
-      precioPorPlato: 75,
-    },
-    financial: {
-      budget: 10000,
-      totalIncome: 5000,
-      totalExpenses: 0,
-      balance: 5000,
-      advancePayment: 5000,
-      pendingPayment: 5000,
-    },
-    contract: {
-      tipoContrato: 'corporativo',
-      precioTotal: 10000,
-      pagoAdelantado: 5000,
-      saldoPendiente: 5000,
-      fechaFirma: '2025-06-10',
-    },
-    assignedServiceUsers: [4],
-    payments: [],
-    expenses: [],
-    decoration: [],
-    furniture: [],
-    staff: [],
-    timeline: [],
-    tags: [],
-    createdBy: 1,
-    createdByName: 'Admin Sistema',
-    createdAt: '2025-06-10',
-    updatedAt: '2025-06-10',
-    imageUrl: 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=800',
-  },
-];
+// Mock Events - VACÍO, los eventos se crearán en localStorage
+export const MOCK_EVENTS: Event[] = [];
+
+// Función para inicializar eventos de ejemplo en localStorage (solo la primera vez)
+export function initializeSampleEvents() {
+  const existingEvents = localStorage.getItem('demo_events');
+  const hasInitialized = localStorage.getItem('events_initialized');
+  
+  // Solo inicializar si no hay eventos y no se ha inicializado antes
+  if (!hasInitialized) {
+    console.log('Inicializando eventos de ejemplo...');
+    localStorage.setItem('demo_events', '[]');
+    localStorage.setItem('events_initialized', 'true');
+  }
+}
 
 export const MOCK_DASHBOARD_DATA: Record<number, any> = {
   1: { // Admin
