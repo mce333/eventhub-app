@@ -155,7 +155,7 @@ export function canAccessRoute(role: UserRole, route: string): boolean {
     '/eventos': 'canViewEvents',
     '/clientes': 'canViewClients',
     '/estadisticas': 'canViewStatistics',
-    '/espacios': 'canViewSpaces',
+    '/almacen': 'canViewWarehouse',
     '/configuracion': 'canManageUsers',
   };
 
