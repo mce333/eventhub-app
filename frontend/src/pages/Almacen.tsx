@@ -87,6 +87,9 @@ export default function Almacen() {
       ubicacion: newItem.ubicacion!,
       estado: newItem.estado!,
       notas: newItem.notas,
+      registradoPor: `${user?.name} ${user?.last_name}`,
+      registradoRol: user?.role?.displayName || 'Usuario',
+      registradoFecha: new Date().toLocaleString('es-ES'),
     };
 
     const updatedItems = [...items, item];
