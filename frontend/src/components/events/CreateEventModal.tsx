@@ -166,6 +166,12 @@ export function CreateEventModal({ open, onClose }: CreateEventModalProps) {
 
       const newEventId = Date.now();
       
+      // Determinar status basado en la fecha del evento
+      const eventDate = new Date(formData.date!);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const eventStatus = eventDate < today ? 'completed' : 'confirmed';
+      
       const newEvent = {
         id: newEventId,
         name: formData.name!,
@@ -176,7 +182,7 @@ export function CreateEventModal({ open, onClose }: CreateEventModalProps) {
         venue: formData.location!,
         maxAttendees: formData.maxAttendees!,
         attendees: 0,
-        status: 'draft' as const,
+        status: eventStatus as const,
         description: formData.description || '',
         imageUrl: getEventImageByType(formData.type!),
         serviceType: formData.serviceType!,
