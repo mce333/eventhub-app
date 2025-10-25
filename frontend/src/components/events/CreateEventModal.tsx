@@ -777,6 +777,28 @@ export function CreateEventModal({ open, onClose }: CreateEventModalProps) {
             </div>
 
             <div>
+              <Label>Garantía (S/)</Label>
+              <Input
+                type="number"
+                placeholder="500.00"
+                step="0.01"
+                value={formData.contract?.garantia || ''}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    contract: {
+                      ...formData.contract!,
+                      garantia: parseFloat(e.target.value) || 0,
+                    },
+                  })
+                }
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                Monto de garantía por daños o cancelación
+              </p>
+            </div>
+
+            <div>
               <Label>Foto del Contrato</Label>
               <div className="flex items-center gap-2">
                 <Input type="file" accept="image/*" />
