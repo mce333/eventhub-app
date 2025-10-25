@@ -25,6 +25,8 @@ export interface Permission {
   canManageStaff: boolean;
   canViewSpaces: boolean;
   canManageSpaces: boolean;
+  canViewWarehouse: boolean;
+  canManageWarehouse: boolean;
 }
 
 export const ROLE_PERMISSIONS: Record<UserRole, Permission> = {
