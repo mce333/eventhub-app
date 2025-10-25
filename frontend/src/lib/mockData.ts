@@ -232,9 +232,9 @@ export const MOCK_EVENTS: Event[] = [
     status: 'confirmed',
     date: '2025-07-10',
     endDate: '2025-07-10',
-    location: 'Salón Ejecutivo',
-    venue: 'Local de Eventos',
-    attendees: 80,
+    location: 'Local Solaz',
+    venue: 'Local Solaz',
+    attendees: 95,
     maxAttendees: 100,
     client: {
       id: 3,
