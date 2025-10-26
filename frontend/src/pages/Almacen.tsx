@@ -19,6 +19,7 @@ interface WarehouseCategory {
   unidad: string;
   ubicacion: string;
   historial: HistoryEntry[];
+  imagen?: string;
 }
 
 interface HistoryEntry {
