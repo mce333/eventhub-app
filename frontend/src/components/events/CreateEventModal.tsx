@@ -68,11 +68,11 @@ const EVENT_TYPES: { value: EventType; label: string }[] = [
   { value: 'otro', label: 'Otro' },
 ];
 
-export function CreateEventModal({ open, onClose }: CreateEventModalProps) {
+export function CreateEventModal({ open, onClose, initialDate }: CreateEventModalProps) {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(0);
-  const [selectedDate, setSelectedDate] = useState<Date>();
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(initialDate);
   const [menuItems, setMenuItems] = useState(menuService.getMenuItems());
   const [decorationItems, setDecorationItems] = useState<DecorationItem[]>([]);
   const [selectedServiceUsers, setSelectedServiceUsers] = useState<number[]>([]);
