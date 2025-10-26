@@ -79,6 +79,14 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/estadisticas"
+        element={
+          <ProtectedRoute>
+            <Estadisticas />
+          </ProtectedRoute>
+        }
+      />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
