@@ -262,7 +262,7 @@ export default function EventoDetalle() {
 
             {/* Tabs */}
             <Tabs defaultValue={defaultTab} className="w-full">
-              <TabsList className={isEncargadoCompras || isServicio ? "grid w-full grid-cols-1" : "grid w-full grid-cols-6"}>
+              <TabsList className={isEncargadoCompras || isServicio ? "grid w-full grid-cols-2" : "grid w-full grid-cols-7"}>
                 {!isEncargadoCompras && !isServicio && (
                   <>
                     <TabsTrigger value="info">Información</TabsTrigger>
@@ -272,6 +272,9 @@ export default function EventoDetalle() {
                   </>
                 )}
                 <TabsTrigger value="expenses">Gastos</TabsTrigger>
+                {(userRole === 'admin' || userRole === 'servicio') && (
+                  <TabsTrigger value="incomes">Ingresos</TabsTrigger>
+                )}
                 {!isEncargadoCompras && !isServicio && (
                   <TabsTrigger value="gallery">Galería</TabsTrigger>
                 )}
