@@ -703,6 +703,85 @@ export function CreateEventModal({ open, onClose }: CreateEventModalProps) {
                 </CardContent>
               </Card>
             )}
+
+            {formData.serviceType === 'solo_alquiler' && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Detalles de Alquiler</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label>Cantidad de Mesas</Label>
+                      <Input
+                        type="number"
+                        placeholder="Ej: 20"
+                        value={formData.rentalDetails?.cantidadMesas || ''}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            rentalDetails: {
+                              ...formData.rentalDetails!,
+                              cantidadMesas: parseInt(e.target.value) || 0,
+                            },
+                          })
+                        }
+                      />
+                    </div>
+
+                    <div>
+                      <Label>Cantidad de Vasos</Label>
+                      <Input
+                        type="number"
+                        placeholder="Ej: 100"
+                        value={formData.rentalDetails?.cantidadVasos || ''}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            rentalDetails: {
+                              ...formData.rentalDetails!,
+                              cantidadVasos: parseInt(e.target.value) || 0,
+                            },
+                          })
+                        }
+                      />
+                    </div>
+
+                    <div>
+                      <Label>Mantelería</Label>
+                      <Input
+                        type="number"
+                        placeholder="Cantidad"
+                        value={formData.rentalDetails?.cantidadManteleria || ''}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            rentalDetails: {
+                              ...formData.rentalDetails!,
+                              cantidadManteleria: parseInt(e.target.value) || 0,
+                            },
+                          })
+                        }
+                      />
+                    </div>
+
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="vigilante"
+                        checked={formData.rentalDetails?.incluyeVigilante || false}
+                        onCheckedChange={(checked) =>
+                          setFormData({
+                            ...formData,
+                            rentalDetails: { ...formData.rentalDetails!, incluyeVigilante: checked as boolean },
+                          })
+                        }
+                      />
+                      <Label htmlFor="vigilante">¿Incluye Vigilante?</Label>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </div>
         );
 
