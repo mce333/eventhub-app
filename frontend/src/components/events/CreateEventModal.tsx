@@ -45,6 +45,8 @@ interface DecorationItem {
   providerCost: number;
   clientCost: number;
   profit: number;
+  estadoPago: 'pendiente' | 'adelanto' | 'pagado';
+  montoPagado: number;
 }
 
 const STEPS = [
