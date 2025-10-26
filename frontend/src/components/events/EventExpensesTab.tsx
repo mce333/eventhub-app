@@ -363,7 +363,7 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
                       <p className="text-sm text-muted-foreground">{expense.description}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-lg font-bold">S/ {expense.amount.toLocaleString()}</p>
+                      <p className="text-lg font-bold">S/ {(expense.amount || 0).toLocaleString()}</p>
                     </div>
                   </div>
                   
