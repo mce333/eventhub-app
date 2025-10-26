@@ -55,18 +55,6 @@ export function Sidebar() {
           </NavLink>
         ))}
       </nav>
-
-      <div className="p-4 border-t border-sidebar-border">
-        <div className="bg-gradient-card rounded-lg p-4 border border-primary/20">
-          <h3 className="text-sm font-semibold text-foreground mb-2">¿Necesitas ayuda?</h3>
-          <p className="text-xs text-muted-foreground mb-3">
-            Contacta con soporte para resolver tus dudas
-          </p>
-          <button className="w-full px-3 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors">
-            Contactar
-          </button>
-        </div>
-      </div>
     </aside>
   );
 }
