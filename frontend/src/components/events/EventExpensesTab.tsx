@@ -437,44 +437,32 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
           {showAddForm && (
             <CardContent className="space-y-4">
               {/* Expense Registration Form */}
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label>Categoría *</Label>
-                  <Select
-                    value={newExpense.category}
-                    onValueChange={(value) => setNewExpense({ ...newExpense, category: value })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecciona categoría" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {EXPENSE_CATEGORIES.map((cat) => (
-                        <SelectItem key={cat.value} value={cat.value}>
-                          {cat.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+              <div>
+                <Label>Descripción *</Label>
+                <Input
+                  placeholder="Ej: Compra de ingredientes adicionales"
+                  value={newExpense.category}
+                  onChange={(e) => setNewExpense({ ...newExpense, category: e.target.value })}
+                />
+              </div>
 
-                <div>
-                  <Label>Método de Pago *</Label>
-                  <Select
-                    value={newExpense.paymentMethod}
-                    onValueChange={(value) => setNewExpense({ ...newExpense, paymentMethod: value })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {PAYMENT_METHODS.map((method) => (
-                        <SelectItem key={method.value} value={method.value}>
-                          {method.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+              <div>
+                <Label>Método de Pago *</Label>
+                <Select
+                  value={newExpense.paymentMethod}
+                  onValueChange={(value) => setNewExpense({ ...newExpense, paymentMethod: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PAYMENT_METHODS.map((method) => (
+                      <SelectItem key={method.value} value={method.value}>
+                        {method.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="grid grid-cols-3 gap-4">
