@@ -37,6 +37,7 @@ import { STAFF_ROLES, getDefaultRate, getRateType, canRoleHaveSystemAccess } fro
 interface CreateEventModalProps {
   open: boolean;
   onClose: () => void;
+  initialDate?: Date;
 }
 
 interface DecorationItem {
