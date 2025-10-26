@@ -172,15 +172,17 @@ export function EventIncomesTab({ event, onUpdate }: EventIncomesTabProps) {
               </select>
             </div>
 
-            <div>
-              <Label>Descripción *</Label>
-              <Textarea
-                placeholder="Ej: Venta de 20 cervezas"
-                value={newIncome.descripcion}
-                onChange={(e) => setNewIncome({ ...newIncome, descripcion: e.target.value })}
-                rows={2}
-              />
-            </div>
+            {newIncome.tipo === 'kiosco' && (
+              <div>
+                <Label>Descripción *</Label>
+                <Textarea
+                  placeholder="Ej: Venta de 20 cervezas"
+                  value={newIncome.descripcion}
+                  onChange={(e) => setNewIncome({ ...newIncome, descripcion: e.target.value })}
+                  rows={2}
+                />
+              </div>
+            )}
 
             {newIncome.tipo === 'kiosco' ? (
               <div>
