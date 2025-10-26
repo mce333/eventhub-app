@@ -295,7 +295,7 @@ export default function EventoDetalle() {
                   </TabsContent>
 
                   <TabsContent value="decoration">
-                    <EventDecorationTab event={event} />
+                    <EventDecorationTab event={event} onUpdate={loadEvent} />
                   </TabsContent>
 
                   <TabsContent value="staff">
