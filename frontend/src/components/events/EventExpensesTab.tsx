@@ -70,6 +70,17 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
     paymentMethod: 'efectivo',
   });
 
+  // Sync registered expenses when event changes
+  useEffect(() => {
+    const registered: {[key: number]: boolean} = {};
+    event.expenses?.forEach(e => {
+      if (e.isPredetermined && (e as any).isRegistered) {
+        registered[e.id] = true;
+      }
+    });
+    setRegisteredExpenses(registered);
+  }, [event.expenses, event.id]);
+
   // Calculate suggested ingredients when dish changes
   useEffect(() => {
     if (selectedDish && event.foodDetails?.cantidadDePlatos) {
