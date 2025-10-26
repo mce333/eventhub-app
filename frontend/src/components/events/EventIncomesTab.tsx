@@ -375,7 +375,7 @@ export function EventIncomesTab({ event, onUpdate }: EventIncomesTabProps) {
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle>Ingresos Adicionales (Kiosco & Horas Extras)</CardTitle>
+            <CardTitle>Ingresos Adicionales</CardTitle>
             <Button
               onClick={() => setShowAddForm(!showAddForm)}
               size="sm"
