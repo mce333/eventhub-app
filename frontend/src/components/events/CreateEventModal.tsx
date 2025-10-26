@@ -314,14 +314,18 @@ export function CreateEventModal({ open, onClose, initialDate }: CreateEventModa
       [field]: value,
     };
     
+    // Auto-fill costs when package is selected
     if (field === 'package') {
       const selectedPackage = DECORATION_PACKAGES.find(p => p.name === value);
       if (selectedPackage) {
         updated[index].providerCost = selectedPackage.providerCost;
         updated[index].clientCost = selectedPackage.clientCost;
+        // Calculate profit immediately when package is selected
+        updated[index].profit = selectedPackage.clientCost - selectedPackage.providerCost;
       }
     }
     
+    // Recalculate profit when costs change
     if (field === 'providerCost' || field === 'clientCost') {
       updated[index].profit = updated[index].clientCost - updated[index].providerCost;
     }
