@@ -345,7 +345,7 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Receipt className="h-5 w-5" />
-              Gastos Predeterminados
+              Gastos Predeterminados del Menú
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -368,36 +368,48 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
                   </div>
                   
                   {canEdit && (
-                    <div className="grid grid-cols-3 gap-3 pt-3 border-t">
-                      <div>
-                        <Label className="text-xs">Cantidad</Label>
-                        <Input
-                          type="number"
-                          value={expense.cantidad || 1}
-                          onChange={(e) => updatePredefinedExpense(expense.id, 'quantity', parseInt(e.target.value))}
-                          className="h-8"
-                        />
+                    <>
+                      <div className="grid grid-cols-3 gap-3 pt-3 border-t">
+                        <div>
+                          <Label className="text-xs">Cantidad</Label>
+                          <Input
+                            type="number"
+                            value={expense.cantidad || 1}
+                            onChange={(e) => updatePredefinedExpense(expense.id, 'quantity', parseInt(e.target.value) || 0)}
+                            className="h-8"
+                          />
+                        </div>
+                        <div>
+                          <Label className="text-xs">Precio Unitario</Label>
+                          <Input
+                            type="number"
+                            step="0.01"
+                            value={expense.costoUnitario || 0}
+                            onChange={(e) => updatePredefinedExpense(expense.id, 'unitPrice', parseFloat(e.target.value) || 0)}
+                            className="h-8"
+                          />
+                        </div>
+                        <div>
+                          <Label className="text-xs">Total</Label>
+                          <Input
+                            type="number"
+                            value={(expense.cantidad || 1) * (expense.costoUnitario || 0)}
+                            disabled
+                            className="h-8 bg-muted font-bold"
+                          />
+                        </div>
                       </div>
-                      <div>
-                        <Label className="text-xs">Precio Unitario</Label>
-                        <Input
-                          type="number"
-                          step="0.01"
-                          value={expense.costoUnitario || 0}
-                          onChange={(e) => updatePredefinedExpense(expense.id, 'unitPrice', parseFloat(e.target.value))}
-                          className="h-8"
-                        />
-                      </div>
-                      <div>
-                        <Label className="text-xs">Total</Label>
-                        <Input
-                          type="number"
-                          value={expense.amount}
-                          disabled
-                          className="h-8 bg-muted font-bold"
-                        />
-                      </div>
-                    </div>
+                      <Button
+                        onClick={() => {
+                          updatePredefinedExpense(expense.id, 'quantity', expense.cantidad || 1);
+                          toast.success(`Gasto de ${expense.category} registrado`);
+                        }}
+                        size="sm"
+                        className="w-full mt-3"
+                      >
+                        Registrar {expense.category}
+                      </Button>
+                    </>
                   )}
                 </div>
               ))}
