@@ -299,7 +299,7 @@ export default function EventoDetalle() {
                   </TabsContent>
 
                   <TabsContent value="staff">
-                    <EventStaffTab event={event} />
+                    <EventStaffTab event={event} onUpdate={loadEvent} />
                   </TabsContent>
                 </>
               )}
