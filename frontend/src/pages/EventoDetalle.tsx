@@ -18,6 +18,7 @@ import { EventContractTab } from '@/components/events/EventContractTab';
 import { EventDecorationTab } from '@/components/events/EventDecorationTab';
 import { EventStaffTab } from '@/components/events/EventStaffTab';
 import { EventExpensesTab } from '@/components/events/EventExpensesTab';
+import { EventIncomesTab } from '@/components/events/EventIncomesTab';
 import { EventGalleryTab } from '@/components/events/EventGalleryTab';
 import { ChatbotHelper } from '@/components/dashboard/ChatbotHelper';
 
