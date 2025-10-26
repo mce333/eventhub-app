@@ -235,6 +235,36 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
     }
   };
 
+  const registerPredefinedExpense = (expenseId: number) => {
+    const storedEvents = JSON.parse(localStorage.getItem('demo_events') || '[]');
+    let index = storedEvents.findIndex((e: Event) => e.id === event.id);
+    
+    // If event not in localStorage, add it first
+    if (index === -1) {
+      storedEvents.push({ ...event });
+      index = storedEvents.length - 1;
+    }
+    
+    if (index !== -1) {
+      const expenseIndex = storedEvents[index].expenses?.findIndex((e: EventExpense) => e.id === expenseId);
+      if (expenseIndex !== undefined && expenseIndex !== -1 && storedEvents[index].expenses) {
+        const expense = storedEvents[index].expenses[expenseIndex];
+        
+        // Mark as registered
+        (expense as any).isRegistered = true;
+        (expense as any).registeredAt = new Date().toLocaleString('es-ES');
+        (expense as any).registeredBy = `${user?.name} ${user?.last_name}`;
+        
+        // Update registration state
+        setRegisteredExpenses(prev => ({ ...prev, [expenseId]: true }));
+        
+        localStorage.setItem('demo_events', JSON.stringify(storedEvents));
+        toast.success(`Gasto de ${expense.category} registrado correctamente`);
+        onUpdate();
+      }
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Suspicious Activity Alert */}
