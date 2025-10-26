@@ -83,18 +83,15 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
 
   const handleAddExpense = () => {
     if (!newExpense.category || newExpense.amount <= 0) {
-      toast.error('Por favor completa todos los campos requeridos');
+      toast.error('Por favor completa descripción y monto');
       return;
     }
-
-    // Get description from selected category
-    const categoryLabel = EXPENSE_CATEGORIES.find(c => c.value === newExpense.category)?.label || newExpense.category;
 
     const expense: EventExpense = {
       id: Date.now(),
       eventId: event.id,
-      category: newExpense.category as any,
-      description: categoryLabel,
+      category: 'otros' as any,
+      description: newExpense.category, // Ahora category contiene la descripción
       cantidad: newExpense.quantity,
       costoUnitario: newExpense.unitPrice,
       amount: newExpense.amount,
