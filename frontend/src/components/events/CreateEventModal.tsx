@@ -85,6 +85,13 @@ export function CreateEventModal({ open, onClose, initialDate }: CreateEventModa
   const progress = ((currentStep + 1) / STEPS.length) * 100;
   const serviceUsers = getServiceUsers(DEMO_USERS);
 
+  // Update selectedDate when initialDate prop changes
+  useEffect(() => {
+    if (initialDate) {
+      setSelectedDate(initialDate);
+    }
+  }, [initialDate]);
+
   const handleNext = () => {
     if (!validateCurrentStep()) {
       return;
