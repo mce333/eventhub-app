@@ -387,69 +387,116 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {predefinedExpenses.map((expense) => (
-                <div key={expense.id} className="p-4 border rounded-lg bg-primary/5">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h4 className="font-semibold">{expense.category}</h4>
-                        <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
-                          PREDETERMINADO
-                        </Badge>
+              {predefinedExpenses.map((expense) => {
+                const isRegistered = registeredExpenses[expense.id] || (expense as any).isRegistered;
+                
+                return (
+                  <div key={expense.id} className={`p-4 border rounded-lg ${isRegistered ? 'bg-green-500/5 border-green-500/30' : 'bg-primary/5'}`}>
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <h4 className="font-semibold">{expense.category}</h4>
+                          {isRegistered ? (
+                            <Badge variant="outline" className="bg-green-500/20 text-green-700 border-green-500/30">
+                              ✓ REGISTRADO
+                            </Badge>
+                          ) : (
+                            <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
+                              PREDETERMINADO
+                            </Badge>
+                          )}
+                        </div>
+                        <p className="text-sm text-muted-foreground">{expense.description}</p>
                       </div>
-                      <p className="text-sm text-muted-foreground">{expense.description}</p>
+                      <div className="text-right">
+                        <p className="text-lg font-bold">S/ {(expense.amount || 0).toLocaleString()}</p>
+                      </div>
                     </div>
-                    <div className="text-right">
-                      <p className="text-lg font-bold">S/ {(expense.amount || 0).toLocaleString()}</p>
-                    </div>
+                    
+                    {canEdit && !isRegistered && (
+                      <>
+                        <div className="grid grid-cols-3 gap-3 pt-3 border-t">
+                          <div>
+                            <Label className="text-xs">Cantidad</Label>
+                            <Input
+                              type="number"
+                              value={expense.cantidad || 1}
+                              onChange={(e) => updatePredefinedExpense(expense.id, 'quantity', parseInt(e.target.value) || 0)}
+                              className="h-8"
+                            />
+                          </div>
+                          <div>
+                            <Label className="text-xs">Precio Unitario (S/)</Label>
+                            <Input
+                              type="number"
+                              step="0.01"
+                              value={expense.costoUnitario || 0}
+                              onChange={(e) => updatePredefinedExpense(expense.id, 'unitPrice', parseFloat(e.target.value) || 0)}
+                              className="h-8"
+                            />
+                          </div>
+                          <div>
+                            <Label className="text-xs">Total</Label>
+                            <Input
+                              type="number"
+                              value={(expense.cantidad || 1) * (expense.costoUnitario || 0)}
+                              disabled
+                              className="h-8 bg-muted font-bold"
+                            />
+                          </div>
+                        </div>
+                        <Button
+                          onClick={() => registerPredefinedExpense(expense.id)}
+                          size="sm"
+                          className="w-full mt-3 bg-gradient-primary"
+                        >
+                          Registrar {expense.category}
+                        </Button>
+                      </>
+                    )}
+                    
+                    {isRegistered && (
+                      <div className="pt-3 border-t">
+                        <div className="flex items-center justify-between text-sm mb-2">
+                          <span className="text-muted-foreground">Detalles del Registro:</span>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              setRegisteredExpenses(prev => {
+                                const updated = { ...prev };
+                                delete updated[expense.id];
+                                return updated;
+                              });
+                            }}
+                          >
+                            Editar
+                          </Button>
+                        </div>
+                        <div className="grid grid-cols-3 gap-3 text-sm">
+                          <div>
+                            <p className="text-muted-foreground">Cantidad</p>
+                            <p className="font-medium">{expense.cantidad || 1}</p>
+                          </div>
+                          <div>
+                            <p className="text-muted-foreground">Precio Unitario</p>
+                            <p className="font-medium">S/ {(expense.costoUnitario || 0).toFixed(2)}</p>
+                          </div>
+                          <div>
+                            <p className="text-muted-foreground">Total</p>
+                            <p className="font-medium">S/ {((expense.cantidad || 1) * (expense.costoUnitario || 0)).toFixed(2)}</p>
+                          </div>
+                        </div>
+                        {(expense as any).registeredBy && (
+                          <p className="text-xs text-muted-foreground mt-2">
+                            Registrado por: {(expense as any).registeredBy} - {(expense as any).registeredAt}
+                          </p>
+                        )}
+                      </div>
+                    )}
                   </div>
-                  
-                  {canEdit && (
-                    <>
-                      <div className="grid grid-cols-3 gap-3 pt-3 border-t">
-                        <div>
-                          <Label className="text-xs">Cantidad</Label>
-                          <Input
-                            type="number"
-                            value={expense.cantidad || 1}
-                            onChange={(e) => updatePredefinedExpense(expense.id, 'quantity', parseInt(e.target.value) || 0)}
-                            className="h-8"
-                          />
-                        </div>
-                        <div>
-                          <Label className="text-xs">Precio Unitario</Label>
-                          <Input
-                            type="number"
-                            step="0.01"
-                            value={expense.costoUnitario || 0}
-                            onChange={(e) => updatePredefinedExpense(expense.id, 'unitPrice', parseFloat(e.target.value) || 0)}
-                            className="h-8"
-                          />
-                        </div>
-                        <div>
-                          <Label className="text-xs">Total</Label>
-                          <Input
-                            type="number"
-                            value={(expense.cantidad || 1) * (expense.costoUnitario || 0)}
-                            disabled
-                            className="h-8 bg-muted font-bold"
-                          />
-                        </div>
-                      </div>
-                      <Button
-                        onClick={() => {
-                          updatePredefinedExpense(expense.id, 'quantity', expense.cantidad || 1);
-                          toast.success(`Gasto de ${expense.category} registrado`);
-                        }}
-                        size="sm"
-                        className="w-full mt-3"
-                      >
-                        Registrar {expense.category}
-                      </Button>
-                    </>
-                  )}
-                </div>
-              ))}
+                );
+              })}
             </div>
           </CardContent>
         </Card>
