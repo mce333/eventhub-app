@@ -84,6 +84,7 @@ export default function Estadisticas() {
       masRentable,
       menosRentable,
       distribucionGastos,
+      profitabilityAnalysis: sorted, // Guardar para usar en la tabla
       totalEventosCompletados: completedEvents.length,
       promedioGanancia: sorted.reduce((sum, e) => sum + e.ganancia, 0) / sorted.length,
       promedioMargen: sorted.reduce((sum, e) => sum + e.margen, 0) / sorted.length,
