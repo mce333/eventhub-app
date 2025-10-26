@@ -242,6 +242,17 @@ export default function Almacen() {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-3">
+                      {/* Imagen */}
+                      {category.imagen && (
+                        <div className="w-full h-32 rounded-lg overflow-hidden">
+                          <img 
+                            src={category.imagen} 
+                            alt={category.nombre}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      )}
+                      
                       <div className="text-center py-4">
                         <p className="text-4xl font-bold text-primary">{category.cantidad}</p>
                         <p className="text-sm text-muted-foreground">{category.unidad}</p>
