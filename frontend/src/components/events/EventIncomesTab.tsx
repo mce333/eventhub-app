@@ -151,6 +151,26 @@ export function EventIncomesTab({ event, onUpdate }: EventIncomesTabProps) {
     }
   };
 
+  const handleRemoveGarantia = () => {
+    if (!window.confirm('¿Estás seguro de remover la garantía de este evento? Esta acción no se puede deshacer.')) {
+      return;
+    }
+
+    const storedEvents = JSON.parse(localStorage.getItem('demo_events') || '[]');
+    const index = storedEvents.findIndex((e: Event) => e.id === event.id);
+    
+    if (index !== -1) {
+      // Remove garantia from contract
+      if (storedEvents[index].contract) {
+        storedEvents[index].contract.garantia = 0;
+      }
+      localStorage.setItem('demo_events', JSON.stringify(storedEvents));
+      
+      toast.success('Garantía removida del evento');
+      onUpdate();
+    }
+  };
+
   // Si es Coordinador, solo mostrar formulario de llenado
   if (isCoordinador) {
     return (
