@@ -292,7 +292,7 @@ export default function Estadisticas() {
                           </tr>
                         </thead>
                         <tbody>
-                          {profitabilityAnalysis.map((event, idx) => (
+                          {stats.profitabilityAnalysis.map((event: any, idx: number) => (
                             <tr key={idx} className="border-b hover:bg-muted/50">
                               <td className="py-3 px-4 text-sm font-medium">{event.nombre}</td>
                               <td className="py-3 px-4">
