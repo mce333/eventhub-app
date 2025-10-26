@@ -914,6 +914,33 @@ export function CreateEventModal({ open, onClose }: CreateEventModalProps) {
                               className="bg-success/10 font-bold"
                             />
                           </div>
+                          
+                          {/* Estado de Pago */}
+                          <div>
+                            <Label>Estado de Pago</Label>
+                            <select
+                              className="w-full h-10 px-3 rounded-md border border-input bg-background"
+                              value={item.estadoPago || 'pendiente'}
+                              onChange={(e) => updateDecoration(index, 'estadoPago', e.target.value)}
+                            >
+                              <option value="pendiente">Pendiente</option>
+                              <option value="adelanto">Adelanto Dado</option>
+                              <option value="pagado">Pagado Completo</option>
+                            </select>
+                          </div>
+                          
+                          {/* Monto Pagado */}
+                          {(item.estadoPago === 'adelanto' || item.estadoPago === 'pagado') && (
+                            <div>
+                              <Label>Monto Pagado (S/)</Label>
+                              <Input
+                                type="number"
+                                step="0.01"
+                                value={item.montoPagado || 0}
+                                onChange={(e) => updateDecoration(index, 'montoPagado', parseFloat(e.target.value) || 0)}
+                              />
+                            </div>
+                          )}
                         </div>
                         <Button
                           type="button"
