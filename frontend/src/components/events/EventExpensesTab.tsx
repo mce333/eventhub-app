@@ -52,6 +52,16 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
     return saved || '';
   });
   const [suggestedIngredients, setSuggestedIngredients] = useState<any[]>([]);
+  const [registeredExpenses, setRegisteredExpenses] = useState<{[key: number]: boolean}>(() => {
+    // Load registered expenses from event data
+    const registered: {[key: number]: boolean} = {};
+    event.expenses?.forEach(e => {
+      if (e.isPredetermined && (e as any).isRegistered) {
+        registered[e.id] = true;
+      }
+    });
+    return registered;
+  });
   const [newExpense, setNewExpense] = useState({
     category: '',
     amount: 0,
