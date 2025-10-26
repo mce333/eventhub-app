@@ -34,12 +34,60 @@ interface HistoryEntry {
 }
 
 const CATEGORIAS_INICIALES: WarehouseCategory[] = [
-  { id: 'sillas', nombre: 'Sillas', cantidad: 0, unidad: 'unidades', ubicacion: 'Almacén Principal', historial: [] },
-  { id: 'mesas', nombre: 'Mesas', cantidad: 0, unidad: 'unidades', ubicacion: 'Almacén Principal', historial: [] },
-  { id: 'vasos', nombre: 'Vasos', cantidad: 0, unidad: 'unidades', ubicacion: 'Almacén Principal', historial: [] },
-  { id: 'platos', nombre: 'Platos', cantidad: 0, unidad: 'unidades', ubicacion: 'Almacén Principal', historial: [] },
-  { id: 'manteleria', nombre: 'Mantelería', cantidad: 0, unidad: 'unidades', ubicacion: 'Almacén Principal', historial: [] },
-  { id: 'decoracion', nombre: 'Decoración', cantidad: 0, unidad: 'piezas', ubicacion: 'Almacén Principal', historial: [] },
+  { 
+    id: 'sillas', 
+    nombre: 'Sillas', 
+    cantidad: 0, 
+    unidad: 'unidades', 
+    ubicacion: 'Almacén Principal', 
+    historial: [],
+    imagen: 'https://images.unsplash.com/photo-1503602642458-232111445657?w=400'
+  },
+  { 
+    id: 'mesas', 
+    nombre: 'Mesas', 
+    cantidad: 0, 
+    unidad: 'unidades', 
+    ubicacion: 'Almacén Principal', 
+    historial: [],
+    imagen: 'https://images.unsplash.com/photo-1617806118233-18e1de247200?w=400'
+  },
+  { 
+    id: 'vasos', 
+    nombre: 'Vasos', 
+    cantidad: 0, 
+    unidad: 'unidades', 
+    ubicacion: 'Almacén Principal', 
+    historial: [],
+    imagen: 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=400'
+  },
+  { 
+    id: 'platos', 
+    nombre: 'Platos', 
+    cantidad: 0, 
+    unidad: 'unidades', 
+    ubicacion: 'Almacén Principal', 
+    historial: [],
+    imagen: 'https://images.unsplash.com/photo-1578643463396-0997cb5328e1?w=400'
+  },
+  { 
+    id: 'manteleria', 
+    nombre: 'Mantelería', 
+    cantidad: 0, 
+    unidad: 'unidades', 
+    ubicacion: 'Almacén Principal', 
+    historial: [],
+    imagen: 'https://images.unsplash.com/photo-1523755231516-e43fd2e8dca5?w=400'
+  },
+  { 
+    id: 'decoracion', 
+    nombre: 'Decoración', 
+    cantidad: 0, 
+    unidad: 'piezas', 
+    ubicacion: 'Almacén Principal', 
+    historial: [],
+    imagen: 'https://images.unsplash.com/photo-1530023367847-a683933f4172?w=400'
+  },
 ];
 
 export default function Almacen() {
