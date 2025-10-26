@@ -296,6 +296,8 @@ export function CreateEventModal({ open, onClose }: CreateEventModalProps) {
         providerCost: 0,
         clientCost: 0,
         profit: 0,
+        estadoPago: 'pendiente',
+        montoPagado: 0,
       },
     ]);
   };
