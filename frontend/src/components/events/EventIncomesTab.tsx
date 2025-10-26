@@ -307,10 +307,22 @@ export function EventIncomesTab({ event, onUpdate }: EventIncomesTabProps) {
       {garantiaInfo > 0 && (
         <Card className="border-2 border-yellow-500">
           <CardHeader>
-            <CardTitle className="text-base flex items-center gap-2 text-yellow-600">
-              <Shield className="h-5 w-5" />
-              Garantía
-            </CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-base flex items-center gap-2 text-yellow-600">
+                <Shield className="h-5 w-5" />
+                Garantía
+              </CardTitle>
+              {userRole === 'admin' && !garantiaDevuelta && (
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={handleRemoveGarantia}
+                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                >
+                  Remover
+                </Button>
+              )}
+            </div>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between p-4 bg-yellow-500/10 rounded-lg">
