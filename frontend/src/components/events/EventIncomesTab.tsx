@@ -152,14 +152,37 @@ export function EventIncomesTab({ event, onUpdate }: EventIncomesTabProps) {
   };
 
   const handleRemoveGarantia = () => {
-    if (!window.confirm('¿Estás seguro de remover la garantía de este evento? Esta acción no se puede deshacer.')) {
+    if (!window.confirm('¿Estás seguro de remover la garantía de este evento? Esta acción quedará registrada en la auditoría.')) {
       return;
     }
 
     const storedEvents = JSON.parse(localStorage.getItem('demo_events') || '[]');
-    const index = storedEvents.findIndex((e: Event) => e.id === event.id);
+    let index = storedEvents.findIndex((e: Event) => e.id === event.id);
+    
+    // If event not in localStorage, add it first
+    if (index === -1) {
+      storedEvents.push({ ...event });
+      index = storedEvents.length - 1;
+    }
     
     if (index !== -1) {
+      const oldGarantia = storedEvents[index].contract?.garantia || 0;
+      
+      // Create audit log
+      if (!storedEvents[index].auditLogs) {
+        storedEvents[index].auditLogs = [];
+      }
+      storedEvents[index].auditLogs.push({
+        id: Date.now(),
+        timestamp: new Date().toISOString(),
+        userId: user?.id,
+        userName: `${user?.name} ${user?.last_name}`,
+        userRole: user?.role?.name || 'unknown',
+        action: 'garantia_removed',
+        description: `Garantía removida del evento (S/ ${oldGarantia})`,
+        metadata: { oldGarantia },
+      });
+      
       // Remove garantia from contract
       if (storedEvents[index].contract) {
         storedEvents[index].contract.garantia = 0;
