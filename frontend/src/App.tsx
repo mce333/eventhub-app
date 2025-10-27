@@ -10,6 +10,7 @@ import EventoDetalle from './pages/EventoDetalle';
 import Clientes from './pages/Clientes';
 import Almacen from './pages/Almacen';
 import Estadisticas from './pages/Estadisticas';
+import Configuracion from './pages/Configuracion';
 import NotFound from './pages/NotFound';
 import { useAuth } from '@/contexts/AuthContext';
 
