@@ -191,58 +191,61 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
   };
 
   const updatePredefinedExpense = (expenseId: number, field: 'quantity' | 'unitPrice', value: number) => {
-    const storedEvents = JSON.parse(localStorage.getItem('demo_events') || '[]');
-    const index = storedEvents.findIndex((e: Event) => e.id === event.id);
-    
-    if (index !== -1) {
-      const expenseIndex = storedEvents[index].expenses?.findIndex((e: EventExpense) => e.id === expenseId);
-      if (expenseIndex !== undefined && expenseIndex !== -1 && storedEvents[index].expenses) {
-        const expense = storedEvents[index].expenses![expenseIndex];
-        const oldAmount = expense.amount;
-        
-        if (field === 'quantity') {
-          expense.cantidad = value;
-        } else {
-          expense.costoUnitario = value;
-        }
-        
-        expense.amount = (expense.cantidad || 1) * (expense.costoUnitario || 0);
-        
-        const difference = expense.amount - oldAmount;
-        storedEvents[index].financial.totalExpenses += difference;
-        storedEvents[index].financial.balance -= difference;
-        
-        localStorage.setItem('demo_events', JSON.stringify(storedEvents));
-        onUpdate();
+    try {
+      // Validate value
+      if (isNaN(value) || value < 0) {
+        console.warn('Invalid value for expense update:', value);
+        return;
       }
-    } else {
-      // Event from MOCK_EVENTS - add to demo_events with update
-      const updatedEvent = { ...event };
-      const expenseIndex = updatedEvent.expenses?.findIndex((e: EventExpense) => e.id === expenseId);
+
+      const storedEvents = JSON.parse(localStorage.getItem('demo_events') || '[]');
+      let index = storedEvents.findIndex((e: Event) => e.id === event.id);
       
-      if (expenseIndex !== undefined && expenseIndex !== -1 && updatedEvent.expenses) {
-        const expense = updatedEvent.expenses[expenseIndex];
-        const oldAmount = expense.amount;
-        
-        if (field === 'quantity') {
-          expense.cantidad = value;
-        } else {
-          expense.costoUnitario = value;
-        }
-        
-        expense.amount = (expense.cantidad || 1) * (expense.costoUnitario || 0);
-        
-        const difference = expense.amount - oldAmount;
-        updatedEvent.financial = {
-          ...updatedEvent.financial,
-          totalExpenses: (updatedEvent.financial?.totalExpenses || 0) + difference,
-          balance: (updatedEvent.financial?.balance || 0) - difference,
-        };
-        
-        storedEvents.push(updatedEvent);
-        localStorage.setItem('demo_events', JSON.stringify(storedEvents));
-        onUpdate();
+      // If event not in localStorage, add it first
+      if (index === -1) {
+        storedEvents.push(JSON.parse(JSON.stringify(event)));
+        index = storedEvents.length - 1;
       }
+      
+      if (index !== -1) {
+        const expenseIndex = storedEvents[index].expenses?.findIndex((e: EventExpense) => e.id === expenseId);
+        if (expenseIndex !== undefined && expenseIndex !== -1 && storedEvents[index].expenses) {
+          const expense = storedEvents[index].expenses[expenseIndex];
+          
+          // Store old amount safely
+          const oldAmount = expense.amount || 0;
+          
+          // Update field
+          if (field === 'quantity') {
+            expense.cantidad = Math.max(0, value);
+          } else {
+            expense.costoUnitario = Math.max(0, value);
+          }
+          
+          // Calculate new amount safely
+          const cantidad = expense.cantidad || 0;
+          const costoUnitario = expense.costoUnitario || 0;
+          expense.amount = cantidad * costoUnitario;
+          
+          // Update financial data safely
+          const difference = expense.amount - oldAmount;
+          if (!isNaN(difference) && isFinite(difference)) {
+            storedEvents[index].financial = storedEvents[index].financial || { 
+              totalExpenses: 0, 
+              totalIncome: 0, 
+              balance: 0 
+            };
+            storedEvents[index].financial.totalExpenses = (storedEvents[index].financial.totalExpenses || 0) + difference;
+            storedEvents[index].financial.balance = (storedEvents[index].financial.balance || 0) - difference;
+          }
+          
+          localStorage.setItem('demo_events', JSON.stringify(storedEvents));
+          onUpdate();
+        }
+      }
+    } catch (error) {
+      console.error('Error updating predefined expense:', error);
+      toast.error('Error al actualizar el gasto. Por favor, recarga la página.');
     }
   };
 
