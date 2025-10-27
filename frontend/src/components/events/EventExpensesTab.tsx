@@ -464,9 +464,11 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
                             <Label className="text-xs">Cantidad</Label>
                             <Input
                               type="number"
-                              value={expense.cantidad || 1}
-                              onChange={(e) => updatePredefinedExpense(expense.id, 'quantity', parseInt(e.target.value) || 0)}
+                              value={getExpenseValue(expense, 'cantidad')}
+                              onChange={(e) => handleExpenseInputChange(expense.id, 'cantidad', e.target.value)}
+                              onBlur={() => handleExpenseInputBlur(expense.id, 'quantity')}
                               className="h-8"
+                              min="0"
                             />
                           </div>
                           <div>
@@ -474,16 +476,18 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
                             <Input
                               type="number"
                               step="0.01"
-                              value={expense.costoUnitario || 0}
-                              onChange={(e) => updatePredefinedExpense(expense.id, 'unitPrice', parseFloat(e.target.value) || 0)}
+                              value={getExpenseValue(expense, 'costoUnitario')}
+                              onChange={(e) => handleExpenseInputChange(expense.id, 'costoUnitario', e.target.value)}
+                              onBlur={() => handleExpenseInputBlur(expense.id, 'unitPrice')}
                               className="h-8"
+                              min="0"
                             />
                           </div>
                           <div>
                             <Label className="text-xs">Total</Label>
                             <Input
                               type="number"
-                              value={(expense.cantidad || 1) * (expense.costoUnitario || 0)}
+                              value={(getExpenseValue(expense, 'cantidad') * getExpenseValue(expense, 'costoUnitario')).toFixed(2)}
                               disabled
                               className="h-8 bg-muted font-bold"
                             />
