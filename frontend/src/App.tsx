@@ -88,6 +88,14 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/configuracion"
+        element={
+          <ProtectedRoute>
+            <Configuracion />
+          </ProtectedRoute>
+        }
+      />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
