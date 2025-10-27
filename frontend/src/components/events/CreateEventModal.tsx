@@ -182,6 +182,14 @@ export function CreateEventModal({ open, onClose, initialDate }: CreateEventModa
       today.setHours(0, 0, 0, 0);
       const eventStatus = eventDate < today ? 'completed' : 'confirmed';
       
+      // Add unique IDs to expenses
+      const expensesWithIds = predeterminedExpenses.map((expense, index) => ({
+        ...expense,
+        id: newEventId + index + 1, // Unique ID for each expense
+        amount: 0,
+        date: new Date().toISOString(),
+      }));
+      
       const newEvent = {
         id: newEventId,
         name: formData.name!,
@@ -215,7 +223,7 @@ export function CreateEventModal({ open, onClose, initialDate }: CreateEventModa
           advancePayment: formData.contract?.pagoAdelantado || 0,
           pendingPayment: totalPrice - (formData.contract?.pagoAdelantado || 0),
         },
-        expenses: predeterminedExpenses,
+        expenses: expensesWithIds,
         payments: [],
         decoration: decorationItems.map((item, idx) => ({
           id: idx + 1,
