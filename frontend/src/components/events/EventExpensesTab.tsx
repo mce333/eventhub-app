@@ -490,6 +490,7 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
                           <div>
                             <Label className="text-xs">Cantidad</Label>
                             <Input
+                              key={`cantidad-${expense.id}`}
                               type="number"
                               value={getExpenseValue(expense, 'cantidad')}
                               onChange={(e) => handleExpenseInputChange(expense.id, 'cantidad', e.target.value)}
@@ -501,6 +502,7 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
                           <div>
                             <Label className="text-xs">Precio Unitario (S/)</Label>
                             <Input
+                              key={`costo-${expense.id}`}
                               type="number"
                               step="0.01"
                               value={getExpenseValue(expense, 'costoUnitario')}
@@ -513,6 +515,7 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
                           <div>
                             <Label className="text-xs">Total</Label>
                             <Input
+                              key={`total-${expense.id}`}
                               type="number"
                               value={(getExpenseValue(expense, 'cantidad') * getExpenseValue(expense, 'costoUnitario')).toFixed(2)}
                               disabled
