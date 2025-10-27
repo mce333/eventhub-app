@@ -250,6 +250,35 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
     }
   };
 
+  const handleExpenseInputChange = (expenseId: number, field: 'cantidad' | 'costoUnitario', value: string) => {
+    const numValue = parseFloat(value) || 0;
+    setEditingExpenseValues(prev => ({
+      ...prev,
+      [expenseId]: {
+        ...prev[expenseId],
+        [field]: numValue
+      }
+    }));
+  };
+
+  const handleExpenseInputBlur = (expenseId: number, field: 'quantity' | 'unitPrice') => {
+    const values = editingExpenseValues[expenseId];
+    if (values) {
+      const value = field === 'quantity' ? values.cantidad : values.costoUnitario;
+      if (value !== undefined && !isNaN(value)) {
+        updatePredefinedExpense(expenseId, field, value);
+      }
+    }
+  };
+
+  const getExpenseValue = (expense: EventExpense, field: 'cantidad' | 'costoUnitario') => {
+    const editingValues = editingExpenseValues[expense.id];
+    if (editingValues && editingValues[field] !== undefined) {
+      return editingValues[field];
+    }
+    return expense[field] || 0;
+  };
+
   const registerPredefinedExpense = (expenseId: number) => {
     const storedEvents = JSON.parse(localStorage.getItem('demo_events') || '[]');
     let index = storedEvents.findIndex((e: Event) => e.id === event.id);
