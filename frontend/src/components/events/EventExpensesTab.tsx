@@ -80,6 +80,18 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
       }
     });
     setRegisteredExpenses(registered);
+    
+    // Initialize editing values with current expense values
+    const initialEditValues: {[key: number]: {cantidad: number, costoUnitario: number}} = {};
+    event.expenses?.forEach(e => {
+      if (e.isPredetermined) {
+        initialEditValues[e.id] = {
+          cantidad: e.cantidad ?? 1,
+          costoUnitario: e.costoUnitario ?? 0
+        };
+      }
+    });
+    setEditingExpenseValues(initialEditValues);
   }, [event.expenses, event.id]);
 
   // Calculate suggested ingredients when dish changes
