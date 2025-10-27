@@ -62,6 +62,7 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
     });
     return registered;
   });
+  const [editingExpenseValues, setEditingExpenseValues] = useState<{[key: number]: {cantidad: number, costoUnitario: number}}>({});
   const [newExpense, setNewExpense] = useState({
     category: '',
     amount: 0,
