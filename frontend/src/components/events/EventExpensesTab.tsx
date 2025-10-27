@@ -292,18 +292,14 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
     // First check if there's an editing value for this specific expense
     const editingValues = editingExpenseValues[expense.id];
     if (editingValues && editingValues[field] !== undefined) {
-      console.log(`getExpenseValue: Using editing value for expense ${expense.id}, field ${field}:`, editingValues[field]);
       return editingValues[field];
     }
     // Otherwise return the expense's own value, or default based on field
-    let value;
     if (field === 'cantidad') {
-      value = expense.cantidad ?? 1;
+      return expense.cantidad ?? 1;
     } else {
-      value = expense.costoUnitario ?? 0;
+      return expense.costoUnitario ?? 0;
     }
-    console.log(`getExpenseValue: Using expense value for expense ${expense.id}, field ${field}:`, value);
-    return value;
   };
 
   const registerPredefinedExpense = (expenseId: number) => {
