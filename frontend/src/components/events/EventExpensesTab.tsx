@@ -251,12 +251,17 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
   };
 
   const handleExpenseInputChange = (expenseId: number, field: 'cantidad' | 'costoUnitario', value: string) => {
-    const numValue = parseFloat(value) || 0;
+    const numValue = parseFloat(value);
+    // Allow empty string to clear the field
+    const finalValue = value === '' ? 0 : (isNaN(numValue) ? 0 : numValue);
+    
     setEditingExpenseValues(prev => ({
       ...prev,
       [expenseId]: {
+        cantidad: prev[expenseId]?.cantidad ?? 0,
+        costoUnitario: prev[expenseId]?.costoUnitario ?? 0,
         ...prev[expenseId],
-        [field]: numValue
+        [field]: finalValue
       }
     }));
   };
@@ -272,11 +277,17 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
   };
 
   const getExpenseValue = (expense: EventExpense, field: 'cantidad' | 'costoUnitario') => {
+    // First check if there's an editing value for this specific expense
     const editingValues = editingExpenseValues[expense.id];
     if (editingValues && editingValues[field] !== undefined) {
       return editingValues[field];
     }
-    return expense[field] || 0;
+    // Otherwise return the expense's own value, or default based on field
+    if (field === 'cantidad') {
+      return expense.cantidad ?? 1;
+    } else {
+      return expense.costoUnitario ?? 0;
+    }
   };
 
   const registerPredefinedExpense = (expenseId: number) => {
