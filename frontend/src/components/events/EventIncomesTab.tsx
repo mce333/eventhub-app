@@ -45,7 +45,7 @@ export function EventIncomesTab({ event, onUpdate }: EventIncomesTabProps) {
   const [showAddForm, setShowAddForm] = useState(false);
   const [showGarantiaDevolucion, setShowGarantiaDevolucion] = useState(false);
   const [newIncome, setNewIncome] = useState({
-    tipo: 'kiosco' as 'kiosco' | 'horas_extras',
+    tipo: 'kiosco' as 'kiosco' | 'horas_extras' | 'adelanto',
     monto: 0,
     descripcion: '',
     horasExtras: 0,
@@ -70,7 +70,27 @@ export function EventIncomesTab({ event, onUpdate }: EventIncomesTabProps) {
     garantiaInfo;
 
   const handleAddIncome = () => {
-    if (!newIncome.descripcion) {
+    // Validación para adelantos
+    if (newIncome.tipo === 'adelanto') {
+      if (!newIncome.descripcion) {
+        toast.error('La descripción es requerida');
+        return;
+      }
+      if (newIncome.monto <= 0) {
+        toast.error('El monto debe ser mayor a 0');
+        return;
+      }
+      
+      const totalAdelantos = (event.financial?.advancePayment || 0) + ingresos.filter(i => i.tipo === 'adelanto').reduce((sum, i) => sum + i.monto, 0);
+      const saldoPendiente = (event.contract?.precioTotal || 0) - totalAdelantos;
+      
+      if (newIncome.monto > saldoPendiente) {
+        toast.error(`El adelanto no puede ser mayor al saldo pendiente (S/ ${saldoPendiente.toFixed(2)})`);
+        return;
+      }
+    }
+    
+    if (newIncome.tipo === 'kiosco' && !newIncome.descripcion) {
       toast.error('La descripción es requerida');
       return;
     }
