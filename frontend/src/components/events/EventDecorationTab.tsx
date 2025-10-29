@@ -184,40 +184,154 @@ export function EventDecorationTab({ event, onUpdate }: EventDecorationTabProps)
         <CardContent>
           {event.decoration && event.decoration.length > 0 ? (
             <div className="space-y-3">
-              {event.decoration.map((item, index) => (
-                <div key={index} className="p-4 border rounded-lg">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h4 className="font-semibold">{item.item}</h4>
-                        <Badge variant="outline" className={
-                          item.estado === 'completado' ? 'bg-success/10 text-success border-success/20' :
-                          item.estado === 'en_proceso' ? 'bg-warning/10 text-warning border-warning/20' :
-                          'bg-muted/10 text-muted-foreground border-muted/20'
-                        }>
-                          {item.estado === 'completado' ? 'Completado' :
-                           item.estado === 'en_proceso' ? 'En Progreso' : 'Pendiente'}
-                        </Badge>
-                        {getPaymentStatusBadge((item as any).estadoPago || 'pendiente')}
+              {event.decoration.map((item, index) => {
+                const totalPagado = getTotalPagado(item);
+                const saldoPendiente = getSaldoPendiente(item);
+                const pagos = getItemPayments(item);
+                
+                return (
+                  <div key={index} className="p-4 border rounded-lg">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <h4 className="font-semibold">{item.item}</h4>
+                          {getEstadoBadge(item.estado || 'pendiente')}
+                        </div>
+                        {item.supplier && (
+                          <p className="text-sm text-muted-foreground">Proveedor: {item.supplier}</p>
+                        )}
                       </div>
-                      {item.supplier && (
-                        <p className="text-sm text-muted-foreground">Proveedor: {item.supplier}</p>
+                      {canEdit && editingIndex !== index && item.estado !== 'completado' && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleEditPayment(index)}
+                        >
+                          <Edit2 className="h-4 w-4 mr-1" />
+                          Registrar Pago
+                        </Button>
                       )}
                     </div>
-                    {canEdit && editingIndex !== index && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleEditPayment(index)}
-                      >
-                        <Edit2 className="h-4 w-4 mr-1" />
-                        Editar Pago
-                      </Button>
+                    
+                    {editingIndex === index ? (
+                      <div className="space-y-3 p-3 bg-muted/30 rounded-lg border">
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <Label className="text-xs">Tipo de Pago</Label>
+                            <select
+                              className="w-full h-9 px-3 rounded-md border border-input bg-background text-sm"
+                              value={editData.tipoPago}
+                              onChange={(e) => {
+                                const tipo = e.target.value as 'adelanto' | 'pago_completo';
+                                setEditData({ 
+                                  ...editData, 
+                                  tipoPago: tipo,
+                                  montoPago: tipo === 'pago_completo' ? saldoPendiente : 0
+                                });
+                              }}
+                            >
+                              <option value="adelanto">Adelanto</option>
+                              <option value="pago_completo">Pago Completo</option>
+                            </select>
+                          </div>
+                          <div>
+                            <Label className="text-xs">Monto (S/)</Label>
+                            <Input
+                              type="number"
+                              step="0.01"
+                              value={editData.montoPago}
+                              onChange={(e) => setEditData({ ...editData, montoPago: parseFloat(e.target.value) || 0 })}
+                              className="h-9"
+                              max={saldoPendiente}
+                              disabled={editData.tipoPago === 'pago_completo'}
+                            />
+                          </div>
+                        </div>
+                        <div className="p-2 bg-blue-500/10 rounded text-sm">
+                          <p className="text-xs text-muted-foreground">Saldo Pendiente:</p>
+                          <p className="text-lg font-bold text-blue-600">S/ {saldoPendiente.toFixed(2)}</p>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button size="sm" onClick={() => handleSavePayment(index)} className="flex-1">
+                            <Save className="h-3 w-3 mr-1" />
+                            Guardar
+                          </Button>
+                          <Button size="sm" variant="outline" onClick={() => setEditingIndex(null)} className="flex-1">
+                            <X className="h-3 w-3 mr-1" />
+                            Cancelar
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="grid grid-cols-4 gap-4 text-sm mb-3">
+                          <div>
+                            <p className="text-muted-foreground">Cantidad</p>
+                            <p className="font-medium">{item.quantity}</p>
+                          </div>
+                          <div>
+                            <p className="text-muted-foreground">Costo Proveedor</p>
+                            <p className="font-medium">S/ {(item.providerCost || 0).toLocaleString()}</p>
+                          </div>
+                          <div>
+                            <p className="text-muted-foreground">Costo Cliente</p>
+                            <p className="font-medium">S/ {item.totalPrice.toLocaleString()}</p>
+                          </div>
+                          <div>
+                            <p className="text-muted-foreground">Ganancia</p>
+                            <p className="font-bold text-success">
+                              S/ {(item.profit || (item.totalPrice - (item.providerCost || 0))).toLocaleString()}
+                            </p>
+                          </div>
+                        </div>
+                        
+                        {/* Payment Summary */}
+                        <div className="pt-3 border-t">
+                          <div className="grid grid-cols-3 gap-4 text-sm mb-3">
+                            <div className="p-2 bg-green-500/10 rounded">
+                              <p className="text-xs text-muted-foreground">Total Pagado</p>
+                              <p className="text-lg font-bold text-green-600">S/ {totalPagado.toFixed(2)}</p>
+                            </div>
+                            <div className="p-2 bg-orange-500/10 rounded">
+                              <p className="text-xs text-muted-foreground">Saldo Pendiente</p>
+                              <p className="text-lg font-bold text-orange-600">S/ {saldoPendiente.toFixed(2)}</p>
+                            </div>
+                            <div className="p-2 bg-blue-500/10 rounded">
+                              <p className="text-xs text-muted-foreground">Total</p>
+                              <p className="text-lg font-bold text-blue-600">S/ {item.totalPrice.toFixed(2)}</p>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {/* Payment History */}
+                        {pagos.length > 0 && (
+                          <div className="mt-3 pt-3 border-t">
+                            <div className="flex items-center gap-2 mb-2">
+                              <History className="h-4 w-4 text-muted-foreground" />
+                              <p className="text-sm font-semibold">Historial de Pagos ({pagos.length})</p>
+                            </div>
+                            <div className="space-y-2">
+                              {pagos.map((pago) => (
+                                <div key={pago.id} className="p-2 bg-muted/50 rounded text-sm flex items-center justify-between">
+                                  <div className="flex-1">
+                                    <Badge variant="outline" className="text-xs mr-2">
+                                      {pago.tipo === 'adelanto' ? 'Adelanto' : 'Pago Completo'}
+                                    </Badge>
+                                    <span className="text-xs text-muted-foreground">
+                                      {pago.fecha} - {pago.registradoPor}
+                                    </span>
+                                  </div>
+                                  <span className="font-bold text-green-600">S/ {pago.monto.toFixed(2)}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </>
                     )}
                   </div>
-                  
-                  {editingIndex === index ? (
-                    <div className="space-y-3 p-3 bg-muted/30 rounded-lg border">
+                );
+              })}
                       <div className="grid grid-cols-2 gap-3">
                         <div>
                           <Label className="text-xs">Estado de Pago</Label>
