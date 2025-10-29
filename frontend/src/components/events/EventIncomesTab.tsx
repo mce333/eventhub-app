@@ -589,10 +589,37 @@ export function EventIncomesTab({ event, onUpdate }: EventIncomesTabProps) {
                   value={newIncome.tipo}
                   onChange={(e) => setNewIncome({ ...newIncome, tipo: e.target.value as any })}
                 >
+                  <option value="adelanto">Adelanto Adicional</option>
                   <option value="kiosco">Kiosco</option>
                   <option value="horas_extras">Horas Extras</option>
                 </select>
               </div>
+
+              {newIncome.tipo === 'adelanto' && (
+                <>
+                  <div>
+                    <Label>Descripción *</Label>
+                    <Textarea
+                      placeholder="Ej: Segundo adelanto del cliente"
+                      value={newIncome.descripcion}
+                      onChange={(e) => setNewIncome({ ...newIncome, descripcion: e.target.value })}
+                      rows={2}
+                    />
+                  </div>
+                  <div>
+                    <Label>Monto (S/) *</Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      value={newIncome.monto || ''}
+                      onChange={(e) => setNewIncome({ ...newIncome, monto: parseFloat(e.target.value) || 0 })}
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Saldo pendiente: S/ {((event.contract?.precioTotal || 0) - (event.financial?.advancePayment || 0) - ingresos.filter(i => i.tipo === 'adelanto').reduce((sum, i) => sum + i.monto, 0)).toFixed(2)}
+                    </p>
+                  </div>
+                </>
+              )}
 
               {newIncome.tipo === 'kiosco' ? (
                 <div>
@@ -604,7 +631,7 @@ export function EventIncomesTab({ event, onUpdate }: EventIncomesTabProps) {
                     onChange={(e) => setNewIncome({ ...newIncome, monto: parseFloat(e.target.value) || 0 })}
                   />
                 </div>
-              ) : (
+              ) : newIncome.tipo === 'horas_extras' ? (
                 <>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
@@ -647,7 +674,7 @@ export function EventIncomesTab({ event, onUpdate }: EventIncomesTabProps) {
                     </p>
                   </div>
                 </>
-              )}
+              ) : null}
 
               <Button onClick={handleAddIncome} className="w-full bg-gradient-primary">
                 Registrar Ingreso
