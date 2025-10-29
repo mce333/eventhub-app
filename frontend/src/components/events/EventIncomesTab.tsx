@@ -310,12 +310,25 @@ export function EventIncomesTab({ event, onUpdate }: EventIncomesTabProps) {
         </CardContent>
       </Card>
 
-      {/* Adelanto Inicial */}
+      {/* Adelantos */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Pago Adelantado</CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-base">Adelantos</CardTitle>
+            {canEdit && (
+              <Button
+                onClick={() => setShowAddForm(!showAddForm)}
+                size="sm"
+                variant="outline"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                {showAddForm ? 'Cancelar' : 'Agregar Adelanto'}
+              </Button>
+            )}
+          </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-4">
+          {/* Adelanto Inicial */}
           <div className="flex items-center justify-between p-4 bg-green-500/10 rounded-lg">
             <div>
               <p className="font-medium">Adelanto Inicial</p>
@@ -323,6 +336,111 @@ export function EventIncomesTab({ event, onUpdate }: EventIncomesTabProps) {
             </div>
             <p className="text-xl font-bold text-green-600">S/ {(event.financial?.advancePayment || 0).toLocaleString()}</p>
           </div>
+
+          {/* Additional Advances */}
+          {ingresos.filter(i => i.tipo === 'adelanto').map((adelanto) => (
+            <div key={adelanto.id} className="flex items-center justify-between p-4 bg-green-500/5 rounded-lg border border-green-500/20">
+              <div>
+                <p className="font-medium">Adelanto Adicional</p>
+                <p className="text-xs text-muted-foreground">{adelanto.descripcion}</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Por: {adelanto.registradoPor} - {adelanto.fecha}
+                </p>
+              </div>
+              <p className="text-lg font-bold text-green-600">S/ {adelanto.monto.toLocaleString()}</p>
+            </div>
+          ))}
+
+          {/* Total Advances Summary */}
+          <div className="pt-3 border-t">
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-muted-foreground">Total Adelantos:</p>
+              <p className="text-xl font-bold text-green-600">
+                S/ {((event.financial?.advancePayment || 0) + ingresos.filter(i => i.tipo === 'adelanto').reduce((sum, i) => sum + i.monto, 0)).toLocaleString()}
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Cancelación Total */}
+      <Card className="border-2 border-blue-500">
+        <CardHeader>
+          <CardTitle className="text-base text-blue-600">Cancelación Total del Contrato</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-3 gap-4">
+            <div className="p-3 bg-blue-500/10 rounded">
+              <p className="text-xs text-muted-foreground">Monto Total</p>
+              <p className="text-lg font-bold text-blue-600">S/ {(event.contract?.precioTotal || 0).toLocaleString()}</p>
+            </div>
+            <div className="p-3 bg-green-500/10 rounded">
+              <p className="text-xs text-muted-foreground">Total Adelantos</p>
+              <p className="text-lg font-bold text-green-600">
+                S/ {((event.financial?.advancePayment || 0) + ingresos.filter(i => i.tipo === 'adelanto').reduce((sum, i) => sum + i.monto, 0)).toLocaleString()}
+              </p>
+            </div>
+            <div className="p-3 bg-orange-500/10 rounded">
+              <p className="text-xs text-muted-foreground">Saldo Pendiente</p>
+              <p className="text-lg font-bold text-orange-600">
+                S/ {((event.contract?.precioTotal || 0) - (event.financial?.advancePayment || 0) - ingresos.filter(i => i.tipo === 'adelanto').reduce((sum, i) => sum + i.monto, 0)).toLocaleString()}
+              </p>
+            </div>
+          </div>
+
+          {canEdit && !ingresos.find(i => i.tipo === 'pago_final') && (
+            <Button
+              onClick={() => {
+                const saldoPendiente = (event.contract?.precioTotal || 0) - (event.financial?.advancePayment || 0) - ingresos.filter(i => i.tipo === 'adelanto').reduce((sum, i) => sum + i.monto, 0);
+                
+                if (saldoPendiente <= 0) {
+                  toast.error('El contrato ya está completamente pagado');
+                  return;
+                }
+
+                const income = {
+                  id: Date.now(),
+                  tipo: 'pago_final' as const,
+                  monto: saldoPendiente,
+                  descripcion: 'Cancelación total del contrato',
+                  fecha: new Date().toLocaleString('es-ES'),
+                  registradoPor: `${user?.name} ${user?.last_name}`,
+                  registradoRol: user?.role?.displayName || 'Usuario',
+                };
+
+                const storedEvents = JSON.parse(localStorage.getItem('demo_events') || '[]');
+                const index = storedEvents.findIndex((e: any) => e.id === event.id);
+                
+                if (index !== -1) {
+                  storedEvents[index].ingresos = [...(storedEvents[index].ingresos || []), income];
+                  storedEvents[index].financial.totalIncome += income.monto;
+                  storedEvents[index].financial.balance += income.monto;
+                  storedEvents[index].contract.saldoPendiente = 0;
+                  localStorage.setItem('demo_events', JSON.stringify(storedEvents));
+                  
+                  toast.success(`Cancelación total registrada: S/ ${saldoPendiente.toFixed(2)}`);
+                  onUpdate();
+                }
+              }}
+              className="w-full bg-blue-600 hover:bg-blue-700"
+            >
+              Registrar Cancelación Total (S/ {((event.contract?.precioTotal || 0) - (event.financial?.advancePayment || 0) - ingresos.filter(i => i.tipo === 'adelanto').reduce((sum, i) => sum + i.monto, 0)).toFixed(2)})
+            </Button>
+          )}
+
+          {ingresos.find(i => i.tipo === 'pago_final') && (
+            <div className="p-4 bg-green-500/10 rounded-lg border border-green-500/30">
+              <p className="font-semibold text-green-600 mb-2">✓ Contrato Pagado Completamente</p>
+              {(() => {
+                const pagoFinal = ingresos.find(i => i.tipo === 'pago_final');
+                return pagoFinal ? (
+                  <p className="text-sm text-muted-foreground">
+                    Cancelación total de S/ {pagoFinal.monto.toLocaleString()} registrada por {pagoFinal.registradoPor} el {pagoFinal.fecha}
+                  </p>
+                ) : null;
+              })()}
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -330,22 +448,10 @@ export function EventIncomesTab({ event, onUpdate }: EventIncomesTabProps) {
       {garantiaInfo > 0 && (
         <Card className="border-2 border-yellow-500">
           <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-base flex items-center gap-2 text-yellow-600">
-                <Shield className="h-5 w-5" />
-                Garantía
-              </CardTitle>
-              {userRole === 'admin' && !garantiaDevuelta && (
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  onClick={handleRemoveGarantia}
-                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                >
-                  Remover
-                </Button>
-              )}
-            </div>
+            <CardTitle className="text-base flex items-center gap-2 text-yellow-600">
+              <Shield className="h-5 w-5" />
+              Garantía
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between p-4 bg-yellow-500/10 rounded-lg">
