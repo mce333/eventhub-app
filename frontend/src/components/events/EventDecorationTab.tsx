@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Event } from '@/types/events';
 import { useAuth } from '@/contexts/AuthContext';
 import { getUserRole } from '@/lib/permissions';
-import { Sparkles, Edit2, Save, X } from 'lucide-react';
+import { Sparkles, Edit2, Save, X, History } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface EventDecorationTabProps {
@@ -15,14 +15,22 @@ interface EventDecorationTabProps {
   onUpdate?: () => void;
 }
 
+interface PaymentRecord {
+  id: number;
+  monto: number;
+  fecha: string;
+  registradoPor: string;
+  tipo: 'adelanto' | 'pago_completo';
+}
+
 export function EventDecorationTab({ event, onUpdate }: EventDecorationTabProps) {
   const { user } = useAuth();
   const userRole = getUserRole(user);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [editData, setEditData] = useState<{
-    estadoPago: 'pendiente' | 'adelanto' | 'pagado';
-    montoPagado: number;
-  }>({ estadoPago: 'pendiente', montoPagado: 0 });
+    tipoPago: 'adelanto' | 'pago_completo';
+    montoPago: number;
+  }>({ tipoPago: 'adelanto', montoPago: 0 });
 
   const canEdit = userRole === 'admin';
   
@@ -30,12 +38,26 @@ export function EventDecorationTab({ event, onUpdate }: EventDecorationTabProps)
   const totalClientCost = event.decoration?.reduce((sum, item) => sum + item.totalPrice, 0) || 0;
   const totalProfit = totalClientCost - totalProviderCost;
 
+  const getItemPayments = (item: any): PaymentRecord[] => {
+    return item.pagos || [];
+  };
+
+  const getTotalPagado = (item: any): number => {
+    const pagos = getItemPayments(item);
+    return pagos.reduce((sum: number, pago: PaymentRecord) => sum + pago.monto, 0);
+  };
+
+  const getSaldoPendiente = (item: any): number => {
+    return item.totalPrice - getTotalPagado(item);
+  };
+
   const handleEditPayment = (index: number) => {
     const item = event.decoration![index];
+    const saldoPendiente = getSaldoPendiente(item);
     setEditingIndex(index);
     setEditData({
-      estadoPago: (item as any).estadoPago || 'pendiente',
-      montoPagado: (item as any).montoPagado || 0,
+      tipoPago: 'adelanto',
+      montoPago: 0,
     });
   };
 
@@ -43,44 +65,73 @@ export function EventDecorationTab({ event, onUpdate }: EventDecorationTabProps)
     const storedEvents = JSON.parse(localStorage.getItem('demo_events') || '[]');
     let eventIndex = storedEvents.findIndex((e: Event) => e.id === event.id);
     
-    // If event not in localStorage, add it first
     if (eventIndex === -1) {
-      storedEvents.push({ ...event });
+      storedEvents.push(JSON.parse(JSON.stringify(event)));
       eventIndex = storedEvents.length - 1;
     }
     
     if (eventIndex !== -1 && storedEvents[eventIndex].decoration) {
-      // Update payment info
-      (storedEvents[eventIndex].decoration[index] as any).estadoPago = editData.estadoPago;
-      (storedEvents[eventIndex].decoration[index] as any).montoPagado = editData.montoPagado;
-      (storedEvents[eventIndex].decoration[index] as any).updatedBy = `${user?.name} ${user?.last_name}`;
-      (storedEvents[eventIndex].decoration[index] as any).updatedAt = new Date().toLocaleString('es-ES');
+      const item = storedEvents[eventIndex].decoration[index];
+      const saldoPendiente = getSaldoPendiente(item);
       
-      // Determine estado based on payment
-      let newEstado = 'pendiente';
-      const totalCost = storedEvents[eventIndex].decoration[index].totalPrice;
-      
-      if (editData.montoPagado >= totalCost && editData.estadoPago === 'pagado') {
-        newEstado = 'completado';
-      } else if (editData.montoPagado > 0 || editData.estadoPago === 'adelanto') {
-        newEstado = 'en_proceso';
+      // Validación
+      if (editData.montoPago <= 0) {
+        toast.error('El monto debe ser mayor a 0');
+        return;
       }
       
-      storedEvents[eventIndex].decoration[index].estado = newEstado as any;
+      if (editData.tipoPago === 'pago_completo') {
+        // Auto-rellenar con saldo pendiente
+        editData.montoPago = saldoPendiente;
+      }
+      
+      if (editData.montoPago > saldoPendiente) {
+        toast.error(`El monto no puede ser mayor al saldo pendiente (S/ ${saldoPendiente.toFixed(2)})`);
+        return;
+      }
+      
+      // Crear registro de pago
+      const newPayment: PaymentRecord = {
+        id: Date.now(),
+        monto: editData.montoPago,
+        fecha: new Date().toLocaleString('es-ES'),
+        registradoPor: `${user?.name} ${user?.last_name}`,
+        tipo: editData.tipoPago,
+      };
+      
+      // Inicializar array de pagos si no existe
+      if (!item.pagos) {
+        item.pagos = [];
+      }
+      
+      // Agregar pago al historial
+      item.pagos.push(newPayment);
+      
+      // Calcular total pagado
+      const totalPagado = item.pagos.reduce((sum: number, p: PaymentRecord) => sum + p.monto, 0);
+      
+      // Actualizar estado según total pagado
+      if (totalPagado >= item.totalPrice) {
+        item.estado = 'completado';
+      } else if (totalPagado > 0) {
+        item.estado = 'en_proceso';
+      } else {
+        item.estado = 'pendiente';
+      }
       
       localStorage.setItem('demo_events', JSON.stringify(storedEvents));
-      toast.success('Estado de pago actualizado');
+      toast.success(`Pago registrado: S/ ${editData.montoPago.toFixed(2)}`);
       setEditingIndex(null);
       onUpdate?.();
     }
   };
 
-  const getPaymentStatusBadge = (estadoPago: string) => {
-    switch (estadoPago) {
-      case 'pagado':
-        return <Badge className="bg-green-500/20 text-green-700 border-green-500/30">Pagado</Badge>;
-      case 'adelanto':
-        return <Badge className="bg-orange-500/20 text-orange-700 border-orange-500/30">Adelanto Dado</Badge>;
+  const getEstadoBadge = (estado: string) => {
+    switch (estado) {
+      case 'completado':
+        return <Badge className="bg-green-500/20 text-green-700 border-green-500/30">Pagado Completo</Badge>;
+      case 'en_proceso':
+        return <Badge className="bg-orange-500/20 text-orange-700 border-orange-500/30">En Progreso</Badge>;
       default:
         return <Badge className="bg-gray-500/20 text-gray-700 border-gray-500/30">Pendiente</Badge>;
     }
