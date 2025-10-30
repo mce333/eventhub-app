@@ -52,24 +52,6 @@ export function EventInfoTab({ event, isEditing, onUpdate }: EventInfoTabProps) 
                 disabled={!isEditing}
               />
             </div>
-            <div>
-              <Label>Capacidad Máxima</Label>
-              <Input
-                type="number"
-                value={event.maxAttendees}
-                onChange={(e) => handleChange('maxAttendees', parseInt(e.target.value))}
-                disabled={!isEditing}
-              />
-            </div>
-            <div>
-              <Label>Asistentes Confirmados</Label>
-              <Input
-                type="number"
-                value={event.attendees}
-                onChange={(e) => handleChange('attendees', parseInt(e.target.value))}
-                disabled={!isEditing}
-              />
-            </div>
           </div>
 
           <div>
@@ -78,6 +60,10 @@ export function EventInfoTab({ event, isEditing, onUpdate }: EventInfoTabProps) 
               value={event.description || ''}
               onChange={(e) => handleChange('description', e.target.value)}
               disabled={!isEditing}
+              className={!isEditing ? 'bg-muted' : ''}
+              rows={4}
+            />
+          </div>
               rows={4}
             />
           </div>
