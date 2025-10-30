@@ -9,7 +9,6 @@ const menuItems = [
   { title: "Eventos", icon: Calendar, path: "/eventos" },
   { title: "Finanzas", icon: DollarSign, path: "/finanzas" },
   { title: "Clientes", icon: Users, path: "/clientes" },
-  { title: "Estadísticas", icon: TrendingUp, path: "/estadisticas" },
   { title: "Almacén", icon: Package, path: "/almacen" },
   { title: "Configuración", icon: Settings, path: "/configuracion" },
 ];
