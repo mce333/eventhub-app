@@ -370,8 +370,8 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
         </CardContent>
       </Card>
 
-      {/* Ingredient Control System - GLOBAL para todo el evento */}
-      {event.foodDetails?.cantidadDePlatos && canEdit && (
+      {/* Ingredient Control System - SOLO para Encargado de Compras o Admin */}
+      {event.foodDetails?.cantidadDePlatos && canEdit && userRole !== 'servicio' && (
         <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
           <CardHeader className="pb-3">
             <CardTitle className="text-base font-medium flex items-center gap-2">
