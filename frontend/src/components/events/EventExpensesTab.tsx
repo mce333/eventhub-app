@@ -375,16 +375,6 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
 
   return (
     <div className="space-y-6">
-      {/* Suspicious Activity Alert */}
-      {isSuspicious && canEdit && (
-        <Alert variant="destructive">
-          <AlertTriangle className="h-4 w-4" />
-          <AlertDescription>
-            <strong>Advertencia:</strong> Eres Admin/Socio. Cualquier modificación de gastos será registrada como actividad sospechosa en la auditoría.
-          </AlertDescription>
-        </Alert>
-      )}
-
       {/* Permission Alert for Servicio users */}
       {userRole === 'servicio' && !canEdit && (
         <Alert>
