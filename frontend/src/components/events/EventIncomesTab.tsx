@@ -42,16 +42,28 @@ interface GarantiaDevolucion {
 export function EventIncomesTab({ event, onUpdate }: EventIncomesTabProps) {
   const { user } = useAuth();
   const userRole = getUserRole(user);
-  const [showAddForm, setShowAddForm] = useState(false);
+  const [showAddAdelanto, setShowAddAdelanto] = useState(false);
+  const [showAddKiosco, setShowAddKiosco] = useState(false);
+  const [showAddHorasExtras, setShowAddHorasExtras] = useState(false);
   const [showGarantiaDevolucion, setShowGarantiaDevolucion] = useState(false);
-  const [newIncome, setNewIncome] = useState({
-    tipo: 'kiosco' as 'kiosco' | 'horas_extras' | 'adelanto',
+  
+  const [newAdelanto, setNewAdelanto] = useState({
     monto: 0,
     descripcion: '',
+  });
+  
+  const [newKiosco, setNewKiosco] = useState({
+    monto: 0,
+    descripcion: '',
+  });
+  
+  const [newHorasExtras, setNewHorasExtras] = useState({
     horasExtras: 0,
     precioPorHora: 0,
+    descripcion: '',
     metodoPago: 'efectivo',
   });
+  
   const [devolucionData, setDevolucionData] = useState({
     montoDescontado: 0,
     motivoDescuento: '',
@@ -69,60 +81,125 @@ export function EventIncomesTab({ event, onUpdate }: EventIncomesTabProps) {
     (event.financial?.advancePayment || 0) + 
     garantiaInfo;
 
-  const handleAddIncome = () => {
-    // Validación para adelantos
-    if (newIncome.tipo === 'adelanto') {
-      if (!newIncome.descripcion) {
-        toast.error('La descripción es requerida');
-        return;
-      }
-      if (newIncome.monto <= 0) {
-        toast.error('El monto debe ser mayor a 0');
-        return;
-      }
-      
-      const totalAdelantos = (event.financial?.advancePayment || 0) + ingresos.filter(i => i.tipo === 'adelanto').reduce((sum, i) => sum + i.monto, 0);
-      const saldoPendiente = (event.contract?.precioTotal || 0) - totalAdelantos;
-      
-      if (newIncome.monto > saldoPendiente) {
-        toast.error(`El adelanto no puede ser mayor al saldo pendiente (S/ ${saldoPendiente.toFixed(2)})`);
-        return;
-      }
-    }
-    
-    if (newIncome.tipo === 'kiosco' && !newIncome.descripcion) {
+  const handleAddAdelanto = () => {
+    if (!newAdelanto.descripcion) {
       toast.error('La descripción es requerida');
       return;
     }
-
-    let montoFinal = 0;
+    if (newAdelanto.monto <= 0) {
+      toast.error('El monto debe ser mayor a 0');
+      return;
+    }
     
-    if (newIncome.tipo === 'horas_extras') {
-      if (newIncome.horasExtras <= 0 || newIncome.precioPorHora <= 0) {
-        toast.error('Completa horas y precio por hora');
-        return;
-      }
-      montoFinal = newIncome.horasExtras * newIncome.precioPorHora;
-    } else {
-      if (newIncome.monto <= 0) {
-        toast.error('El monto es requerido');
-        return;
-      }
-      montoFinal = newIncome.monto;
+    const totalAdelantos = (event.financial?.advancePayment || 0) + ingresos.filter(i => i.tipo === 'adelanto').reduce((sum, i) => sum + i.monto, 0);
+    const saldoPendiente = (event.contract?.precioTotal || 0) - totalAdelantos;
+    
+    if (newAdelanto.monto > saldoPendiente) {
+      toast.error(`El adelanto no puede ser mayor al saldo pendiente (S/ ${saldoPendiente.toFixed(2)})`);
+      return;
     }
 
     const income: Income = {
       id: Date.now(),
-      tipo: newIncome.tipo,
-      monto: montoFinal,
-      descripcion: newIncome.descripcion,
-      horasExtras: newIncome.tipo === 'horas_extras' ? newIncome.horasExtras : undefined,
-      precioPorHora: newIncome.tipo === 'horas_extras' ? newIncome.precioPorHora : undefined,
-      metodoPago: newIncome.tipo === 'horas_extras' ? newIncome.metodoPago : undefined,
+      tipo: 'adelanto',
+      monto: newAdelanto.monto,
+      descripcion: newAdelanto.descripcion,
       fecha: new Date().toLocaleString('es-ES'),
       registradoPor: `${user?.name} ${user?.last_name}`,
       registradoRol: user?.role?.displayName || 'Usuario',
     };
+
+    const storedEvents = JSON.parse(localStorage.getItem('demo_events') || '[]');
+    const index = storedEvents.findIndex((e: any) => e.id === event.id);
+    
+    if (index !== -1) {
+      storedEvents[index].ingresos = [...(storedEvents[index].ingresos || []), income];
+      storedEvents[index].financial.totalIncome += income.monto;
+      storedEvents[index].financial.balance += income.monto;
+      storedEvents[index].contract.saldoPendiente -= income.monto;
+      localStorage.setItem('demo_events', JSON.stringify(storedEvents));
+      
+      toast.success('Adelanto registrado correctamente');
+      setShowAddAdelanto(false);
+      setNewAdelanto({ monto: 0, descripcion: '' });
+      onUpdate();
+    }
+  };
+
+  const handleAddKiosco = () => {
+    if (!newKiosco.descripcion) {
+      toast.error('La descripción es requerida');
+      return;
+    }
+    if (newKiosco.monto <= 0) {
+      toast.error('El monto debe ser mayor a 0');
+      return;
+    }
+
+    const income: Income = {
+      id: Date.now(),
+      tipo: 'kiosco',
+      monto: newKiosco.monto,
+      descripcion: newKiosco.descripcion,
+      fecha: new Date().toLocaleString('es-ES'),
+      registradoPor: `${user?.name} ${user?.last_name}`,
+      registradoRol: user?.role?.displayName || 'Usuario',
+    };
+
+    const storedEvents = JSON.parse(localStorage.getItem('demo_events') || '[]');
+    const index = storedEvents.findIndex((e: any) => e.id === event.id);
+    
+    if (index !== -1) {
+      storedEvents[index].ingresos = [...(storedEvents[index].ingresos || []), income];
+      storedEvents[index].financial.totalIncome += income.monto;
+      storedEvents[index].financial.balance += income.monto;
+      localStorage.setItem('demo_events', JSON.stringify(storedEvents));
+      
+      toast.success('Ingreso de kiosco registrado');
+      setShowAddKiosco(false);
+      setNewKiosco({ monto: 0, descripcion: '' });
+      onUpdate();
+    }
+  };
+
+  const handleAddHorasExtras = () => {
+    if (!newHorasExtras.descripcion) {
+      toast.error('La descripción es requerida');
+      return;
+    }
+    if (newHorasExtras.horasExtras <= 0 || newHorasExtras.precioPorHora <= 0) {
+      toast.error('Completa horas y precio por hora');
+      return;
+    }
+
+    const income: Income = {
+      id: Date.now(),
+      tipo: 'horas_extras',
+      monto: newHorasExtras.horasExtras * newHorasExtras.precioPorHora,
+      descripcion: newHorasExtras.descripcion,
+      horasExtras: newHorasExtras.horasExtras,
+      precioPorHora: newHorasExtras.precioPorHora,
+      metodoPago: newHorasExtras.metodoPago,
+      fecha: new Date().toLocaleString('es-ES'),
+      registradoPor: `${user?.name} ${user?.last_name}`,
+      registradoRol: user?.role?.displayName || 'Usuario',
+    };
+
+    const storedEvents = JSON.parse(localStorage.getItem('demo_events') || '[]');
+    const index = storedEvents.findIndex((e: any) => e.id === event.id);
+    
+    if (index !== -1) {
+      storedEvents[index].ingresos = [...(storedEvents[index].ingresos || []), income];
+      storedEvents[index].financial.totalIncome += income.monto;
+      storedEvents[index].financial.balance += income.monto;
+      localStorage.setItem('demo_events', JSON.stringify(storedEvents));
+      
+      toast.success('Horas extras registradas');
+      setShowAddHorasExtras(false);
+      setNewHorasExtras({ horasExtras: 0, precioPorHora: 0, descripcion: '', metodoPago: 'efectivo' });
+      onUpdate();
+    }
+  };
 
     const storedEvents = JSON.parse(localStorage.getItem('demo_events') || '[]');
     const index = storedEvents.findIndex((e: Event) => e.id === event.id);
