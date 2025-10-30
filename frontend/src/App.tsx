@@ -8,6 +8,7 @@ import Login from './pages/Login';
 import Eventos from './pages/Eventos';
 import EventoDetalle from './pages/EventoDetalle';
 import Clientes from './pages/Clientes';
+import Finanzas from './pages/Finanzas';
 import Almacen from './pages/Almacen';
 import Estadisticas from './pages/Estadisticas';
 import Configuracion from './pages/Configuracion';
