@@ -381,27 +381,27 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
       {/* Ingredient Control System - SOLO para Encargado de Compras o Admin */}
       {event.foodDetails?.cantidadDePlatos && canEdit && userRole !== 'servicio' && (
         <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
-          <CardHeader className="pb-3">
+          <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-base font-medium flex items-center gap-2">
-                <ChefHat className="h-5 w-5" />
-                Guía de Compras para el Evento
+              <CardTitle className="text-sm font-medium flex items-center gap-2">
+                <ChefHat className="h-4 w-4" />
+                Guía de Compras
               </CardTitle>
               {selectedDish && suggestedIngredients.length > 0 && (
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => setIsGuideCollapsed(!isGuideCollapsed)}
-                  className="h-8 px-2"
+                  className="h-7 px-2 text-xs"
                 >
                   {isGuideCollapsed ? (
                     <>
-                      <ChevronDown className="h-4 w-4 mr-1" />
+                      <ChevronDown className="h-3 w-3 mr-1" />
                       Expandir
                     </>
                   ) : (
                     <>
-                      <ChevronUp className="h-4 w-4 mr-1" />
+                      <ChevronUp className="h-3 w-3 mr-1" />
                       Minimizar
                     </>
                   )}
@@ -409,16 +409,19 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
               )}
             </div>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="space-y-2">
             <div>
-              <Label>Seleccionar Plato del Menú</Label>
+              <Label className="text-xs">Plato del Menú</Label>
               <Select
                 value={selectedDish}
-                onValueChange={setSelectedDish}
+                onValueChange={(value) => {
+                  console.log('🔄 Plato seleccionado:', value);
+                  setSelectedDish(value);
+                }}
                 disabled={!!selectedDish}
               >
-                <SelectTrigger className={selectedDish ? 'bg-muted' : ''}>
-                  <SelectValue placeholder="Selecciona el plato principal del evento" />
+                <SelectTrigger className={`h-8 text-sm ${selectedDish ? 'bg-muted' : ''}`}>
+                  <SelectValue placeholder="Selecciona el plato principal" />
                 </SelectTrigger>
                 <SelectContent>
                   {DISH_INGREDIENTS.map((dish) => (
@@ -428,46 +431,43 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
                   ))}
                 </SelectContent>
               </Select>
+              {event.foodDetails?.tipoDePlato && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  Plato del evento: {event.foodDetails.tipoDePlato}
+                </p>
+              )}
             </div>
 
             {selectedDish && suggestedIngredients.length > 0 && !isGuideCollapsed && (
-              <div className="mt-4">
-                <div className="flex items-center justify-between mb-2">
-                  <p className="text-sm font-medium">
-                    Insumos sugeridos para {event.foodDetails.cantidadDePlatos} porciones:
+              <div className="mt-2">
+                <div className="flex items-center justify-between mb-1">
+                  <p className="text-xs font-medium">
+                    Insumos para {event.foodDetails.cantidadDePlatos} porciones:
                   </p>
-                  <Badge variant="outline" className="bg-primary/10">
-                    Guía de Compra
+                  <Badge variant="outline" className="bg-primary/10 text-xs h-5">
+                    Guía
                   </Badge>
                 </div>
-                <div className="max-h-60 overflow-y-auto space-y-2">
+                <div className="max-h-48 overflow-y-auto space-y-1">
                   {suggestedIngredients.map((ingredient, idx) => (
                     <div
                       key={idx}
-                      className="flex items-center justify-between p-2 bg-background rounded border text-sm"
+                      className="flex items-center justify-between p-1.5 bg-background rounded border text-xs"
                     >
                       <div className="flex-1">
-                        <p className="font-medium">{ingredient.name}</p>
-                        <p className="text-xs text-muted-foreground">
-                          Cantidad máxima: {ingredient.totalQuantity.toFixed(2)} {ingredient.unit}
+                        <p className="font-medium text-xs">{ingredient.name}</p>
+                        <p className="text-[10px] text-muted-foreground">
+                          {ingredient.totalQuantity.toFixed(2)} {ingredient.unit}
                         </p>
                       </div>
                       <div className="text-right">
-                        <p className="font-semibold text-primary">
+                        <p className="font-semibold text-primary text-xs">
                           S/ {ingredient.totalCost.toFixed(2)}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          S/ {ingredient.estimatedCost.toFixed(2)}/{ingredient.unit}
                         </p>
                       </div>
                     </div>
                   ))}
                 </div>
-                <Alert className="mt-3">
-                  <AlertDescription className="text-xs">
-                    💡 <strong>Tip:</strong> Esta guía está basada en el plato seleccionado al crear el evento. Usa estas cantidades como referencia para todas tus compras.
-                  </AlertDescription>
-                </Alert>
               </div>
             )}
           </CardContent>
