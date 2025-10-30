@@ -711,6 +711,46 @@ export function CreateEventModal({ open, onClose, initialDate }: CreateEventModa
                     <Label htmlFor="cerveza">¿Incluye Cerveza?</Label>
                   </div>
 
+                  {formData.foodDetails?.incluyeCerveza && (
+                    <div className="grid grid-cols-2 gap-3 p-3 bg-primary/5 rounded-lg border border-primary/20">
+                      <div>
+                        <Label className="text-sm">Número de Cajas</Label>
+                        <Input
+                          type="number"
+                          placeholder="0"
+                          value={formData.foodDetails?.numeroCajasCerveza || ''}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              foodDetails: { 
+                                ...formData.foodDetails!, 
+                                numeroCajasCerveza: parseInt(e.target.value) || 0 
+                              },
+                            })
+                          }
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-sm">Costo por Caja (S/)</Label>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          placeholder="0.00"
+                          value={formData.foodDetails?.costoPorCaja || ''}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              foodDetails: { 
+                                ...formData.foodDetails!, 
+                                costoPorCaja: parseFloat(e.target.value) || 0 
+                              },
+                            })
+                          }
+                        />
+                      </div>
+                    </div>
+                  )}
+
                   <div>
                     <Label>Tipo de Pago *</Label>
                     <Select
