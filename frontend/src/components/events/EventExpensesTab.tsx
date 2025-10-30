@@ -47,12 +47,45 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
   const { user } = useAuth();
   const [showAddForm, setShowAddForm] = useState(false);
   const [isGuideCollapsed, setIsGuideCollapsed] = useState(false);
+  
+  // Función para mapear el tipoDePlato del evento a un dishId válido
+  const mapTipoDePlatoToDishId = (tipoDePlato: string | undefined): string => {
+    if (!tipoDePlato) return '';
+    
+    const lowerPlato = tipoDePlato.toLowerCase();
+    
+    // Mapeo de nombres comunes a dishIds
+    if (lowerPlato.includes('pollo')) return 'pollo-parrilla';
+    if (lowerPlato.includes('carne') || lowerPlato.includes('res')) return 'carne-asada';
+    if (lowerPlato.includes('pescado')) return 'pescado-frito';
+    if (lowerPlato.includes('arroz chaufa')) return 'arroz-chaufa';
+    if (lowerPlato.includes('lomo saltado')) return 'lomo-saltado';
+    if (lowerPlato.includes('tallarín')) return 'tallarin-saltado';
+    if (lowerPlato.includes('ceviche')) return 'ceviche';
+    if (lowerPlato.includes('ají de gallina')) return 'aji-gallina';
+    
+    // Si no hay mapeo, intentar usar el valor directamente
+    return tipoDePlato;
+  };
+  
   const [selectedDish, setSelectedDish] = useState<string>(() => {
     // Cargar plato guardado del localStorage para este evento
     const saved = localStorage.getItem(`event_${event.id}_selected_dish`);
-    // Si no hay plato guardado, usar el plato del evento (tipoDePlato)
-    return saved || event.foodDetails?.tipoDePlato || '';
+    if (saved) {
+      console.log('📦 Plato cargado desde localStorage:', saved);
+      return saved;
+    }
+    
+    // Si no hay plato guardado, intentar mapear el plato del evento
+    if (event.foodDetails?.tipoDePlato) {
+      const mappedDish = mapTipoDePlatoToDishId(event.foodDetails.tipoDePlato);
+      console.log('🗺️ Mapeando tipoDePlato:', event.foodDetails.tipoDePlato, '→', mappedDish);
+      return mappedDish;
+    }
+    
+    return '';
   });
+  
   const [suggestedIngredients, setSuggestedIngredients] = useState<any[]>([]);
   const [registeredExpenses, setRegisteredExpenses] = useState<{[key: number]: boolean}>(() => {
     // Load registered expenses from event data
