@@ -263,28 +263,29 @@ export function EventIncomesTab({ event, onUpdate }: EventIncomesTabProps) {
             )}
 
             {newIncome.tipo === 'kiosco' && (
-              <div>
-                <Label>Descripción *</Label>
-                <Textarea
-                  placeholder="Ej: Venta de 20 cervezas"
-                  value={newIncome.descripcion}
-                  onChange={(e) => setNewIncome({ ...newIncome, descripcion: e.target.value })}
-                  rows={2}
-                />
-              </div>
+              <>
+                <div>
+                  <Label>Descripción *</Label>
+                  <Textarea
+                    placeholder="Ej: Venta de 20 cervezas"
+                    value={newIncome.descripcion}
+                    onChange={(e) => setNewIncome({ ...newIncome, descripcion: e.target.value })}
+                    rows={2}
+                  />
+                </div>
+                <div>
+                  <Label>Monto (S/) *</Label>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    value={newIncome.monto || ''}
+                    onChange={(e) => setNewIncome({ ...newIncome, monto: parseFloat(e.target.value) || 0 })}
+                  />
+                </div>
+              </>
             )}
 
-            {newIncome.tipo === 'kiosco' ? (
-              <div>
-                <Label>Monto (S/) *</Label>
-                <Input
-                  type="number"
-                  step="0.01"
-                  value={newIncome.monto || ''}
-                  onChange={(e) => setNewIncome({ ...newIncome, monto: parseFloat(e.target.value) || 0 })}
-                />
-              </div>
-            ) : (
+            {newIncome.tipo === 'horas_extras' && (
               <>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
