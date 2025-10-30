@@ -1118,14 +1118,39 @@ export function CreateEventModal({ open, onClose, initialDate }: CreateEventModa
               </CardHeader>
               <CardContent>
                 {formData.staff && formData.staff.length > 0 ? (
-                  <div className="space-y-4">
+                  <div className="space-y-3">
                     {formData.staff.map((person, index) => {
                       const rateType = person.roleId ? getRateType(person.roleId) : 'hourly';
                       const canAccess = person.roleId ? canRoleHaveSystemAccess(person.roleId) : false;
+                      const isSaved = savedStaffIndexes.has(index);
                       
                       return (
-                        <Card key={index} className="border-2">
-                          <CardContent className="pt-6 space-y-4">
+                        <Card key={index} className={`border-2 ${isSaved ? 'bg-green-500/5 border-green-500/30' : ''}`}>
+                          <CardContent className={isSaved ? 'pt-3 pb-3' : 'pt-6 space-y-4'}>
+                            {isSaved ? (
+                              // Compact saved view
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                  <div className="h-10 w-10 rounded-full bg-green-500/20 flex items-center justify-center">
+                                    <span className="text-lg font-bold text-green-700">
+                                      {person.name.charAt(0)}
+                                    </span>
+                                  </div>
+                                  <div>
+                                    <p className="font-semibold text-sm">{person.name}</p>
+                                    <p className="text-xs text-muted-foreground">{person.role}</p>
+                                  </div>
+                                </div>
+                                <div className="text-right">
+                                  <p className="font-bold text-sm">S/ {person.totalCost.toLocaleString()}</p>
+                                  <Badge variant="outline" className="bg-green-500/20 text-green-700 border-green-500/30 text-xs mt-1">
+                                    ✓ Registrado
+                                  </Badge>
+                                </div>
+                              </div>
+                            ) : (
+                              // Full editable form
+                              <div className="space-y-4">
                             <div className="flex items-start justify-between gap-4">
                               <div className="flex-1 space-y-4">
                                 {/* Fila 1: Nombre y Rol */}
