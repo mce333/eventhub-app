@@ -19,11 +19,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { DollarSign, TrendingUp, TrendingDown, Wallet, Save, X, Plus, Calendar, ChevronDown } from 'lucide-react';
+import { DollarSign, TrendingUp, TrendingDown, Wallet, Save, X, Plus, Calendar, ChevronDown, PieChart } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 import { getUserRole } from '@/lib/permissions';
 import { Event } from '@/types/events';
+import { EstadisticasContent } from '@/components/finanzas/EstadisticasContent';
 
 interface GeneralExpenseItem {
   id: number;
