@@ -484,50 +484,44 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               {predefinedExpenses.map((expense) => {
                 const isRegistered = registeredExpenses[expense.id] || (expense as any).isRegistered;
                 
                 return (
-                  <div key={expense.id} className={`p-3 border rounded-lg ${isRegistered ? 'bg-green-500/5 border-green-500/30' : 'bg-primary/5'}`}>
-                    <div className="flex items-center justify-between mb-2">
+                  <div key={expense.id} className={`p-2 border rounded ${isRegistered ? 'bg-green-500/5 border-green-500/30' : 'bg-primary/5'}`}>
+                    <div className="flex items-center justify-between mb-1">
                       <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <h4 className="font-medium text-sm">{expense.category}</h4>
-                          {isRegistered ? (
-                            <Badge variant="outline" className="bg-green-500/20 text-green-700 border-green-500/30 text-xs h-5">
+                        <div className="flex items-center gap-1.5">
+                          <h4 className="font-medium text-xs">{expense.category}</h4>
+                          {isRegistered && (
+                            <Badge variant="outline" className="bg-green-500/20 text-green-700 border-green-500/30 text-[10px] h-4 px-1">
                               ✓
-                            </Badge>
-                          ) : (
-                            <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20 text-xs h-5">
-                              Pendiente
                             </Badge>
                           )}
                         </div>
-                        <p className="text-xs text-muted-foreground">{expense.description}</p>
+                        <p className="text-[10px] text-muted-foreground line-clamp-1">{expense.description}</p>
                       </div>
-                      <div className="text-right">
-                        <p className="text-base font-bold">S/ {(expense.amount || 0).toLocaleString()}</p>
-                      </div>
+                      <p className="text-sm font-bold ml-2">S/ {(expense.amount || 0).toLocaleString()}</p>
                     </div>
                     
                     {canEdit && !isRegistered && (
                       <>
-                        <div className="grid grid-cols-3 gap-2 pt-2 border-t">
+                        <div className="grid grid-cols-3 gap-1.5 pt-1.5 border-t">
                           <div>
-                            <Label className="text-xs">Cantidad</Label>
+                            <Label className="text-[10px]">Cant.</Label>
                             <Input
                               key={`cantidad-${expense.id}`}
                               type="number"
                               value={getExpenseValue(expense, 'cantidad')}
                               onChange={(e) => handleExpenseInputChange(expense.id, 'cantidad', e.target.value)}
                               onBlur={() => handleExpenseInputBlur(expense.id, 'quantity')}
-                              className="h-7 text-sm"
+                              className="h-6 text-xs"
                               min="0"
                             />
                           </div>
                           <div>
-                            <Label className="text-xs">Precio (S/)</Label>
+                            <Label className="text-[10px]">P. Unit.</Label>
                             <Input
                               key={`costo-${expense.id}`}
                               type="number"
@@ -535,25 +529,25 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
                               value={getExpenseValue(expense, 'costoUnitario')}
                               onChange={(e) => handleExpenseInputChange(expense.id, 'costoUnitario', e.target.value)}
                               onBlur={() => handleExpenseInputBlur(expense.id, 'unitPrice')}
-                              className="h-7 text-sm"
+                              className="h-6 text-xs"
                               min="0"
                             />
                           </div>
                           <div>
-                            <Label className="text-xs">Total</Label>
+                            <Label className="text-[10px]">Total</Label>
                             <Input
                               key={`total-${expense.id}`}
                               type="number"
                               value={(getExpenseValue(expense, 'cantidad') * getExpenseValue(expense, 'costoUnitario')).toFixed(2)}
                               disabled
-                              className="h-7 text-sm bg-muted font-bold"
+                              className="h-6 text-xs bg-muted font-bold"
                             />
                           </div>
                         </div>
                         <Button
                           onClick={() => registerPredefinedExpense(expense.id)}
                           size="sm"
-                          className="w-full mt-2 h-7 text-xs bg-gradient-primary"
+                          className="w-full mt-1.5 h-6 text-[10px] bg-gradient-primary"
                         >
                           Registrar
                         </Button>
@@ -561,31 +555,14 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
                     )}
                     
                     {isRegistered && (
-                      <div className="pt-2 border-t">
-                        <div className="flex items-center justify-between text-xs mb-1">
-                          <span className="text-muted-foreground">Detalles:</span>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-6 px-2 text-xs"
-                            onClick={() => {
-                              setRegisteredExpenses(prev => {
-                                const updated = { ...prev };
-                                delete updated[expense.id];
-                                return updated;
-                              });
-                            }}
-                          >
-                            Editar
-                          </Button>
-                        </div>
-                        <div className="grid grid-cols-3 gap-2 text-xs">
+                      <div className="pt-1.5 border-t mt-1">
+                        <div className="grid grid-cols-3 gap-1.5 text-[10px]">
                           <div>
-                            <p className="text-muted-foreground">Cantidad</p>
+                            <p className="text-muted-foreground">Cant.</p>
                             <p className="font-medium">{expense.cantidad || 1}</p>
                           </div>
                           <div>
-                            <p className="text-muted-foreground">Precio Unit.</p>
+                            <p className="text-muted-foreground">P.U.</p>
                             <p className="font-medium">S/ {(expense.costoUnitario || 0).toFixed(2)}</p>
                           </div>
                           <div>
@@ -593,11 +570,6 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
                             <p className="font-medium">S/ {((expense.cantidad || 1) * (expense.costoUnitario || 0)).toFixed(2)}</p>
                           </div>
                         </div>
-                        {(expense as any).registeredBy && (
-                          <p className="text-xs text-muted-foreground mt-1">
-                            Por: {(expense as any).registeredBy}
-                          </p>
-                        )}
                       </div>
                     )}
                   </div>
