@@ -982,7 +982,7 @@ export function CreateEventModal({ open, onClose, initialDate }: CreateEventModa
             </div>
 
             <div>
-              <Label>Presupuesto Asignado (S/)</Label>
+              <Label>Caja Chica del Evento (S/)</Label>
               <Input
                 type="number"
                 placeholder="10000.00"
@@ -999,7 +999,7 @@ export function CreateEventModal({ open, onClose, initialDate }: CreateEventModa
                 }
               />
               <p className="text-xs text-muted-foreground mt-1">
-                Presupuesto total para gastos del evento
+                Presupuesto asignado para todos los gastos del evento
               </p>
             </div>
 
