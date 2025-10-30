@@ -1475,41 +1475,94 @@ export function CreateEventModal({ open, onClose, initialDate }: CreateEventModa
                 <CardTitle className="text-base">Desglose de Costos</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3 text-sm">
+                {/* Comida */}
                 {totals.foodCost > 0 && (
-                  <div className="flex justify-between">
-                    <span>Costo de Comida:</span>
-                    <span className="font-medium">S/ {totals.foodCost.toFixed(2)}</span>
+                  <div className="p-3 bg-background rounded-lg border">
+                    <div className="flex justify-between items-center">
+                      <span className="font-semibold">Comida</span>
+                      <span className="font-bold">S/ {totals.foodCost.toFixed(2)}</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Costo total de comida
+                    </p>
                   </div>
                 )}
+                
+                {/* Cerveza */}
+                {formData.foodDetails?.incluyeCerveza && totals.cervezaCost > 0 && (
+                  <div className="p-3 bg-background rounded-lg border">
+                    <div className="flex justify-between items-center">
+                      <span className="font-semibold">Cerveza</span>
+                      <span className="font-bold">S/ {totals.cervezaCost.toFixed(2)}</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {formData.foodDetails.numeroCajasCerveza || 0} cajas × S/ {formData.foodDetails.costoPorCaja || 0}
+                      {' - '}
+                      {formData.foodDetails.tipoDePago === 'cover' ? 'Cover' : 'Compra en local'}
+                    </p>
+                  </div>
+                )}
+                
+                {/* Decoración */}
                 {totals.decorationClientCost > 0 && (
-                  <>
-                    <div className="flex justify-between">
-                      <span>Costo Decoración (Cliente):</span>
-                      <span className="font-medium">S/ {totals.decorationClientCost.toFixed(2)}</span>
+                  <div className="p-3 bg-background rounded-lg border">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="font-semibold">Decoración</span>
+                      <span className="font-bold">S/ {totals.decorationClientCost.toFixed(2)}</span>
                     </div>
-                    <div className="flex justify-between text-success">
-                      <span>Ganancia Decoración:</span>
-                      <span className="font-bold">S/ {totals.decorationProfit.toFixed(2)}</span>
+                    <div className="grid grid-cols-2 gap-2 text-xs">
+                      <div>
+                        <p className="text-muted-foreground">Costo Total:</p>
+                        <p className="font-medium">S/ {totals.decorationTotalCost.toFixed(2)}</p>
+                      </div>
+                      <div>
+                        <p className="text-muted-foreground">Costo al Cliente:</p>
+                        <p className="font-medium">S/ {totals.decorationClientCost.toFixed(2)}</p>
+                      </div>
                     </div>
-                  </>
-                )}
-                {totals.staffCost > 0 && (
-                  <div className="flex justify-between">
-                    <span>Costo de Personal:</span>
-                    <span className="font-medium">S/ {totals.staffCost.toFixed(2)}</span>
+                    <div className="mt-2 p-2 bg-green-500/10 rounded">
+                      <div className="flex justify-between text-xs">
+                        <span className="text-green-700">Ganancia:</span>
+                        <span className="font-bold text-green-700">S/ {totals.decorationProfit.toFixed(2)}</span>
+                      </div>
+                    </div>
                   </div>
                 )}
-                <div className="border-t pt-3 flex justify-between">
-                  <span className="font-bold text-lg">PRECIO TOTAL:</span>
-                  <span className="font-bold text-xl text-primary">S/ {totals.totalPrice.toFixed(2)}</span>
+                
+                {/* Garantía */}
+                {totals.garantia > 0 && (
+                  <div className="p-3 bg-background rounded-lg border">
+                    <div className="flex justify-between items-center">
+                      <span className="font-semibold">Garantía</span>
+                      <span className="font-bold">S/ {totals.garantia.toFixed(2)}</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Garantía por daños o cancelación
+                    </p>
+                  </div>
+                )}
+                
+                {/* Precio Total */}
+                <div className="border-t-2 pt-3 mt-4">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="font-bold text-base">PRECIO TOTAL:</span>
+                    <span className="font-bold text-2xl text-primary">S/ {totals.totalPrice.toFixed(2)}</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Incluye: Comida{totals.cervezaCost > 0 ? ', Cerveza' : ''}{totals.decorationClientCost > 0 ? ', Decoración' : ''}{totals.garantia > 0 ? ', Garantía' : ''}
+                  </p>
                 </div>
-                <div className="flex justify-between">
-                  <span>Pago Adelantado:</span>
-                  <span className="font-medium">S/ {totals.advancePayment.toFixed(2)}</span>
+                
+                {/* Adelanto */}
+                <div className="flex justify-between p-2 bg-blue-500/10 rounded">
+                  <span className="font-medium">Pago Adelantado:</span>
+                  <span className="font-bold text-blue-600">S/ {totals.advancePayment.toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between text-warning">
+                
+                {/* Saldo Pendiente */}
+                <div className="flex justify-between p-2 bg-warning/10 rounded">
                   <span className="font-semibold">Saldo Pendiente:</span>
-                  <span className="font-bold">S/ {totals.balance.toFixed(2)}</span>
+                  <span className="font-bold text-warning text-lg">S/ {totals.balance.toFixed(2)}</span>
                 </div>
               </CardContent>
             </Card>
