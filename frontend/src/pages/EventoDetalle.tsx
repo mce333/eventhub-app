@@ -138,7 +138,7 @@ export default function EventoDetalle() {
   }
 
   // Determine default tab based on user role
-  const defaultTab = isEncargadoCompras || isServicio ? 'expenses' : 'info';
+  const defaultTab = isEncargadoCompras || isServicio ? 'expenses' : 'contract';
 
   return (
     <div className="min-h-screen bg-background flex">
