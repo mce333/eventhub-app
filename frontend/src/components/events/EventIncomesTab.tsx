@@ -233,7 +233,7 @@ export function EventIncomesTab({ event, onUpdate }: EventIncomesTabProps) {
     return (
       <div className="space-y-6">
         {/* Ingresos Kiosco */}
-        <Card>
+        <Card className="border-2 border-cyan-500">
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle>Ingresos Kiosco</CardTitle>
