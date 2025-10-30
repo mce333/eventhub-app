@@ -64,14 +64,23 @@ const MESES = [
   'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'
 ];
 
+const EXPENSE_TYPES = [
+  { key: 'luz', label: 'Luz', icon: '💡' },
+  { key: 'agua', label: 'Agua', icon: '💧' },
+  { key: 'internet', label: 'Internet', icon: '🌐' },
+  { key: 'personalFijo', label: 'Personal Fijo', icon: '👥' },
+  { key: 'vigilante', label: 'Vigilante', icon: '🛡️' },
+  { key: 'alcabala', label: 'Alcabala', icon: '🏢' },
+] as const;
+
 export default function Finanzas() {
   const { user } = useAuth();
   const userRole = getUserRole(user);
-  const [isEditingGeneral, setIsEditingGeneral] = useState(false);
-  const [generalExpenses, setGeneralExpenses] = useState<GeneralExpense[]>([]);
+  const [generalExpenseItems, setGeneralExpenseItems] = useState<GeneralExpenseItem[]>([]);
   const [accountBalances, setAccountBalances] = useState<AccountBalance[]>([]);
   const [showAddBalance, setShowAddBalance] = useState(false);
   const [availableEvents, setAvailableEvents] = useState<Event[]>([]);
+  const [monthSelectorOpen, setMonthSelectorOpen] = useState(false);
   
   const currentYear = new Date().getFullYear();
   const currentMonthIndex = new Date().getMonth();
@@ -81,15 +90,14 @@ export default function Finanzas() {
   const [selectedMes, setSelectedMes] = useState(currentMonthName);
   const [selectedAño, setSelectedAño] = useState(currentYear);
   
-  const [currentGeneralExpense, setCurrentGeneralExpense] = useState<Omit<GeneralExpense, 'id' | 'registeredBy' | 'registeredAt'>>({
+  // Estado para cada input de gasto individual
+  const [expenseInputs, setExpenseInputs] = useState<{[key: string]: number}>({
     luz: 0,
-    personalFijo: 0,
     agua: 0,
     internet: 0,
+    personalFijo: 0,
     vigilante: 0,
     alcabala: 0,
-    mes: selectedMes,
-    año: selectedAño,
   });
 
   const [newBalance, setNewBalance] = useState({
