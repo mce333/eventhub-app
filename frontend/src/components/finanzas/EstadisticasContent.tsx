@@ -90,22 +90,9 @@ export function EstadisticasContent() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex">
-      <Sidebar />
-
-      <div className="flex-1 flex flex-col">
-        <Header />
-
-        <main className="flex-1 p-8 overflow-auto">
-          <div className="max-w-7xl mx-auto space-y-8">
-            {/* Header */}
-            <div>
-              <h1 className="text-3xl font-bold text-foreground mb-2">Estadísticas y Análisis</h1>
-              <p className="text-muted-foreground">Optimiza tus costos y aumenta la rentabilidad</p>
-            </div>
-
-            {stats ? (
-              <>
+    <div className="space-y-8">
+      {stats ? (
+        <>
                 {/* Resumen General */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <Card className="bg-gradient-to-br from-green-500/10 to-green-500/5 border-green-500/20">
