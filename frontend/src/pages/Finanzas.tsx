@@ -323,9 +323,10 @@ export default function Finanzas() {
             </div>
 
             <Tabs defaultValue="general" className="w-full">
-              <TabsList className="grid w-full grid-cols-2">
+              <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="general">Gastos Generales</TabsTrigger>
                 <TabsTrigger value="balances">Balance por Evento</TabsTrigger>
+                <TabsTrigger value="estadisticas">Estadísticas</TabsTrigger>
               </TabsList>
 
               <TabsContent value="general" className="space-y-4">
