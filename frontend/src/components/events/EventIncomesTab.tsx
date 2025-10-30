@@ -668,7 +668,7 @@ export function EventIncomesTab({ event, onUpdate }: EventIncomesTabProps) {
       )}
 
       {/* Horas Extras */}
-      <Card>
+      <Card className="border-2 border-purple-500">
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle>Horas Extras</CardTitle>
