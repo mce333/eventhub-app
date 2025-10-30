@@ -46,10 +46,12 @@ const PAYMENT_METHODS = [
 export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
   const { user } = useAuth();
   const [showAddForm, setShowAddForm] = useState(false);
+  const [isGuideCollapsed, setIsGuideCollapsed] = useState(false);
   const [selectedDish, setSelectedDish] = useState<string>(() => {
     // Cargar plato guardado del localStorage para este evento
     const saved = localStorage.getItem(`event_${event.id}_selected_dish`);
-    return saved || '';
+    // Si no hay plato guardado, usar el plato del evento (tipoDePlato)
+    return saved || event.foodDetails?.tipoDePlato || '';
   });
   const [suggestedIngredients, setSuggestedIngredients] = useState<any[]>([]);
   const [registeredExpenses, setRegisteredExpenses] = useState<{[key: number]: boolean}>(() => {
