@@ -15,7 +15,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Event, EventExpense } from '@/types/events';
 import { useAuth } from '@/contexts/AuthContext';
 import { canEditExpenses, isSuspiciousExpenseEdit, getUserRole } from '@/lib/permissions';
-import { Receipt, Plus, AlertTriangle, TrendingUp, ChefHat } from 'lucide-react';
+import { Receipt, Plus, AlertTriangle, TrendingUp, ChefHat, ChevronDown, ChevronUp } from 'lucide-react';
 import { toast } from 'sonner';
 import { DISH_INGREDIENTS, calculateTotalIngredients, DishIngredients } from '@/lib/ingredientsData';
 
