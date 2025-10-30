@@ -478,36 +478,36 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
+            <div className="space-y-2">
               {predefinedExpenses.map((expense) => {
                 const isRegistered = registeredExpenses[expense.id] || (expense as any).isRegistered;
                 
                 return (
-                  <div key={expense.id} className={`p-4 border rounded-lg ${isRegistered ? 'bg-green-500/5 border-green-500/30' : 'bg-primary/5'}`}>
-                    <div className="flex items-start justify-between mb-3">
+                  <div key={expense.id} className={`p-3 border rounded-lg ${isRegistered ? 'bg-green-500/5 border-green-500/30' : 'bg-primary/5'}`}>
+                    <div className="flex items-center justify-between mb-2">
                       <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <h4 className="font-semibold">{expense.category}</h4>
+                        <div className="flex items-center gap-2">
+                          <h4 className="font-medium text-sm">{expense.category}</h4>
                           {isRegistered ? (
-                            <Badge variant="outline" className="bg-green-500/20 text-green-700 border-green-500/30">
-                              ✓ REGISTRADO
+                            <Badge variant="outline" className="bg-green-500/20 text-green-700 border-green-500/30 text-xs h-5">
+                              ✓
                             </Badge>
                           ) : (
-                            <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
-                              PREDETERMINADO
+                            <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20 text-xs h-5">
+                              Pendiente
                             </Badge>
                           )}
                         </div>
-                        <p className="text-sm text-muted-foreground">{expense.description}</p>
+                        <p className="text-xs text-muted-foreground">{expense.description}</p>
                       </div>
                       <div className="text-right">
-                        <p className="text-lg font-bold">S/ {(expense.amount || 0).toLocaleString()}</p>
+                        <p className="text-base font-bold">S/ {(expense.amount || 0).toLocaleString()}</p>
                       </div>
                     </div>
                     
                     {canEdit && !isRegistered && (
                       <>
-                        <div className="grid grid-cols-3 gap-3 pt-3 border-t">
+                        <div className="grid grid-cols-3 gap-2 pt-2 border-t">
                           <div>
                             <Label className="text-xs">Cantidad</Label>
                             <Input
@@ -516,12 +516,12 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
                               value={getExpenseValue(expense, 'cantidad')}
                               onChange={(e) => handleExpenseInputChange(expense.id, 'cantidad', e.target.value)}
                               onBlur={() => handleExpenseInputBlur(expense.id, 'quantity')}
-                              className="h-8"
+                              className="h-7 text-sm"
                               min="0"
                             />
                           </div>
                           <div>
-                            <Label className="text-xs">Precio Unitario (S/)</Label>
+                            <Label className="text-xs">Precio (S/)</Label>
                             <Input
                               key={`costo-${expense.id}`}
                               type="number"
@@ -529,7 +529,7 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
                               value={getExpenseValue(expense, 'costoUnitario')}
                               onChange={(e) => handleExpenseInputChange(expense.id, 'costoUnitario', e.target.value)}
                               onBlur={() => handleExpenseInputBlur(expense.id, 'unitPrice')}
-                              className="h-8"
+                              className="h-7 text-sm"
                               min="0"
                             />
                           </div>
@@ -540,27 +540,28 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
                               type="number"
                               value={(getExpenseValue(expense, 'cantidad') * getExpenseValue(expense, 'costoUnitario')).toFixed(2)}
                               disabled
-                              className="h-8 bg-muted font-bold"
+                              className="h-7 text-sm bg-muted font-bold"
                             />
                           </div>
                         </div>
                         <Button
                           onClick={() => registerPredefinedExpense(expense.id)}
                           size="sm"
-                          className="w-full mt-3 bg-gradient-primary"
+                          className="w-full mt-2 h-7 text-xs bg-gradient-primary"
                         >
-                          Registrar {expense.category}
+                          Registrar
                         </Button>
                       </>
                     )}
                     
                     {isRegistered && (
-                      <div className="pt-3 border-t">
-                        <div className="flex items-center justify-between text-sm mb-2">
-                          <span className="text-muted-foreground">Detalles del Registro:</span>
+                      <div className="pt-2 border-t">
+                        <div className="flex items-center justify-between text-xs mb-1">
+                          <span className="text-muted-foreground">Detalles:</span>
                           <Button
                             variant="ghost"
                             size="sm"
+                            className="h-6 px-2 text-xs"
                             onClick={() => {
                               setRegisteredExpenses(prev => {
                                 const updated = { ...prev };
@@ -572,13 +573,13 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
                             Editar
                           </Button>
                         </div>
-                        <div className="grid grid-cols-3 gap-3 text-sm">
+                        <div className="grid grid-cols-3 gap-2 text-xs">
                           <div>
                             <p className="text-muted-foreground">Cantidad</p>
                             <p className="font-medium">{expense.cantidad || 1}</p>
                           </div>
                           <div>
-                            <p className="text-muted-foreground">Precio Unitario</p>
+                            <p className="text-muted-foreground">Precio Unit.</p>
                             <p className="font-medium">S/ {(expense.costoUnitario || 0).toFixed(2)}</p>
                           </div>
                           <div>
@@ -587,8 +588,8 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
                           </div>
                         </div>
                         {(expense as any).registeredBy && (
-                          <p className="text-xs text-muted-foreground mt-2">
-                            Registrado por: {(expense as any).registeredBy} - {(expense as any).registeredAt}
+                          <p className="text-xs text-muted-foreground mt-1">
+                            Por: {(expense as any).registeredBy}
                           </p>
                         )}
                       </div>
