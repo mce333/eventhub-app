@@ -376,19 +376,42 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
       {event.foodDetails?.cantidadDePlatos && canEdit && userRole !== 'servicio' && (
         <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
           <CardHeader className="pb-3">
-            <CardTitle className="text-base font-medium flex items-center gap-2">
-              <ChefHat className="h-5 w-5" />
-              Guía de Compras para el Evento
-            </CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-base font-medium flex items-center gap-2">
+                <ChefHat className="h-5 w-5" />
+                Guía de Compras para el Evento
+              </CardTitle>
+              {selectedDish && suggestedIngredients.length > 0 && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setIsGuideCollapsed(!isGuideCollapsed)}
+                  className="h-8 px-2"
+                >
+                  {isGuideCollapsed ? (
+                    <>
+                      <ChevronDown className="h-4 w-4 mr-1" />
+                      Expandir
+                    </>
+                  ) : (
+                    <>
+                      <ChevronUp className="h-4 w-4 mr-1" />
+                      Minimizar
+                    </>
+                  )}
+                </Button>
+              )}
+            </div>
           </CardHeader>
           <CardContent className="space-y-3">
             <div>
-              <Label>Seleccionar Plato del Menú (Solo una vez)</Label>
+              <Label>Seleccionar Plato del Menú</Label>
               <Select
                 value={selectedDish}
                 onValueChange={setSelectedDish}
+                disabled={!!selectedDish}
               >
-                <SelectTrigger>
+                <SelectTrigger className={selectedDish ? 'bg-muted' : ''}>
                   <SelectValue placeholder="Selecciona el plato principal del evento" />
                 </SelectTrigger>
                 <SelectContent>
@@ -401,7 +424,7 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
               </Select>
             </div>
 
-            {selectedDish && suggestedIngredients.length > 0 && (
+            {selectedDish && suggestedIngredients.length > 0 && !isGuideCollapsed && (
               <div className="mt-4">
                 <div className="flex items-center justify-between mb-2">
                   <p className="text-sm font-medium">
@@ -436,7 +459,7 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
                 </div>
                 <Alert className="mt-3">
                   <AlertDescription className="text-xs">
-                    💡 <strong>Tip:</strong> Esta guía se muestra una sola vez por evento. Usa estas cantidades como referencia para todas tus compras.
+                    💡 <strong>Tip:</strong> Esta guía está basada en el plato seleccionado al crear el evento. Usa estas cantidades como referencia para todas tus compras.
                   </AlertDescription>
                 </Alert>
               </div>
