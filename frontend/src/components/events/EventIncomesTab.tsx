@@ -904,60 +904,9 @@ export function EventIncomesTab({ event, onUpdate }: EventIncomesTabProps) {
           )}
         </CardContent>
       </Card>
-                <>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label>Número de Horas *</Label>
-                      <Input
-                        type="number"
-                        value={newIncome.horasExtras || ''}
-                        onChange={(e) => setNewIncome({ ...newIncome, horasExtras: parseInt(e.target.value) || 0 })}
-                      />
-                    </div>
-                    <div>
-                      <Label>Precio por Hora (S/) *</Label>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        value={newIncome.precioPorHora || ''}
-                        onChange={(e) => setNewIncome({ ...newIncome, precioPorHora: parseFloat(e.target.value) || 0 })}
-                      />
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <Label>Método de Pago *</Label>
-                    <select
-                      className="w-full h-10 px-3 rounded-md border border-input bg-background"
-                      value={newIncome.metodoPago}
-                      onChange={(e) => setNewIncome({ ...newIncome, metodoPago: e.target.value })}
-                    >
-                      <option value="efectivo">Efectivo</option>
-                      <option value="tarjeta">Tarjeta</option>
-                      <option value="transferencia">Transferencia</option>
-                      <option value="yape">Yape/Plin</option>
-                    </select>
-                  </div>
-
-                  <div className="p-3 bg-primary/10 rounded-lg">
-                    <p className="text-sm font-medium">Total a Registrar:</p>
-                    <p className="text-2xl font-bold text-primary">
-                      S/ {(newIncome.horasExtras * newIncome.precioPorHora).toFixed(2)}
-                    </p>
-                  </div>
-                </>
-              ) : null}
-
-              <Button onClick={handleAddIncome} className="w-full bg-gradient-primary">
-                Registrar Ingreso
-              </Button>
-            </div>
-          )}
-
-          {/* Lista de Ingresos */}
-          {ingresos.length > 0 ? (
-            <div className="space-y-3">
-              {ingresos.map((income) => (
+    </div>
+  );
+}
                 <div key={income.id} className="p-4 border rounded-lg bg-green-500/5">
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex-1">
