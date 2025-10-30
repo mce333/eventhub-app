@@ -319,9 +319,6 @@ export function EstadisticasContent() {
                 </CardContent>
               </Card>
             )}
-          </div>
-        </main>
-      </div>
     </div>
   );
 }
