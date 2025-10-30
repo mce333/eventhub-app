@@ -443,8 +443,8 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
         </Card>
       )}
 
-      {/* Predefined Expenses */}
-      {predefinedExpenses.length > 0 && (
+      {/* Predefined Expenses - SOLO para Encargado de Compras o Admin */}
+      {predefinedExpenses.length > 0 && userRole !== 'servicio' && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
