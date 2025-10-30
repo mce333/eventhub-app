@@ -114,16 +114,11 @@ export default function Finanzas() {
     loadEvents();
   }, []);
 
-  // Update expense when month/year changes
-  useEffect(() => {
-    loadExpenseForMonth(selectedMes, selectedAño);
-  }, [selectedMes, selectedAño, generalExpenses]);
-
   const loadFinancialData = () => {
-    const storedExpenses = JSON.parse(localStorage.getItem('general_expenses') || '[]');
+    const storedExpenseItems = JSON.parse(localStorage.getItem('general_expense_items') || '[]');
     const storedBalances = JSON.parse(localStorage.getItem('account_balances') || '[]');
     
-    setGeneralExpenses(storedExpenses);
+    setGeneralExpenseItems(storedExpenseItems);
     setAccountBalances(storedBalances);
   };
 
@@ -132,35 +127,44 @@ export default function Finanzas() {
     setAvailableEvents(storedEvents);
   };
 
-  const loadExpenseForMonth = (mes: string, año: number) => {
-    const monthExpense = generalExpenses.find(
-      (e) => e.mes === mes && e.año === año
-    );
+  const handleRegisterExpense = (tipo: 'luz' | 'personalFijo' | 'agua' | 'internet' | 'vigilante' | 'alcabala') => {
+    const monto = expenseInputs[tipo];
     
-    if (monthExpense) {
-      setCurrentGeneralExpense({
-        luz: monthExpense.luz,
-        personalFijo: monthExpense.personalFijo,
-        agua: monthExpense.agua,
-        internet: monthExpense.internet,
-        vigilante: monthExpense.vigilante,
-        alcabala: monthExpense.alcabala,
-        mes: monthExpense.mes,
-        año: monthExpense.año,
-      });
-    } else {
-      // Reset to zero if no data for this month
-      setCurrentGeneralExpense({
-        luz: 0,
-        personalFijo: 0,
-        agua: 0,
-        internet: 0,
-        vigilante: 0,
-        alcabala: 0,
-        mes: mes,
-        año: año,
-      });
+    if (monto <= 0) {
+      toast.error('El monto debe ser mayor a 0');
+      return;
     }
+
+    const newItem: GeneralExpenseItem = {
+      id: Date.now(),
+      tipo,
+      monto,
+      mes: selectedMes,
+      año: selectedAño,
+      registeredBy: `${user?.name} ${user?.last_name}`,
+      registeredAt: new Date().toISOString(),
+    };
+
+    const updatedItems = [...generalExpenseItems, newItem];
+    setGeneralExpenseItems(updatedItems);
+    localStorage.setItem('general_expense_items', JSON.stringify(updatedItems));
+    
+    // Reset input
+    setExpenseInputs(prev => ({ ...prev, [tipo]: 0 }));
+    
+    toast.success(`${EXPENSE_TYPES.find(t => t.key === tipo)?.label} registrado correctamente`);
+  };
+
+  const calculateTotalForMonth = () => {
+    return generalExpenseItems
+      .filter(item => item.mes === selectedMes && item.año === selectedAño)
+      .reduce((sum, item) => sum + item.monto, 0);
+  };
+
+  const getHistoryForType = (tipo: string) => {
+    return generalExpenseItems
+      .filter(item => item.tipo === tipo && item.mes === selectedMes && item.año === selectedAño)
+      .sort((a, b) => new Date(b.registeredAt).getTime() - new Date(a.registeredAt).getTime());
   };
 
   const handleEventSelect = (eventId: string) => {
