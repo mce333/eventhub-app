@@ -172,27 +172,6 @@ export default function EventoDetalle() {
                 </div>
               </div>
 
-              {canEdit && !isEncargadoCompras && !isServicio && (
-                <div className="flex gap-2">
-                  {isEditing ? (
-                    <>
-                      <Button variant="outline" onClick={handleCancel}>
-                        <X className="h-4 w-4 mr-2" />
-                        Cancelar
-                      </Button>
-                      <Button onClick={handleSave} className="bg-gradient-primary">
-                        <Save className="h-4 w-4 mr-2" />
-                        Guardar
-                      </Button>
-                    </>
-                  ) : (
-                    <Button onClick={() => setIsEditing(true)} className="bg-gradient-primary">
-                      <Edit className="h-4 w-4 mr-2" />
-                      Editar
-                    </Button>
-                  )}
-                </div>
-              )}
             </div>
 
             {/* Service User Info Alert */}
