@@ -153,6 +153,7 @@ export function canAccessRoute(role: UserRole, route: string): boolean {
   const routePermissions: Record<string, keyof Permission> = {
     '/': 'canViewDashboard',
     '/eventos': 'canViewEvents',
+    '/finanzas': 'canViewFinancial',
     '/clientes': 'canViewClients',
     '/estadisticas': 'canViewStatistics',
     '/almacen': 'canViewWarehouse',
