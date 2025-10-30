@@ -974,6 +974,28 @@ export function CreateEventModal({ open, onClose, initialDate }: CreateEventModa
             </div>
 
             <div>
+              <Label>Presupuesto Asignado (S/)</Label>
+              <Input
+                type="number"
+                placeholder="10000.00"
+                step="0.01"
+                value={formData.contract?.presupuestoAsignado || ''}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    contract: {
+                      ...formData.contract!,
+                      presupuestoAsignado: parseFloat(e.target.value) || 0,
+                    },
+                  })
+                }
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                Presupuesto total para gastos del evento
+              </p>
+            </div>
+
+            <div>
               <Label>Foto del Contrato</Label>
               <div className="flex items-center gap-2">
                 <Input type="file" accept="image/*" />
