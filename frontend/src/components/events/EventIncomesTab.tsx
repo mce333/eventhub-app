@@ -316,15 +316,6 @@ export function EventIncomesTab({ event, onUpdate }: EventIncomesTabProps) {
           <CardContent className="space-y-4">
             {showAddHorasExtras && (
               <div className="space-y-4 p-4 border rounded-lg bg-muted/30">
-                <div>
-                  <Label>Descripción *</Label>
-                  <Textarea
-                    placeholder="Ej: Horas extras de DJ"
-                    value={newHorasExtras.descripcion}
-                    onChange={(e) => setNewHorasExtras({ ...newHorasExtras, descripcion: e.target.value })}
-                    rows={2}
-                  />
-                </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label>Número de Horas *</Label>
