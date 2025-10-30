@@ -498,20 +498,28 @@ export function CreateEventModal({ open, onClose, initialDate }: CreateEventModa
       ? formData.foodDetails.cantidadDePlatos * formData.foodDetails.precioPorPlato
       : 0;
     
+    const cervezaCost = formData.foodDetails?.incluyeCerveza
+      ? (formData.foodDetails.numeroCajasCerveza || 0) * (formData.foodDetails.costoPorCaja || 0)
+      : 0;
+    
+    const decorationTotalCost = decorationItems.reduce((sum, item) => sum + item.totalCost, 0);
     const decorationClientCost = decorationItems.reduce((sum, item) => sum + item.clientCost, 0);
     const decorationProfit = decorationItems.reduce((sum, item) => sum + item.profit, 0);
     
-    const staffCost = (formData.staff || []).reduce((sum, person) => sum + person.totalCost, 0);
+    const garantia = formData.contract?.garantia || 0;
     
-    const totalPrice = foodCost + decorationClientCost + staffCost;
+    // Precio total = comida + cerveza + decoración (cliente) + garantía
+    const totalPrice = foodCost + cervezaCost + decorationClientCost + garantia;
     const advancePayment = formData.contract?.pagoAdelantado || 0;
     const balance = totalPrice - advancePayment;
     
     return {
       foodCost,
+      cervezaCost,
+      decorationTotalCost,
       decorationClientCost,
       decorationProfit,
-      staffCost,
+      garantia,
       totalPrice,
       advancePayment,
       balance,
