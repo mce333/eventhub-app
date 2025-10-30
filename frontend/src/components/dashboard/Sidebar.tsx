@@ -1,4 +1,4 @@
-import { LayoutDashboard, Calendar, Users, Settings, TrendingUp, Package } from "lucide-react";
+import { LayoutDashboard, Calendar, Users, Settings, TrendingUp, Package, DollarSign } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
@@ -7,6 +7,7 @@ import { getUserRole, canAccessRoute } from "@/lib/permissions";
 const menuItems = [
   { title: "Dashboard", icon: LayoutDashboard, path: "/" },
   { title: "Eventos", icon: Calendar, path: "/eventos" },
+  { title: "Finanzas", icon: DollarSign, path: "/finanzas" },
   { title: "Clientes", icon: Users, path: "/clientes" },
   { title: "Estadísticas", icon: TrendingUp, path: "/estadisticas" },
   { title: "Almacén", icon: Package, path: "/almacen" },
