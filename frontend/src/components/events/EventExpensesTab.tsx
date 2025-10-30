@@ -96,15 +96,21 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
     setEditingExpenseValues(initialEditValues);
   }, [event.expenses, event.id]);
 
-  // Calculate suggested ingredients when dish changes
+  // Calculate suggested ingredients when dish changes OR when component mounts
   useEffect(() => {
     if (selectedDish && event.foodDetails?.cantidadDePlatos) {
+      console.log('🍽️ Calculando ingredientes para plato:', selectedDish);
       const calculation = calculateTotalIngredients(selectedDish, event.foodDetails.cantidadDePlatos);
       if (calculation) {
+        console.log('✅ Ingredientes calculados:', calculation.ingredients.length);
         setSuggestedIngredients(calculation.ingredients);
         // Guardar plato seleccionado en localStorage
         localStorage.setItem(`event_${event.id}_selected_dish`, selectedDish);
+      } else {
+        console.log('❌ No se encontraron ingredientes para el plato');
       }
+    } else {
+      console.log('⚠️ Falta selectedDish o cantidadDePlatos');
     }
   }, [selectedDish, event.foodDetails?.cantidadDePlatos, event.id]);
 
