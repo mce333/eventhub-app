@@ -235,9 +235,61 @@ export default function Finanzas() {
                 <h1 className="text-3xl font-bold text-foreground">Finanzas</h1>
                 <p className="text-muted-foreground">Gestión financiera y gastos generales</p>
               </div>
-              <Badge variant="outline" className="text-base px-4 py-2">
-                {selectedMes.charAt(0).toUpperCase() + selectedMes.slice(1)} {selectedAño}
-              </Badge>
+              
+              {/* Month/Year Selector Badge */}
+              <Popover open={monthSelectorOpen} onOpenChange={setMonthSelectorOpen}>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className="text-base px-4 py-2 h-auto">
+                    <Calendar className="h-4 w-4 mr-2" />
+                    {selectedMes.charAt(0).toUpperCase() + selectedMes.slice(1)} {selectedAño}
+                    <ChevronDown className="h-4 w-4 ml-2" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-80">
+                  <div className="space-y-3">
+                    <h4 className="font-semibold text-sm">Seleccionar Período</h4>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <Label className="text-xs">Mes</Label>
+                        <Select value={selectedMes} onValueChange={setSelectedMes}>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {MESES.map((mes) => (
+                              <SelectItem key={mes} value={mes}>
+                                {mes.charAt(0).toUpperCase() + mes.slice(1)}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label className="text-xs">Año</Label>
+                        <Select value={selectedAño.toString()} onValueChange={(val) => setSelectedAño(parseInt(val))}>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {years.map((year) => (
+                              <SelectItem key={year} value={year.toString()}>
+                                {year}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                    <Button 
+                      size="sm" 
+                      className="w-full" 
+                      onClick={() => setMonthSelectorOpen(false)}
+                    >
+                      Aplicar
+                    </Button>
+                  </div>
+                </PopoverContent>
+              </Popover>
             </div>
 
             {/* Summary Cards */}
