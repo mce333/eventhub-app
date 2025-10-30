@@ -11,6 +11,11 @@ export interface EventClient {
   email: string;
   phone: string;
   company?: string;
+  tipoCliente?: 'individual' | 'corporativo';
+  last_name?: string;
+  address?: string;
+  document_type?: string;
+  document_number?: string;
 }
 
 export interface FoodDetails {

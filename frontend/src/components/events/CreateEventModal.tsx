@@ -809,9 +809,30 @@ export function CreateEventModal({ open, onClose, initialDate }: CreateEventModa
         return (
           <div className="space-y-4">
             <div>
-              <Label>Nombre del Cliente *</Label>
+              <Label>Tipo de Cliente *</Label>
+              <Select
+                value={formData.client?.tipoCliente || 'individual'}
+                onValueChange={(value) =>
+                  setFormData({
+                    ...formData,
+                    client: { ...formData.client!, tipoCliente: value as 'individual' | 'corporativo' },
+                  })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecciona tipo" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="individual">Individual</SelectItem>
+                  <SelectItem value="corporativo">Corporativo</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label>{formData.client?.tipoCliente === 'corporativo' ? 'Nombre de la Empresa *' : 'Nombre del Cliente *'}</Label>
               <Input
-                placeholder="Juan Pérez"
+                placeholder={formData.client?.tipoCliente === 'corporativo' ? 'Empresa XYZ' : 'Juan Pérez'}
                 value={formData.client?.name || ''}
                 onChange={(e) =>
                   setFormData({

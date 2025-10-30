@@ -24,7 +24,11 @@ export default function Clientes() {
     
     storedEvents.forEach((event: Event) => {
       const clientKey = event.client.email || event.client.phone;
-      const isCorporativo = event.client.document_type === 'RUC' || event.contract?.tipoContrato === 'corporativo';
+      // Usar tipoCliente del cliente, o inferir por document_type o tipoContrato
+      const isCorporativo = 
+        event.client.tipoCliente === 'corporativo' ||
+        event.client.document_type === 'RUC' || 
+        event.contract?.tipoContrato === 'corporativo';
       
       if (uniqueClients.has(clientKey)) {
         const existing = uniqueClients.get(clientKey)!;

@@ -262,11 +262,10 @@ export default function EventoDetalle() {
 
             {/* Tabs */}
             <Tabs defaultValue={defaultTab} className="w-full">
-              <TabsList className={isEncargadoCompras || isServicio ? "grid w-full grid-cols-2" : "grid w-full grid-cols-7"}>
+              <TabsList className={isEncargadoCompras || isServicio ? "grid w-full grid-cols-2" : "grid w-full grid-cols-6"}>
                 {!isEncargadoCompras && !isServicio && (
                   <>
-                    <TabsTrigger value="info">Información</TabsTrigger>
-                    <TabsTrigger value="contract">Contrato</TabsTrigger>
+                    <TabsTrigger value="contract">Contrato e Información</TabsTrigger>
                     <TabsTrigger value="decoration">Decoración</TabsTrigger>
                     <TabsTrigger value="staff">Personal</TabsTrigger>
                   </>
@@ -282,16 +281,15 @@ export default function EventoDetalle() {
 
               {!isEncargadoCompras && !isServicio && (
                 <>
-                  <TabsContent value="info">
-                    <EventInfoTab
-                      event={isEditing ? editedEvent! : event}
-                      isEditing={isEditing}
-                      onUpdate={setEditedEvent}
-                    />
-                  </TabsContent>
-
                   <TabsContent value="contract">
-                    <EventContractTab event={event} />
+                    <div className="space-y-6">
+                      <EventInfoTab
+                        event={isEditing ? editedEvent! : event}
+                        isEditing={isEditing}
+                        onUpdate={setEditedEvent}
+                      />
+                      <EventContractTab event={event} />
+                    </div>
                   </TabsContent>
 
                   <TabsContent value="decoration">
