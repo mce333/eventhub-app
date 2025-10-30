@@ -338,16 +338,26 @@ export default function Finanzas() {
                     <div className="space-y-4">
                       {EXPENSE_TYPES.map((expenseType) => {
                         const history = getHistoryForType(expenseType.key);
+                        const isRegistered = hasRegisteredForMonth(expenseType.key);
+                        const totalAmount = getTotalForType(expenseType.key);
+                        
                         return (
-                          <Card key={expenseType.key} className="border-2">
+                          <Card key={expenseType.key} className={`border-2 ${isRegistered ? 'bg-green-500/5 border-green-500/30' : ''}`}>
                             <CardHeader className="pb-3">
-                              <CardTitle className="text-base flex items-center gap-2">
-                                <span>{expenseType.icon}</span>
-                                {expenseType.label}
-                              </CardTitle>
+                              <div className="flex items-center justify-between">
+                                <CardTitle className="text-base flex items-center gap-2">
+                                  <span>{expenseType.icon}</span>
+                                  {expenseType.label}
+                                </CardTitle>
+                                {isRegistered && (
+                                  <Badge variant="outline" className="bg-green-500/20 text-green-700 border-green-500/30 text-xs">
+                                    ✓ Registrado
+                                  </Badge>
+                                )}
+                              </div>
                             </CardHeader>
                             <CardContent>
-                              {canEdit && (
+                              {canEdit && !isRegistered && (
                                 <div className="flex gap-2 mb-4">
                                   <div className="flex-1">
                                     <Label htmlFor={expenseType.key} className="text-xs">Monto (S/)</Label>
@@ -375,15 +385,32 @@ export default function Finanzas() {
                                 </div>
                               )}
 
+                              {isRegistered && (
+                                <div className="mb-4 p-3 bg-background rounded-lg border">
+                                  <div className="flex items-center justify-between">
+                                    <span className="text-sm text-muted-foreground">Total Registrado:</span>
+                                    <span className="text-lg font-bold text-green-600">
+                                      S/ {totalAmount.toLocaleString()}
+                                    </span>
+                                  </div>
+                                </div>
+                              )}
+
                               {history.length > 0 && (
                                 <div className="space-y-2">
-                                  <p className="text-xs font-semibold text-muted-foreground">Historial:</p>
+                                  <p className="text-xs font-semibold text-muted-foreground">Historial de Registros:</p>
                                   {history.map((item) => (
                                     <div key={item.id} className="p-2 bg-muted/30 rounded border text-sm">
                                       <div className="flex items-center justify-between">
                                         <span className="font-semibold">S/ {item.monto.toLocaleString()}</span>
                                         <span className="text-xs text-muted-foreground">
-                                          {new Date(item.registeredAt).toLocaleDateString('es-ES')}
+                                          {new Date(item.registeredAt).toLocaleDateString('es-ES', {
+                                            day: '2-digit',
+                                            month: '2-digit',
+                                            year: 'numeric',
+                                            hour: '2-digit',
+                                            minute: '2-digit'
+                                          })}
                                         </span>
                                       </div>
                                       <p className="text-xs text-muted-foreground mt-1">
