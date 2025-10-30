@@ -477,9 +477,9 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
       {/* Predefined Expenses - SOLO para Encargado de Compras o Admin */}
       {predefinedExpenses.length > 0 && userRole !== 'servicio' && (
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Receipt className="h-5 w-5" />
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2 text-sm">
+              <Receipt className="h-4 w-4" />
               Gastos Predeterminados del Menú
             </CardTitle>
           </CardHeader>
