@@ -1,12 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Sidebar } from '@/components/dashboard/Sidebar';
-import { Header } from '@/components/dashboard/Header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { TrendingUp, TrendingDown, DollarSign, Users, UtensilsCrossed, Sparkles, PieChart } from 'lucide-react';
 import { Event } from '@/types/events';
 
-export default function Estadisticas() {
+export function EstadisticasContent() {
   const [events, setEvents] = useState<Event[]>([]);
   const [stats, setStats] = useState<any>(null);
 
