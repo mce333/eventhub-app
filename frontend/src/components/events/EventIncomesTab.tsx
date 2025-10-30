@@ -201,22 +201,6 @@ export function EventIncomesTab({ event, onUpdate }: EventIncomesTabProps) {
     }
   };
 
-    const storedEvents = JSON.parse(localStorage.getItem('demo_events') || '[]');
-    const index = storedEvents.findIndex((e: Event) => e.id === event.id);
-    
-    if (index !== -1) {
-      storedEvents[index].ingresos = [...(storedEvents[index].ingresos || []), income];
-      storedEvents[index].financial.totalIncome += income.monto;
-      storedEvents[index].financial.balance += income.monto;
-      localStorage.setItem('demo_events', JSON.stringify(storedEvents));
-      
-      toast.success('Ingreso registrado');
-      setShowAddForm(false);
-      setNewIncome({ tipo: 'kiosco', monto: 0, descripcion: '', horasExtras: 0, precioPorHora: 0, metodoPago: 'efectivo' });
-      onUpdate();
-    }
-  };
-
   const handleDevolucionGarantia = () => {
     if (!garantiaInfo) {
       toast.error('No hay garantía registrada');
