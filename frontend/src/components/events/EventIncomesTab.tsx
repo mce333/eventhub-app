@@ -248,63 +248,64 @@ export function EventIncomesTab({ event, onUpdate }: EventIncomesTabProps) {
     
     if (index !== -1) {
       const oldGarantia = storedEvents[index].contract?.garantia || 0;
-      
-      // Create audit log
-      if (!storedEvents[index].auditLogs) {
-        storedEvents[index].auditLogs = [];
-      }
-      storedEvents[index].auditLogs.push({
-        id: Date.now(),
-        timestamp: new Date().toISOString(),
-        userId: user?.id,
-        userName: `${user?.name} ${user?.last_name}`,
-        userRole: user?.role?.name || 'unknown',
-        action: 'garantia_removed',
-        description: `Garantía removida del evento (S/ ${oldGarantia})`,
-        metadata: { oldGarantia },
-      });
-      
-      // Remove garantia from contract
-      if (storedEvents[index].contract) {
-        storedEvents[index].contract.garantia = 0;
-      }
+  const handleDevolucionGarantia = () => {
+    if (!garantiaInfo) {
+      toast.error('No hay garantía registrada');
+      return;
+    }
+
+    const montoDevuelto = garantiaInfo - devolucionData.montoDescontado;
+
+    const devolucion: GarantiaDevolucion = {
+      id: Date.now(),
+      montoDevuelto,
+      montoDescontado: devolucionData.montoDescontado,
+      motivoDescuento: devolucionData.motivoDescuento,
+      fecha: new Date().toLocaleString('es-ES'),
+      registradoPor: `${user?.name} ${user?.last_name}`,
+    };
+
+    const storedEvents = JSON.parse(localStorage.getItem('demo_events') || '[]');
+    const index = storedEvents.findIndex((e: Event) => e.id === event.id);
+    
+    if (index !== -1) {
+      storedEvents[index].garantiaDevuelta = devolucion;
       localStorage.setItem('demo_events', JSON.stringify(storedEvents));
       
-      toast.success('Garantía removida del evento');
+      toast.success('Devolución de garantía registrada');
+      setShowGarantiaDevolucion(false);
+      setDevolucionData({ montoDescontado: 0, motivoDescuento: '' });
       onUpdate();
     }
   };
 
-  // Si es Coordinador, solo mostrar formulario de llenado
+  // Si es Coordinador
   if (isCoordinador) {
     return (
       <div className="space-y-6">
+        {/* Ingresos Kiosco */}
         <Card>
           <CardHeader>
-            <CardTitle>Registrar Ingreso Adicional</CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle>Ingresos Kiosco</CardTitle>
+              <Button
+                onClick={() => setShowAddKiosco(!showAddKiosco)}
+                size="sm"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                {showAddKiosco ? 'Cancelar' : 'Agregar'}
+              </Button>
+            </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div>
-              <Label>Tipo de Ingreso *</Label>
-              <select
-                className="w-full h-10 px-3 rounded-md border border-input bg-background"
-                value={newIncome.tipo}
-                onChange={(e) => setNewIncome({ ...newIncome, tipo: e.target.value as any })}
-              >
-                <option value="adelanto">Adelanto Adicional</option>
-                <option value="kiosco">Kiosco</option>
-                <option value="horas_extras">Horas Extras</option>
-              </select>
-            </div>
-
-            {newIncome.tipo === 'adelanto' && (
-              <>
+            {showAddKiosco && (
+              <div className="space-y-4 p-4 border rounded-lg bg-muted/30">
                 <div>
                   <Label>Descripción *</Label>
                   <Textarea
-                    placeholder="Ej: Segundo adelanto del cliente"
-                    value={newIncome.descripcion}
-                    onChange={(e) => setNewIncome({ ...newIncome, descripcion: e.target.value })}
+                    placeholder="Ej: Venta de 20 cervezas"
+                    value={newKiosco.descripcion}
+                    onChange={(e) => setNewKiosco({ ...newKiosco, descripcion: e.target.value })}
                     rows={2}
                   />
                 </div>
@@ -313,17 +314,148 @@ export function EventIncomesTab({ event, onUpdate }: EventIncomesTabProps) {
                   <Input
                     type="number"
                     step="0.01"
-                    value={newIncome.monto || ''}
-                    onChange={(e) => setNewIncome({ ...newIncome, monto: parseFloat(e.target.value) || 0 })}
+                    value={newKiosco.monto || ''}
+                    onChange={(e) => setNewKiosco({ ...newKiosco, monto: parseFloat(e.target.value) || 0 })}
                   />
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Saldo pendiente: S/ {((event.contract?.precioTotal || 0) - (event.financial?.advancePayment || 0) - ingresos.filter(i => i.tipo === 'adelanto').reduce((sum, i) => sum + i.monto, 0)).toFixed(2)}
-                  </p>
                 </div>
-              </>
+                <Button onClick={handleAddKiosco} className="w-full bg-gradient-primary">
+                  Registrar Ingreso
+                </Button>
+              </div>
             )}
 
-            {newIncome.tipo === 'kiosco' && (
+            {/* Lista de Kiosco */}
+            {ingresos.filter(i => i.tipo === 'kiosco').length > 0 ? (
+              <div className="space-y-3">
+                {ingresos.filter(i => i.tipo === 'kiosco').map((income) => (
+                  <div key={income.id} className="p-4 border rounded-lg bg-green-500/5">
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex-1">
+                        <p className="text-sm text-muted-foreground">{income.descripcion}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-lg font-bold text-green-600">S/ {income.monto.toLocaleString()}</p>
+                      </div>
+                    </div>
+                    <div className="text-xs text-muted-foreground pt-2 border-t">
+                      <p>Registrado por: {income.registradoPor} ({income.registradoRol})</p>
+                      <p>{income.fecha}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-center text-muted-foreground py-6">No hay ingresos de kiosco registrados</p>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Horas Extras */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle>Horas Extras</CardTitle>
+              <Button
+                onClick={() => setShowAddHorasExtras(!showAddHorasExtras)}
+                size="sm"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                {showAddHorasExtras ? 'Cancelar' : 'Agregar'}
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {showAddHorasExtras && (
+              <div className="space-y-4 p-4 border rounded-lg bg-muted/30">
+                <div>
+                  <Label>Descripción *</Label>
+                  <Textarea
+                    placeholder="Ej: Horas extras de DJ"
+                    value={newHorasExtras.descripcion}
+                    onChange={(e) => setNewHorasExtras({ ...newHorasExtras, descripcion: e.target.value })}
+                    rows={2}
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label>Número de Horas *</Label>
+                    <Input
+                      type="number"
+                      value={newHorasExtras.horasExtras || ''}
+                      onChange={(e) => setNewHorasExtras({ ...newHorasExtras, horasExtras: parseInt(e.target.value) || 0 })}
+                    />
+                  </div>
+                  <div>
+                    <Label>Precio por Hora (S/) *</Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      value={newHorasExtras.precioPorHora || ''}
+                      onChange={(e) => setNewHorasExtras({ ...newHorasExtras, precioPorHora: parseFloat(e.target.value) || 0 })}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label>Método de Pago *</Label>
+                  <select
+                    className="w-full h-10 px-3 rounded-md border border-input bg-background"
+                    value={newHorasExtras.metodoPago}
+                    onChange={(e) => setNewHorasExtras({ ...newHorasExtras, metodoPago: e.target.value })}
+                  >
+                    <option value="efectivo">Efectivo</option>
+                    <option value="tarjeta">Tarjeta</option>
+                    <option value="transferencia">Transferencia</option>
+                    <option value="yape">Yape/Plin</option>
+                  </select>
+                </div>
+                {newHorasExtras.horasExtras > 0 && newHorasExtras.precioPorHora > 0 && (
+                  <div className="p-3 bg-primary/10 rounded-lg">
+                    <p className="text-sm font-medium">Total a Registrar:</p>
+                    <p className="text-2xl font-bold text-primary">
+                      S/ {(newHorasExtras.horasExtras * newHorasExtras.precioPorHora).toFixed(2)}
+                    </p>
+                  </div>
+                )}
+                <Button onClick={handleAddHorasExtras} className="w-full bg-gradient-primary">
+                  Registrar Horas Extras
+                </Button>
+              </div>
+            )}
+
+            {/* Lista de Horas Extras */}
+            {ingresos.filter(i => i.tipo === 'horas_extras').length > 0 ? (
+              <div className="space-y-3">
+                {ingresos.filter(i => i.tipo === 'horas_extras').map((income) => (
+                  <div key={income.id} className="p-4 border rounded-lg bg-green-500/5">
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex-1">
+                        <p className="text-sm text-muted-foreground">{income.descripcion}</p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {income.horasExtras}h × S/ {income.precioPorHora} ({income.metodoPago})
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-lg font-bold text-green-600">S/ {income.monto.toLocaleString()}</p>
+                      </div>
+                    </div>
+                    <div className="text-xs text-muted-foreground pt-2 border-t">
+                      <p>Registrado por: {income.registradoPor} ({income.registradoRol})</p>
+                      <p>{income.fecha}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-center text-muted-foreground py-6">No hay horas extras registradas</p>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Vista completa para Admin
+  return (
               <>
                 <div>
                   <Label>Descripción *</Label>
