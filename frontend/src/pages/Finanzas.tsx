@@ -180,45 +180,6 @@ export default function Finanzas() {
     }
   };
 
-  const calculateTotalGeneralExpenses = () => {
-    return (
-      currentGeneralExpense.luz +
-      currentGeneralExpense.personalFijo +
-      currentGeneralExpense.agua +
-      currentGeneralExpense.internet +
-      currentGeneralExpense.vigilante +
-      currentGeneralExpense.alcabala
-    );
-  };
-
-  const handleSaveGeneralExpenses = () => {
-    const existingIndex = generalExpenses.findIndex(
-      (e) => e.mes === selectedMes && e.año === selectedAño
-    );
-
-    const expenseToSave: GeneralExpense = {
-      id: existingIndex !== -1 ? generalExpenses[existingIndex].id : Date.now(),
-      ...currentGeneralExpense,
-      mes: selectedMes,
-      año: selectedAño,
-      registeredBy: `${user?.name} ${user?.last_name}`,
-      registeredAt: new Date().toISOString(),
-    };
-
-    let updatedExpenses;
-    if (existingIndex !== -1) {
-      updatedExpenses = [...generalExpenses];
-      updatedExpenses[existingIndex] = expenseToSave;
-    } else {
-      updatedExpenses = [...generalExpenses, expenseToSave];
-    }
-
-    setGeneralExpenses(updatedExpenses);
-    localStorage.setItem('general_expenses', JSON.stringify(updatedExpenses));
-    setIsEditingGeneral(false);
-    toast.success('Gastos generales guardados correctamente');
-  };
-
   const handleAddBalance = () => {
     if (!newBalance.eventName || newBalance.eventId === 0) {
       toast.error('Por favor selecciona un evento');
@@ -250,11 +211,7 @@ export default function Finanzas() {
     toast.success('Balance registrado correctamente');
   };
 
-  const totalExpensesAllTime = generalExpenses.reduce(
-    (sum, exp) => sum + exp.luz + exp.personalFijo + exp.agua + exp.internet + exp.vigilante + exp.alcabala,
-    0
-  );
-
+  const totalExpensesAllTime = generalExpenseItems.reduce((sum, item) => sum + item.monto, 0);
   const totalBalanceDifference = accountBalances.reduce((sum, bal) => sum + bal.diferencia, 0);
 
   // Generate years for selector (current year and 2 years back/forward)
