@@ -39,6 +39,8 @@ export interface EventContract {
   precioTotal: number;
   pagoAdelantado: number;
   saldoPendiente: number;
+  garantia?: number;
+  presupuestoAsignado?: number;
   contratoFoto?: string;
   recibos: string[]; // URLs de recibos
 }
