@@ -303,7 +303,7 @@ export default function Finanzas() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-2xl font-bold text-destructive">
-                    S/ {calculateTotalGeneralExpenses().toLocaleString()}
+                    S/ {calculateTotalForMonth().toLocaleString()}
                   </p>
                 </CardContent>
               </Card>
