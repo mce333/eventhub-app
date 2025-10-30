@@ -480,17 +480,47 @@ export function EventIncomesTab({ event, onUpdate }: EventIncomesTabProps) {
             <CardTitle className="text-base">Adelantos</CardTitle>
             {canEdit && (
               <Button
-                onClick={() => setShowAddForm(!showAddForm)}
+                onClick={() => setShowAddAdelanto(!showAddAdelanto)}
                 size="sm"
                 variant="outline"
               >
                 <Plus className="h-4 w-4 mr-2" />
-                {showAddForm ? 'Cancelar' : 'Agregar Adelanto'}
+                {showAddAdelanto ? 'Cancelar' : 'Agregar Adelanto'}
               </Button>
             )}
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
+          {/* Form to Add Adelanto */}
+          {showAddAdelanto && (
+            <div className="space-y-3 p-4 border rounded-lg bg-muted/30">
+              <div>
+                <Label>Descripción *</Label>
+                <Textarea
+                  placeholder="Ej: Segundo adelanto del cliente"
+                  value={newAdelanto.descripcion}
+                  onChange={(e) => setNewAdelanto({ ...newAdelanto, descripcion: e.target.value })}
+                  rows={2}
+                />
+              </div>
+              <div>
+                <Label>Monto (S/) *</Label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  value={newAdelanto.monto || ''}
+                  onChange={(e) => setNewAdelanto({ ...newAdelanto, monto: parseFloat(e.target.value) || 0 })}
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Saldo pendiente: S/ {((event.contract?.precioTotal || 0) - (event.financial?.advancePayment || 0) - ingresos.filter(i => i.tipo === 'adelanto').reduce((sum, i) => sum + i.monto, 0)).toFixed(2)}
+                </p>
+              </div>
+              <Button onClick={handleAddAdelanto} className="w-full bg-gradient-primary">
+                Registrar Adelanto
+              </Button>
+            </div>
+          )}
+          
           {/* Adelanto Inicial */}
           <div className="flex items-center justify-between p-4 bg-green-500/10 rounded-lg">
             <div>
