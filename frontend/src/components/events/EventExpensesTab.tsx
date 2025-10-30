@@ -381,10 +381,10 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
       {/* Ingredient Control System - SOLO para Encargado de Compras o Admin */}
       {event.foodDetails?.cantidadDePlatos && canEdit && userRole !== 'servicio' && (
         <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
-          <CardHeader className="pb-2">
+          <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-sm font-medium flex items-center gap-2">
-                <ChefHat className="h-4 w-4" />
+              <CardTitle className="text-base font-medium flex items-center gap-2">
+                <ChefHat className="h-5 w-5" />
                 Guía de Compras
               </CardTitle>
               {selectedDish && suggestedIngredients.length > 0 && (
@@ -392,26 +392,26 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
                   variant="ghost"
                   size="sm"
                   onClick={() => setIsGuideCollapsed(!isGuideCollapsed)}
-                  className="h-7 px-2 text-xs"
+                  className="h-8 px-3"
                 >
                   {isGuideCollapsed ? (
                     <>
-                      <ChevronDown className="h-3 w-3 mr-1" />
-                      Expandir
+                      <ChevronDown className="h-4 w-4 mr-1" />
+                      Expandir Lista
                     </>
                   ) : (
                     <>
-                      <ChevronUp className="h-3 w-3 mr-1" />
-                      Minimizar
+                      <ChevronUp className="h-4 w-4 mr-1" />
+                      Minimizar Lista
                     </>
                   )}
                 </Button>
               )}
             </div>
           </CardHeader>
-          <CardContent className="space-y-2">
+          <CardContent className="space-y-3">
             <div>
-              <Label className="text-xs">Plato del Menú</Label>
+              <Label className="text-sm">Seleccionar Plato del Menú</Label>
               <Select
                 value={selectedDish}
                 onValueChange={(value) => {
@@ -420,7 +420,7 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
                 }}
                 disabled={!!selectedDish}
               >
-                <SelectTrigger className={`h-8 text-sm ${selectedDish ? 'bg-muted' : ''}`}>
+                <SelectTrigger className={`${selectedDish ? 'bg-muted' : ''}`}>
                   <SelectValue placeholder="Selecciona el plato principal" />
                 </SelectTrigger>
                 <SelectContent>
@@ -433,42 +433,58 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
               </Select>
               {event.foodDetails?.tipoDePlato && (
                 <p className="text-xs text-muted-foreground mt-1">
-                  Plato del evento: {event.foodDetails.tipoDePlato}
+                  💡 Plato del evento: "{event.foodDetails.tipoDePlato}"
                 </p>
               )}
             </div>
 
             {selectedDish && suggestedIngredients.length > 0 && !isGuideCollapsed && (
-              <div className="mt-2">
-                <div className="flex items-center justify-between mb-1">
-                  <p className="text-xs font-medium">
-                    Insumos para {event.foodDetails.cantidadDePlatos} porciones:
+              <div className="mt-3">
+                <div className="flex items-center justify-between mb-3">
+                  <p className="text-sm font-medium">
+                    Insumos sugeridos para {event.foodDetails.cantidadDePlatos} porciones:
                   </p>
-                  <Badge variant="outline" className="bg-primary/10 text-xs h-5">
-                    Guía
+                  <Badge variant="outline" className="bg-primary/10">
+                    Guía Automática
                   </Badge>
                 </div>
-                <div className="max-h-48 overflow-y-auto space-y-1">
+                <div className="max-h-60 overflow-y-auto space-y-2 border rounded-lg p-2 bg-background/50">
                   {suggestedIngredients.map((ingredient, idx) => (
                     <div
                       key={idx}
-                      className="flex items-center justify-between p-1.5 bg-background rounded border text-xs"
+                      className="flex items-center justify-between p-2 bg-background rounded border"
                     >
                       <div className="flex-1">
-                        <p className="font-medium text-xs">{ingredient.name}</p>
-                        <p className="text-[10px] text-muted-foreground">
-                          {ingredient.totalQuantity.toFixed(2)} {ingredient.unit}
+                        <p className="font-medium text-sm">{ingredient.name}</p>
+                        <p className="text-xs text-muted-foreground">
+                          Cantidad: {ingredient.totalQuantity.toFixed(2)} {ingredient.unit}
                         </p>
                       </div>
                       <div className="text-right">
-                        <p className="font-semibold text-primary text-xs">
+                        <p className="font-semibold text-primary">
                           S/ {ingredient.totalCost.toFixed(2)}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          S/ {ingredient.estimatedCost.toFixed(2)}/{ingredient.unit}
                         </p>
                       </div>
                     </div>
                   ))}
                 </div>
+                <Alert className="mt-3">
+                  <AlertDescription className="text-xs">
+                    💡 <strong>Tip:</strong> Esta guía se basa en el plato seleccionado. Usa estas cantidades como referencia para tus compras.
+                  </AlertDescription>
+                </Alert>
               </div>
+            )}
+            
+            {selectedDish && suggestedIngredients.length === 0 && (
+              <Alert>
+                <AlertDescription className="text-sm">
+                  ⚠️ No se encontraron ingredientes para este plato. Verifica la configuración.
+                </AlertDescription>
+              </Alert>
             )}
           </CardContent>
         </Card>
