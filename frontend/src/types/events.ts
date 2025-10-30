@@ -23,6 +23,8 @@ export interface FoodDetails {
   cantidadDePlatos: number;
   precioPorPlato: number;
   incluyeCerveza: boolean;
+  numeroCajasCerveza?: number;
+  costoPorCaja?: number;
   tipoDePago: PaymentType;
 }
 
