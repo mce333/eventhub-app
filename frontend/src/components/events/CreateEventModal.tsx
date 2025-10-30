@@ -403,6 +403,16 @@ export function CreateEventModal({ open, onClose, initialDate }: CreateEventModa
     });
   };
 
+  const saveStaffMember = (index: number) => {
+    const staffMember = formData.staff?.[index];
+    if (!staffMember?.name || !staffMember?.roleId) {
+      toast.error('Por favor completa el nombre y rol del personal');
+      return;
+    }
+    setSavedStaffIndexes(prev => new Set([...prev, index]));
+    toast.success('Personal registrado correctamente');
+  };
+
   const removeStaff = (index: number) => {
     const staffMember = formData.staff?.[index];
     if (staffMember?.userId) {
