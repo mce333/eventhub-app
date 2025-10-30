@@ -64,9 +64,6 @@ export function EventInfoTab({ event, isEditing, onUpdate }: EventInfoTabProps) 
               rows={4}
             />
           </div>
-              rows={4}
-            />
-          </div>
         </CardContent>
       </Card>
 
