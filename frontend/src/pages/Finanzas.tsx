@@ -148,6 +148,18 @@ export default function Finanzas() {
       .sort((a, b) => new Date(b.registeredAt).getTime() - new Date(a.registeredAt).getTime());
   };
 
+  const hasRegisteredForMonth = (tipo: string) => {
+    return generalExpenseItems.some(
+      item => item.tipo === tipo && item.mes === selectedMes && item.año === selectedAño
+    );
+  };
+
+  const getTotalForType = (tipo: string) => {
+    return generalExpenseItems
+      .filter(item => item.tipo === tipo && item.mes === selectedMes && item.año === selectedAño)
+      .reduce((sum, item) => sum + item.monto, 0);
+  };
+
   const handleEventSelect = (eventId: string) => {
     const selectedEvent = availableEvents.find(e => e.id === parseInt(eventId));
     if (selectedEvent) {
