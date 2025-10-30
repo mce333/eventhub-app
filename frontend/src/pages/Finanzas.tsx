@@ -635,6 +635,21 @@ export default function Finanzas() {
                   </CardContent>
                 </Card>
               </TabsContent>
+
+              {/* Estadísticas Tab */}
+              <TabsContent value="estadisticas" className="space-y-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <PieChart className="h-5 w-5" />
+                      Estadísticas y Análisis
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <EstadisticasContent />
+                  </CardContent>
+                </Card>
+              </TabsContent>
             </Tabs>
           </div>
         </main>
