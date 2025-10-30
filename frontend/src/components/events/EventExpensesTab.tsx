@@ -384,22 +384,98 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
         </Alert>
       )}
 
-      {/* Summary Card */}
-      <Card className="bg-gradient-to-br from-destructive/10 to-destructive/5 border-destructive/20">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-            <TrendingUp className="h-4 w-4" />
-            Total Gastos Registrados
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-3xl font-bold text-destructive">S/ {totalExpenses.toLocaleString()}</p>
-          <div className="mt-2 text-sm text-muted-foreground">
-            <p>{predefinedExpenses.length} gastos predeterminados</p>
-            <p>{additionalExpenses.length} gastos adicionales</p>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Summary Cards - Gastos Totales y Caja Chica */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Total Gastos del Evento */}
+        <Card className="bg-gradient-to-br from-destructive/10 to-destructive/5 border-destructive/20">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+              <TrendingUp className="h-4 w-4" />
+              Total Gastos del Evento
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold text-destructive">
+              S/ {(
+                totalExpenses + 
+                (event.decoration?.reduce((sum, d) => sum + (d.totalPrice || 0), 0) || 0) +
+                (event.staff?.reduce((sum, s) => sum + (s.totalCost || 0), 0) || 0) +
+                (event.foodDetails ? (event.foodDetails.cantidadDePlatos * event.foodDetails.precioPorPlato * 0.7) : 0)
+              ).toLocaleString()}
+            </p>
+            <div className="mt-3 space-y-1 text-xs text-muted-foreground">
+              <div className="flex justify-between">
+                <span>Comida (Insumos):</span>
+                <span className="font-medium">S/ {event.foodDetails ? (event.foodDetails.cantidadDePlatos * event.foodDetails.precioPorPlato * 0.7).toFixed(2) : '0.00'}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Decoración:</span>
+                <span className="font-medium">S/ {(event.decoration?.reduce((sum, d) => sum + (d.totalPrice || 0), 0) || 0).toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Personal:</span>
+                <span className="font-medium">S/ {(event.staff?.reduce((sum, s) => sum + (s.totalCost || 0), 0) || 0).toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Gastos Adicionales:</span>
+                <span className="font-medium">S/ {totalExpenses.toLocaleString()}</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Caja Chica del Evento */}
+        <Card className="bg-gradient-to-br from-blue-500/10 to-blue-500/5 border-blue-500/20">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+              <Wallet className="h-4 w-4" />
+              Caja Chica del Evento
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold text-blue-600">
+              S/ {(event.contract?.presupuestoAsignado || 0).toLocaleString()}
+            </p>
+            <div className="mt-3 pt-3 border-t border-blue-500/20">
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Presupuesto:</span>
+                <span className="font-medium">S/ {(event.contract?.presupuestoAsignado || 0).toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Gastado:</span>
+                <span className="font-medium text-destructive">
+                  - S/ {(
+                    totalExpenses + 
+                    (event.decoration?.reduce((sum, d) => sum + (d.totalPrice || 0), 0) || 0) +
+                    (event.staff?.reduce((sum, s) => sum + (s.totalCost || 0), 0) || 0) +
+                    (event.foodDetails ? (event.foodDetails.cantidadDePlatos * event.foodDetails.precioPorPlato * 0.7) : 0)
+                  ).toLocaleString()}
+                </span>
+              </div>
+              <div className="flex justify-between text-base font-bold mt-2 pt-2 border-t">
+                <span>Sobrante:</span>
+                <span className={
+                  ((event.contract?.presupuestoAsignado || 0) - (
+                    totalExpenses + 
+                    (event.decoration?.reduce((sum, d) => sum + (d.totalPrice || 0), 0) || 0) +
+                    (event.staff?.reduce((sum, s) => sum + (s.totalCost || 0), 0) || 0) +
+                    (event.foodDetails ? (event.foodDetails.cantidadDePlatos * event.foodDetails.precioPorPlato * 0.7) : 0)
+                  )) >= 0 ? 'text-success' : 'text-destructive'
+                }>
+                  S/ {(
+                    (event.contract?.presupuestoAsignado || 0) - (
+                      totalExpenses + 
+                      (event.decoration?.reduce((sum, d) => sum + (d.totalPrice || 0), 0) || 0) +
+                      (event.staff?.reduce((sum, s) => sum + (s.totalCost || 0), 0) || 0) +
+                      (event.foodDetails ? (event.foodDetails.cantidadDePlatos * event.foodDetails.precioPorPlato * 0.7) : 0)
+                    )
+                  ).toLocaleString()}
+                </span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
       {/* Ingredient Control System - SOLO para Encargado de Compras o Admin */}
       {event.foodDetails?.cantidadDePlatos && canEdit && userRole !== 'servicio' && (
