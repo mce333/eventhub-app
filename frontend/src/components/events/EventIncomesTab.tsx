@@ -163,10 +163,6 @@ export function EventIncomesTab({ event, onUpdate }: EventIncomesTabProps) {
   };
 
   const handleAddHorasExtras = () => {
-    if (!newHorasExtras.descripcion) {
-      toast.error('La descripción es requerida');
-      return;
-    }
     if (newHorasExtras.horasExtras <= 0 || newHorasExtras.precioPorHora <= 0) {
       toast.error('Completa horas y precio por hora');
       return;
@@ -176,7 +172,7 @@ export function EventIncomesTab({ event, onUpdate }: EventIncomesTabProps) {
       id: Date.now(),
       tipo: 'horas_extras',
       monto: newHorasExtras.horasExtras * newHorasExtras.precioPorHora,
-      descripcion: newHorasExtras.descripcion,
+      descripcion: `${newHorasExtras.horasExtras} horas extras a S/ ${newHorasExtras.precioPorHora}/h`,
       horasExtras: newHorasExtras.horasExtras,
       precioPorHora: newHorasExtras.precioPorHora,
       metodoPago: newHorasExtras.metodoPago,
