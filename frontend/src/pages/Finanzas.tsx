@@ -14,11 +14,26 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { DollarSign, TrendingUp, TrendingDown, Wallet, Save, Edit, X, Plus, Calendar } from 'lucide-react';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popup';
+import { DollarSign, TrendingUp, TrendingDown, Wallet, Save, X, Plus, Calendar, ChevronDown } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 import { getUserRole } from '@/lib/permissions';
 import { Event } from '@/types/events';
+
+interface GeneralExpenseItem {
+  id: number;
+  tipo: 'luz' | 'personalFijo' | 'agua' | 'internet' | 'vigilante' | 'alcabala';
+  monto: number;
+  mes: string;
+  año: number;
+  registeredBy: string;
+  registeredAt: string;
+}
 
 interface GeneralExpense {
   id: number;
