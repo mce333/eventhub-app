@@ -1304,17 +1304,32 @@ export function CreateEventModal({ open, onClose, initialDate }: CreateEventModa
                                 )}
                               </div>
                               
-                              {/* Botón eliminar */}
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => removeStaff(index)}
-                                className="shrink-0"
-                              >
-                                <Trash2 className="h-4 w-4 text-destructive" />
-                              </Button>
+                              {/* Botones de acción */}
+                              <div className="flex flex-col gap-2">
+                                {!isSaved && (
+                                  <Button
+                                    type="button"
+                                    size="sm"
+                                    onClick={() => saveStaffMember(index)}
+                                    className="bg-gradient-primary"
+                                  >
+                                    <Save className="h-4 w-4 mr-2" />
+                                    Registrar
+                                  </Button>
+                                )}
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => removeStaff(index)}
+                                  className="shrink-0"
+                                >
+                                  <Trash2 className="h-4 w-4 text-destructive" />
+                                </Button>
+                              </div>
                             </div>
+                              </div>
+                            )}
                           </CardContent>
                         </Card>
                       );
