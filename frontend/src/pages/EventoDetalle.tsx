@@ -265,7 +265,7 @@ export default function EventoDetalle() {
               <TabsList className={isEncargadoCompras || isServicio ? "grid w-full grid-cols-2" : "grid w-full grid-cols-6"}>
                 {!isEncargadoCompras && !isServicio && (
                   <>
-                    <TabsTrigger value="contract">Contrato e Información</TabsTrigger>
+                    <TabsTrigger value="contract">Información del Contrato</TabsTrigger>
                     <TabsTrigger value="decoration">Decoración</TabsTrigger>
                     <TabsTrigger value="staff">Personal</TabsTrigger>
                   </>
