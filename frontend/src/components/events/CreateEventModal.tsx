@@ -17,7 +17,7 @@ import { Progress } from '@/components/ui/progress';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, ArrowRight, Upload, Plus, Trash2, CalendarIcon, Users } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Upload, Plus, Trash2, CalendarIcon, Users, Save } from 'lucide-react';
 import { toast } from 'sonner';
 import { CreateEventDTO, EventType, ServiceType, PaymentType, EventStaff } from '@/types/events';
 import { useAuth } from '@/contexts/AuthContext';
