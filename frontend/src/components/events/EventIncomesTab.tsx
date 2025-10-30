@@ -232,53 +232,6 @@ export function EventIncomesTab({ event, onUpdate }: EventIncomesTabProps) {
     }
   };
 
-  const handleRemoveGarantia = () => {
-    if (!window.confirm('¿Estás seguro de remover la garantía de este evento? Esta acción quedará registrada en la auditoría.')) {
-      return;
-    }
-
-    const storedEvents = JSON.parse(localStorage.getItem('demo_events') || '[]');
-    let index = storedEvents.findIndex((e: Event) => e.id === event.id);
-    
-    // If event not in localStorage, add it first
-    if (index === -1) {
-      storedEvents.push({ ...event });
-      index = storedEvents.length - 1;
-    }
-    
-    if (index !== -1) {
-      const oldGarantia = storedEvents[index].contract?.garantia || 0;
-  const handleDevolucionGarantia = () => {
-    if (!garantiaInfo) {
-      toast.error('No hay garantía registrada');
-      return;
-    }
-
-    const montoDevuelto = garantiaInfo - devolucionData.montoDescontado;
-
-    const devolucion: GarantiaDevolucion = {
-      id: Date.now(),
-      montoDevuelto,
-      montoDescontado: devolucionData.montoDescontado,
-      motivoDescuento: devolucionData.motivoDescuento,
-      fecha: new Date().toLocaleString('es-ES'),
-      registradoPor: `${user?.name} ${user?.last_name}`,
-    };
-
-    const storedEvents = JSON.parse(localStorage.getItem('demo_events') || '[]');
-    const index = storedEvents.findIndex((e: Event) => e.id === event.id);
-    
-    if (index !== -1) {
-      storedEvents[index].garantiaDevuelta = devolucion;
-      localStorage.setItem('demo_events', JSON.stringify(storedEvents));
-      
-      toast.success('Devolución de garantía registrada');
-      setShowGarantiaDevolucion(false);
-      setDevolucionData({ montoDescontado: 0, motivoDescuento: '' });
-      onUpdate();
-    }
-  };
-
   // Si es Coordinador
   if (isCoordinador) {
     return (
