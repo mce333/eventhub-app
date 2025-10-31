@@ -841,8 +841,8 @@ export function CreateEventModal({ open, onClose, initialDate }: CreateEventModa
                           const isSaved = savedBeverageIndexes.has(index);
                           
                           return (
-                          <Card key={bev.id} className={isSaved ? "border-green-500 bg-green-50" : "border-2"}>
-                            <CardContent className="pt-4 space-y-3">
+                          <Card key={bev.id} className={`border-2 ${isSaved ? 'bg-green-500/5 border-green-500/30' : ''}`}>
+                            <CardContent className={isSaved ? 'pt-3 pb-3' : 'pt-4 space-y-3'}>
                               {!isSaved ? (
                                 <div className="flex items-start justify-between gap-4">
                                   <div className="flex-1 space-y-3">
