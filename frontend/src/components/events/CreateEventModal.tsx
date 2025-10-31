@@ -1003,6 +1003,15 @@ export function CreateEventModal({ open, onClose, initialDate }: CreateEventModa
                                   {/* Cócteles */}
                                   {bev.tipo === 'coctel' && (
                                     <div className="space-y-3 p-3 bg-purple-500/5 rounded-lg border border-purple-500/20">
+                                      <div>
+                                        <Label className="text-xs">Cantidad (Cócteles)</Label>
+                                        <Input
+                                          type="number"
+                                          placeholder=""
+                                          value={bev.cantidad || ''}
+                                          onChange={(e) => updateBeverage(index, 'cantidad', parseInt(e.target.value) || 0)}
+                                        />
+                                      </div>
                                       <div className="grid grid-cols-2 gap-3">
                                         <div>
                                           <Label className="text-xs">Costo Cóctel (Local) S/</Label>
