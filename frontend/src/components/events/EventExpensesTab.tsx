@@ -159,7 +159,7 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
   // Calculate specific totals
   const comidaInsumosCost = predefinedExpenses.reduce((sum, e) => sum + e.amount, 0);
   const gastosAdicionalesCost = additionalExpenses.reduce((sum, e) => sum + e.amount, 0);
-  const decoracionCost = event.decoration?.reduce((sum, d) => sum + (d.totalPrice || 0), 0) || 0;
+  const decoracionCost = event.decoration?.reduce((sum, d) => sum + (d.providerCost || d.totalPrice || 0), 0) || 0;
   const personalCost = event.staff?.reduce((sum, s) => sum + (s.totalCost || 0), 0) || 0;
   const totalExpenses = comidaInsumosCost + gastosAdicionalesCost + decoracionCost + personalCost;
 
