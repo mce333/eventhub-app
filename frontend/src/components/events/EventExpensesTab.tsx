@@ -628,6 +628,123 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
               </Alert>
             )}
           </div>
+
+          {/* Comida (Insumos) */}
+          {predefinedExpenses.length > 0 && (
+            <div className="space-y-3 p-3 bg-background rounded-lg border mt-4">
+              <div className="flex items-center justify-between">
+                <Label className="text-sm font-medium">Comida (Insumos)</Label>
+                <div className="flex gap-2">
+                  {canEdit && (
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={() => setShowAddIngredient(true)}
+                      variant="outline"
+                      className="h-7 px-2"
+                    >
+                      <Plus className="h-3 w-3 mr-2" />
+                      Añadir
+                    </Button>
+                  )}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setIsInsumosSectionCollapsed(!isInsumosSectionCollapsed)}
+                    className="h-7 px-2"
+                  >
+                    {isInsumosSectionCollapsed ? (
+                      <>
+                        <ChevronDown className="h-3 w-3 mr-1" />
+                        Expandir
+                      </>
+                    ) : (
+                      <>
+                        <ChevronUp className="h-3 w-3 mr-1" />
+                        Minimizar
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </div>
+
+              {!isInsumosSectionCollapsed && (
+                <div className="space-y-2 mt-3">
+                  {predefinedExpenses.map((expense) => {
+                    const isRegistered = registeredExpenses[expense.id] || (expense as any).isRegistered;
+                    
+                    return (
+                      <div key={expense.id} className={`p-3 border rounded-lg ${isRegistered ? 'bg-green-500/5 border-green-500/30' : 'bg-primary/5'}`}>
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2">
+                              <h4 className="font-semibold text-sm">{expense.category}</h4>
+                              {isRegistered && (
+                                <Badge variant="outline" className="bg-green-500/20 text-green-700 border-green-500/30 text-xs">
+                                  ✓ Registrado
+                                </Badge>
+                              )}
+                            </div>
+                            <p className="text-xs text-muted-foreground">{expense.description}</p>
+                          </div>
+                          <p className="text-lg font-bold">S/ {(expense.amount || 0).toLocaleString()}</p>
+                        </div>
+                        
+                        {canEdit && !isRegistered && (
+                          <>
+                            <div className="grid grid-cols-3 gap-2 pt-2 border-t">
+                              <div>
+                                <Label className="text-xs">Cantidad</Label>
+                                <Input
+                                  key={`cantidad-${expense.id}`}
+                                  type="number"
+                                  value={getExpenseValue(expense, 'cantidad')}
+                                  onChange={(e) => handleExpenseInputChange(expense.id, 'cantidad', e.target.value)}
+                                  onBlur={() => handleExpenseInputBlur(expense.id, 'quantity')}
+                                  className="h-8 text-sm"
+                                  min="0"
+                                />
+                              </div>
+                              <div>
+                                <Label className="text-xs">Costo Unitario</Label>
+                                <Input
+                                  key={`costo-${expense.id}`}
+                                  type="number"
+                                  step="0.01"
+                                  value={getExpenseValue(expense, 'costoUnitario')}
+                                  onChange={(e) => handleExpenseInputChange(expense.id, 'costoUnitario', e.target.value)}
+                                  onBlur={() => handleExpenseInputBlur(expense.id, 'unitPrice')}
+                                  className="h-8 text-sm"
+                                  min="0"
+                                />
+                              </div>
+                              <div>
+                                <Label className="text-xs">Total</Label>
+                                <Input
+                                  value={`S/ ${(expense.amount || 0).toFixed(2)}`}
+                                  disabled
+                                  className="h-8 text-sm font-bold bg-muted"
+                                />
+                              </div>
+                            </div>
+                            <Button
+                              size="sm"
+                              onClick={() => handleRegisterExpense(expense.id)}
+                              className="w-full mt-2 bg-gradient-primary"
+                            >
+                              <Save className="h-4 w-4 mr-2" />
+                              Registrar
+                            </Button>
+                          </>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+
           </CardContent>
           )}
         </Card>
