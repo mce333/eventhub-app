@@ -28,6 +28,20 @@ export interface FoodDetails {
   tipoDePago: PaymentType;
 }
 
+export interface BeverageItem {
+  id: number;
+  tipo: 'gaseosa' | 'agua' | 'champan' | 'cerveza' | 'coctel';
+  litros?: number;
+  numeroCajas?: number;
+  modalidad?: 'cover' | 'compra_local';
+  costoPorCaja?: number;
+  costoCajaLocal?: number;
+  costoCajaCliente?: number;
+  costoCoctelLocal?: number;
+  costoCoctelCliente?: number;
+  utilidad?: number;
+}
+
 export interface RentalDetails {
   cantidadMesas: number;
   cantidadVasos: number;
