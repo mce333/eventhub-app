@@ -173,7 +173,7 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
       id: Date.now(),
       eventId: event.id,
       category: 'otros' as any,
-      description: newExpense.category, // Ahora category contiene la descripción
+      description: newExpense.category,
       cantidad: newExpense.quantity,
       costoUnitario: newExpense.unitPrice,
       amount: newExpense.amount,
@@ -186,7 +186,37 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
       isPredetermined: false,
     };
 
-    // Add audit log if admin/socio is editing
+    saveExpenseToEvent(expense);
+  };
+
+  const handleAddIngredient = () => {
+    if (!newExpense.category || newExpense.amount <= 0) {
+      toast.error('Por favor completa ingrediente y monto');
+      return;
+    }
+
+    const expense: EventExpense = {
+      id: Date.now(),
+      eventId: event.id,
+      category: 'otros' as any,
+      description: newExpense.category,
+      cantidad: newExpense.quantity,
+      costoUnitario: newExpense.unitPrice,
+      amount: newExpense.amount,
+      date: new Date().toISOString().split('T')[0],
+      registeredBy: user?.id || 0,
+      registeredByName: `${user?.name} ${user?.last_name}`,
+      registeredAt: new Date().toISOString(),
+      paymentMethod: newExpense.paymentMethod as any,
+      status: 'pending' as any,
+      isPredetermined: true, // Marcado como predeterminado (ingrediente)
+    };
+
+    saveExpenseToEvent(expense);
+    setShowAddIngredient(false);
+  };
+
+  const saveExpenseToEvent = (expense: EventExpense) => {
     const auditLog = isSuspicious ? {
       id: Date.now(),
       eventId: event.id,
