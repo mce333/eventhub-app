@@ -426,6 +426,39 @@ export function CreateEventModal({ open, onClose, initialDate }: CreateEventModa
     });
   };
 
+  const saveFoodSection = () => {
+    if (!formData.foodDetails?.tipoDePlato || !formData.foodDetails?.cantidadDePlatos || !formData.foodDetails?.precioPorPlato) {
+      toast.error('Por favor completa todos los campos de comida');
+      return;
+    }
+    setIsFoodSaved(true);
+    toast.success('Sección de comida guardada correctamente');
+  };
+
+  const saveBeveragesSection = () => {
+    // Validar que se hayan llenado los campos necesarios
+    if (formData.beverages && formData.beverages.length > 0) {
+      const allValid = formData.beverages.every(bev => {
+        if (bev.tipo === 'gaseosa' || bev.tipo === 'agua' || bev.tipo === 'champan') {
+          return bev.cantidad && bev.precioUnitario;
+        } else if (bev.tipo === 'cerveza') {
+          return bev.cantidad || bev.numeroCajas;
+        } else if (bev.tipo === 'coctel') {
+          return bev.cantidad;
+        }
+        return false;
+      });
+      
+      if (!allValid) {
+        toast.error('Por favor completa todos los campos de las bebidas');
+        return;
+      }
+    }
+    setAreBeveragesSaved(true);
+    toast.success('Sección de bebidas guardada correctamente');
+  };
+
+
   const updateStaff = (index: number, field: keyof EventStaff, value: string | number | boolean) => {
     const updated = [...(formData.staff || [])];
     updated[index] = {
