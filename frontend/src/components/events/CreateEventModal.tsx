@@ -1052,7 +1052,6 @@ export function CreateEventModal({ open, onClose, initialDate }: CreateEventModa
                                     size="sm"
                                     onClick={() => saveBeverage(index)}
                                   >
-                                    Registrar
                                   </Button>
                                 </div>
                               </div>
