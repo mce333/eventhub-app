@@ -101,6 +101,8 @@ export interface EventDecoration {
   unitPrice: number;
   totalPrice: number;
   supplier?: string;
+  providerCost?: number; // Costo con proveedor
+  profit?: number; // Utilidad
   estado: 'pendiente' | 'comprado' | 'instalado';
   notes?: string;
 }
