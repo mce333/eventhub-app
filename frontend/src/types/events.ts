@@ -30,10 +30,10 @@ export interface FoodDetails {
 
 export interface BeverageItem {
   id: number;
-  tipo: 'gaseosa' | 'agua' | 'champan' | 'cerveza' | 'coctel';
+  tipo: 'gaseosa' | 'agua' | 'champan' | 'vino' | 'cerveza' | 'coctel';
   litros?: number;
   cantidad?: number; // Cantidad de unidades/cajas/cocteles
-  precioUnitario?: number; // Precio por unidad para gaseosa/agua/champan
+  precioUnitario?: number; // Precio por unidad para gaseosa/agua/champan/vino
   numeroCajas?: number;
   modalidad?: 'cover' | 'compra_local';
   costoPorCaja?: number;
