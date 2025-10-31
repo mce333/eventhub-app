@@ -709,69 +709,112 @@ export function CreateEventModal({ open, onClose, initialDate }: CreateEventModa
                 </Card>
 
                 {/* Sección COMIDA */}
-                <Card>
+                <Card className={isFoodSaved ? 'border-green-500 bg-green-50' : ''}>
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-base">🍽️ Comida</CardTitle>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-base">🍽️ Comida</CardTitle>
+                      {isFoodSaved ? (
+                        <Badge className="bg-green-500">Guardado</Badge>
+                      ) : (
+                        <Button
+                          type="button"
+                          size="sm"
+                          onClick={saveFoodSection}
+                          className="ml-auto"
+                        >
+                          <Save className="h-4 w-4 mr-2" />
+                          Guardar
+                        </Button>
+                      )}
+                    </div>
                   </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div>
-                      <Label>Tipo de Plato *</Label>
-                      <Select
-                        value={formData.foodDetails?.tipoDePlato || ''}
-                        onValueChange={(value) => {
-                          const selectedItem = menuItems.find(item => item.name === value);
-                          setFormData({
-                            ...formData,
-                            foodDetails: {
-                              ...formData.foodDetails!,
-                              tipoDePlato: value,
-                              precioPorPlato: selectedItem?.price || 0,
-                            },
-                          });
-                        }}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecciona un plato" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {menuItems.map((item) => (
-                            <SelectItem key={item.id} value={item.name}>
-                              {item.name} - S/ {item.price}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
+                  {!isFoodSaved ? (
+                    <CardContent className="space-y-4">
+                      <div>
+                        <Label>Tipo de Plato *</Label>
+                        <Select
+                          value={formData.foodDetails?.tipoDePlato || ''}
+                          onValueChange={(value) => {
+                            const selectedItem = menuItems.find(item => item.name === value);
+                            setFormData({
+                              ...formData,
+                              foodDetails: {
+                                ...formData.foodDetails!,
+                                tipoDePlato: value,
+                                precioPorPlato: selectedItem?.price || 0,
+                              },
+                            });
+                          }}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecciona un plato" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {menuItems.map((item) => (
+                              <SelectItem key={item.id} value={item.name}>
+                                {item.name} - S/ {item.price}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
 
-                    <div>
-                      <Label>Cantidad de Platos *</Label>
-                      <Input
-                        type="number"
-                        placeholder="Número de platos"
-                        value={formData.foodDetails?.cantidadDePlatos || ''}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            foodDetails: {
-                              ...formData.foodDetails!,
-                              cantidadDePlatos: parseInt(e.target.value) || 0,
-                            },
-                          })
-                        }
-                      />
-                    </div>
+                      <div>
+                        <Label>Cantidad de Platos *</Label>
+                        <Input
+                          type="number"
+                          placeholder="Número de platos"
+                          value={formData.foodDetails?.cantidadDePlatos || ''}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              foodDetails: {
+                                ...formData.foodDetails!,
+                                cantidadDePlatos: parseInt(e.target.value) || 0,
+                              },
+                            })
+                          }
+                        />
+                      </div>
 
-                    <div>
-                      <Label>Precio por Plato *</Label>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        value={formData.foodDetails?.precioPorPlato || ''}
-                        disabled={!!formData.foodDetails?.tipoDePlato}
-                        className={formData.foodDetails?.tipoDePlato ? 'bg-muted' : ''}
-                      />
-                    </div>
-                  </CardContent>
+                      <div>
+                        <Label>Precio por Plato *</Label>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          value={formData.foodDetails?.precioPorPlato || ''}
+                          disabled={!!formData.foodDetails?.tipoDePlato}
+                          className={formData.foodDetails?.tipoDePlato ? 'bg-muted' : ''}
+                        />
+                      </div>
+                    </CardContent>
+                  ) : (
+                    <CardContent>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Tipo de Plato:</span>
+                          <span className="font-medium">{formData.foodDetails?.tipoDePlato}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Cantidad:</span>
+                          <span className="font-medium">{formData.foodDetails?.cantidadDePlatos}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Precio por Plato:</span>
+                          <span className="font-medium">S/ {formData.foodDetails?.precioPorPlato}</span>
+                        </div>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => setIsFoodSaved(false)}
+                          className="w-full mt-2"
+                        >
+                          Editar
+                        </Button>
+                      </div>
+                    </CardContent>
+                  )}
                 </Card>
 
                 {/* Sección BEBIDAS */}
