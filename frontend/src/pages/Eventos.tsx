@@ -63,6 +63,7 @@ export default function Eventos() {
   const [statusFilter, setStatusFilter] = useState<EventStatus | 'all'>('all');
   const [typeFilter, setTypeFilter] = useState<EventType | 'all'>('all');
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [activeTab, setActiveTab] = useState<'eventos' | 'reservas'>('eventos');
 
   const canCreate = hasPermission(userRole, 'canCreateEvent');
   const canEdit = hasPermission(userRole, 'canEditEvent');
@@ -79,22 +80,35 @@ export default function Eventos() {
     // Cargar SOLO eventos guardados en localStorage
     const storedEvents = JSON.parse(localStorage.getItem('demo_events') || '[]');
     
-    console.log('📊 Eventos cargados desde localStorage:', storedEvents.length);
+    // Ordenar por fecha de creación (más recientes primero)
+    const sortedEvents = storedEvents.sort((a: Event, b: Event) => {
+      const dateA = new Date(a.createdAt).getTime();
+      const dateB = new Date(b.createdAt).getTime();
+      return dateB - dateA; // Descendente
+    });
+    
+    console.log('📊 Eventos cargados desde localStorage:', sortedEvents.length);
     
     // Filter events based on user role
-    let filteredEvents = storedEvents;
+    let filteredEvents = sortedEvents;
     
     if (isServicio && user) {
       // Service users only see events they're assigned to
-      filteredEvents = storedEvents.filter(event => canViewEvent(user, event));
+      filteredEvents = sortedEvents.filter(event => canViewEvent(user, event));
       console.log('🔒 Eventos filtrados para servicio:', filteredEvents.length);
     }
     
     setEvents(filteredEvents);
   };
 
+  // Filter events by category (eventos or reservas)
+  const eventsByCategory = {
+    eventos: events.filter(e => (e.eventCategory || 'evento') === 'evento'),
+    reservas: events.filter(e => e.eventCategory === 'reserva'),
+  };
+
   // Filter events
-  const filteredEvents = events.filter((event) => {
+  const filteredEvents = eventsByCategory[activeTab].filter((event) => {
     const matchesSearch =
       event.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       event.location.toLowerCase().includes(searchTerm.toLowerCase());
