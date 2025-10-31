@@ -494,38 +494,62 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
         </Card>
       </div>
 
-      {/* Ingredient Control System - SOLO para Encargado de Compras o Admin */}
+      {/* Sección COMIDA - Guía de Compras + Comida (Insumos) */}
       {event.foodDetails?.cantidadDePlatos && canEdit && userRole !== 'servicio' && (
         <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base font-medium flex items-center gap-2">
                 <ChefHat className="h-5 w-5" />
-                Guía de Compras
+                Comida
               </CardTitle>
-              {selectedDish && suggestedIngredients.length > 0 && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setIsGuideCollapsed(!isGuideCollapsed)}
-                  className="h-8 px-3"
-                >
-                  {isGuideCollapsed ? (
-                    <>
-                      <ChevronDown className="h-4 w-4 mr-1" />
-                      Expandir Lista
-                    </>
-                  ) : (
-                    <>
-                      <ChevronUp className="h-4 w-4 mr-1" />
-                      Minimizar Lista
-                    </>
-                  )}
-                </Button>
-              )}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsComidaSectionCollapsed(!isComidaSectionCollapsed)}
+                className="h-8 px-3"
+              >
+                {isComidaSectionCollapsed ? (
+                  <>
+                    <ChevronDown className="h-4 w-4 mr-1" />
+                    Expandir
+                  </>
+                ) : (
+                  <>
+                    <ChevronUp className="h-4 w-4 mr-1" />
+                    Minimizar
+                  </>
+                )}
+              </Button>
             </div>
           </CardHeader>
-          <CardContent className="space-y-3">
+          {!isComidaSectionCollapsed && (
+          <CardContent className="space-y-4">
+            {/* Guía de Compras */}
+            <div className="space-y-3 p-3 bg-background rounded-lg border">
+              <div className="flex items-center justify-between">
+                <Label className="text-sm font-medium">Guía de Compras</Label>
+                {selectedDish && suggestedIngredients.length > 0 && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setIsGuideCollapsed(!isGuideCollapsed)}
+                    className="h-7 px-2"
+                  >
+                    {isGuideCollapsed ? (
+                      <>
+                        <ChevronDown className="h-3 w-3 mr-1" />
+                        Expandir Lista
+                      </>
+                    ) : (
+                      <>
+                        <ChevronUp className="h-3 w-3 mr-1" />
+                        Minimizar Lista
+                      </>
+                    )}
+                  </Button>
+                )}
+              </div>
             <div>
               <Label className="text-sm">Seleccionar Plato del Menú</Label>
               <Select
