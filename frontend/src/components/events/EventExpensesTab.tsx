@@ -575,10 +575,26 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
       {predefinedExpenses.length > 0 && userRole !== 'servicio' && (
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-base">
-              <Receipt className="h-5 w-5" />
-              Gastos Predeterminados del Menú
-            </CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Receipt className="h-5 w-5" />
+                Comida (Insumos)
+              </CardTitle>
+              {canEdit && (
+                <Button
+                  type="button"
+                  size="sm"
+                  onClick={() => {
+                    setNewExpense({ ...newExpense, category: 'otros' });
+                    setShowAddForm(true);
+                  }}
+                  variant="outline"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Añadir Ingrediente
+                </Button>
+              )}
+            </div>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
