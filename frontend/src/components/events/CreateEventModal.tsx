@@ -79,6 +79,8 @@ export function CreateEventModal({ open, onClose, initialDate }: CreateEventModa
   const [savedStaffIndexes, setSavedStaffIndexes] = useState<Set<number>>(new Set());
   const [isFoodSaved, setIsFoodSaved] = useState(false);
   const [areBeveragesSaved, setAreBeveragesSaved] = useState(false);
+  const [beerData, setBeerData] = useState<{modalidad: 'cover' | 'compra_local', cantidad: number, numeroCajas?: number, costoPorCaja?: number, costoCajaLocal?: number, costoCajaCliente?: number} | null>(null);
+  const [cocktailData, setCocktailData] = useState<{cantidad: number, costoCoctelLocal: number, costoCoctelCliente: number} | null>(null);
   const [formData, setFormData] = useState<Partial<CreateEventDTO>>({
     serviceType: 'con_comida',
     decoration: [],
