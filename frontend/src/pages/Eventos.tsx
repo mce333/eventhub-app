@@ -306,9 +306,21 @@ export default function Eventos() {
               </CardContent>
             </Card>
 
-            {/* Events Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredEvents.map((event) => (
+            {/* Tabs: Eventos / Reservas */}
+            <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'eventos' | 'reservas')} className="w-full">
+              <TabsList className="grid w-full max-w-md grid-cols-2">
+                <TabsTrigger value="eventos">
+                  Eventos ({eventsByCategory.eventos.length})
+                </TabsTrigger>
+                <TabsTrigger value="reservas">
+                  Reservas ({eventsByCategory.reservas.length})
+                </TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="eventos" className="mt-6">
+                {/* Events Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredEvents.map((event) => (
                 <Card
                   key={event.id}
                   className="bg-gradient-card border-border hover:border-primary/50 transition-all animate-fade-in-up cursor-pointer group"
