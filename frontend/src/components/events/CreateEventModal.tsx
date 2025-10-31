@@ -820,33 +820,61 @@ export function CreateEventModal({ open, onClose, initialDate }: CreateEventModa
                 </Card>
 
                 {/* Sección BEBIDAS */}
-                <Card>
+                <Card className={areBeveragesSaved ? 'border-green-500 bg-green-50' : ''}>
                   <CardHeader className="pb-3">
                     <div className="flex items-center justify-between">
                       <CardTitle className="text-base">🍺 Bebidas</CardTitle>
-                      <Button
-                        type="button"
-                        size="sm"
-                        onClick={() => {
-                          setFormData({
-                            ...formData,
-                            beverages: [
-                              ...(formData.beverages || []),
-                              {
-                                id: Date.now(),
-                                tipo: 'gaseosa',
-                              },
-                            ],
-                          });
-                        }}
-                        variant="outline"
-                      >
-                        <Plus className="h-4 w-4 mr-2" />
-                        Agregar Bebida
-                      </Button>
+                      <div className="flex items-center gap-2">
+                        {areBeveragesSaved && <Badge className="bg-green-500">Guardado</Badge>}
+                        {!areBeveragesSaved && (
+                          <>
+                            <Button
+                              type="button"
+                              size="sm"
+                              onClick={() => {
+                                setFormData({
+                                  ...formData,
+                                  beverages: [
+                                    ...(formData.beverages || []),
+                                    {
+                                      id: Date.now(),
+                                      tipo: 'gaseosa',
+                                    },
+                                  ],
+                                });
+                              }}
+                              variant="outline"
+                            >
+                              <Plus className="h-4 w-4 mr-2" />
+                              Agregar Bebida
+                            </Button>
+                            {formData.beverages && formData.beverages.length > 0 && (
+                              <Button
+                                type="button"
+                                size="sm"
+                                onClick={saveBeveragesSection}
+                              >
+                                <Save className="h-4 w-4 mr-2" />
+                                Guardar
+                              </Button>
+                            )}
+                          </>
+                        )}
+                        {areBeveragesSaved && (
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => setAreBeveragesSaved(false)}
+                          >
+                            Editar
+                          </Button>
+                        )}
+                      </div>
                     </div>
                   </CardHeader>
-                  <CardContent className="space-y-4">
+                  <CardContent className="space-y-4">{!areBeveragesSaved ? (
+                      <>
                     {/* Lista de bebidas agregadas */}
                     {formData.beverages && formData.beverages.length > 0 ? (
                       <div className="space-y-3">
