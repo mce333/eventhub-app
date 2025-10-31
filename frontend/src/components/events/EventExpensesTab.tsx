@@ -1019,6 +1019,84 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
           </CardContent>
         </Card>
       )}
+
+
+      {/* Sección BEBIDAS */}
+      {event.beverages && event.beverages.length > 0 && (
+        <Card className="bg-gradient-to-br from-blue-500/5 to-blue-500/10 border-blue-500/20">
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-base font-medium flex items-center gap-2">
+                <Receipt className="h-5 w-5" />
+                Bebidas
+              </CardTitle>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsBebidasSectionCollapsed(!isBebidasSectionCollapsed)}
+                className="h-8 px-3"
+              >
+                {isBebidasSectionCollapsed ? (
+                  <>
+                    <ChevronDown className="h-4 w-4 mr-1" />
+                    Expandir
+                  </>
+                ) : (
+                  <>
+                    <ChevronUp className="h-4 w-4 mr-1" />
+                    Minimizar
+                  </>
+                )}
+              </Button>
+            </div>
+          </CardHeader>
+          {!isBebidasSectionCollapsed && (
+          <CardContent>
+            <div className="space-y-2">
+              {event.beverages.map((bev, idx) => (
+                <div key={idx} className="p-3 border rounded-lg bg-blue-500/5">
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-sm capitalize">{bev.tipo}</h4>
+                      <p className="text-xs text-muted-foreground">
+                        {bev.tipo === 'gaseosa' || bev.tipo === 'agua' || bev.tipo === 'champan' || bev.tipo === 'vino'
+                          ? `${bev.cantidad || 0} unidades × S/ ${bev.precioUnitario || 0}`
+                          : bev.tipo === 'cerveza'
+                          ? bev.modalidad === 'cover'
+                            ? `Cover - ${bev.numeroCajas || 0} cajas × S/ ${bev.costoPorCaja || 0}`
+                            : `Local - ${bev.cantidad || 0} cajas × S/ ${bev.costoCajaLocal || 0}`
+                          : bev.tipo === 'coctel'
+                          ? bev.modalidad === 'cover'
+                            ? `Cover - ${bev.cantidad || 0} cócteles`
+                            : `Local - ${bev.cantidad || 0} cócteles × S/ ${bev.costoCoctelLocal || 0}`
+                          : ''
+                        }
+                      </p>
+                    </div>
+                    <p className="text-lg font-bold">
+                      S/ {
+                        bev.tipo === 'gaseosa' || bev.tipo === 'agua' || bev.tipo === 'champan' || bev.tipo === 'vino'
+                          ? ((bev.cantidad || 0) * (bev.precioUnitario || 0)).toFixed(2)
+                          : bev.tipo === 'cerveza'
+                          ? bev.modalidad === 'cover'
+                            ? ((bev.numeroCajas || 0) * (bev.costoPorCaja || 0)).toFixed(2)
+                            : ((bev.cantidad || 0) * (bev.costoCajaLocal || 0)).toFixed(2)
+                          : bev.tipo === 'coctel'
+                          ? bev.modalidad === 'cover'
+                            ? '0.00'
+                            : ((bev.cantidad || 0) * (bev.costoCoctelLocal || 0)).toFixed(2)
+                          : '0.00'
+                      }
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+          )}
+        </Card>
+      )}
+
     </div>
   );
 }
