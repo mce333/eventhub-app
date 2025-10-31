@@ -860,6 +860,7 @@ export function CreateEventModal({ open, onClose, initialDate }: CreateEventModa
                                         <SelectItem value="gaseosa">Gaseosa</SelectItem>
                                         <SelectItem value="agua">Agua</SelectItem>
                                         <SelectItem value="champan">Champán</SelectItem>
+                                        <SelectItem value="vino">Vino</SelectItem>
                                         <SelectItem value="cerveza">Cerveza</SelectItem>
                                         <SelectItem value="coctel">Cóctel</SelectItem>
                                       </SelectContent>
