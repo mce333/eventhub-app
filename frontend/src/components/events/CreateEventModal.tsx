@@ -1095,26 +1095,26 @@ export function CreateEventModal({ open, onClose, initialDate }: CreateEventModa
                         <p className="text-xs mt-1">Haz clic en "Agregar Bebida" para comenzar</p>
                       </div>
                     )}
-                      </>
-                    ) : (
-                      <div className="space-y-2 text-sm">
-                        <p className="font-medium text-green-700">✓ Bebidas guardadas correctamente</p>
-                        <div className="text-muted-foreground">
-                          {formData.beverages && formData.beverages.length > 0 ? (
-                            <div className="space-y-1">
-                              {formData.beverages.map((bev, idx) => (
-                                <div key={idx} className="flex justify-between">
-                                  <span className="capitalize">{bev.tipo}:</span>
-                                  <span>{bev.cantidad || bev.numeroCajas || bev.litros} {bev.tipo === 'gaseosa' || bev.tipo === 'agua' || bev.tipo === 'champan' ? 'litros' : bev.tipo === 'cerveza' ? 'cajas' : 'unidades'}</span>
-                                </div>
-                              ))}
-                            </div>
-                          ) : (
-                            <p>No hay bebidas registradas</p>
-                          )}
-                        </div>
+                  </>
+                  ) : (
+                    <div className="space-y-2 text-sm">
+                      <p className="font-medium text-green-700">✓ Bebidas guardadas correctamente</p>
+                      <div className="text-muted-foreground">
+                        {formData.beverages && formData.beverages.length > 0 ? (
+                          <div className="space-y-1">
+                            {formData.beverages.map((bev, idx) => (
+                              <div key={idx} className="flex justify-between">
+                                <span className="capitalize">{bev.tipo}:</span>
+                                <span>{bev.cantidad || bev.numeroCajas || bev.litros} {bev.tipo === 'gaseosa' || bev.tipo === 'agua' || bev.tipo === 'champan' ? 'litros' : bev.tipo === 'cerveza' ? 'cajas' : 'unidades'}</span>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <p>No hay bebidas registradas</p>
+                        )}
                       </div>
-                    )}
+                    </div>
+                  )}
                   </CardContent>
                 </Card>
               </>
