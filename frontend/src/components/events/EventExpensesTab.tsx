@@ -236,7 +236,6 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
     const index = storedEvents.findIndex((e: Event) => e.id === event.id);
     
     if (index !== -1) {
-      // Event exists in demo_events, update it
       storedEvents[index].expenses = [...(storedEvents[index].expenses || []), expense];
       storedEvents[index].financial.totalExpenses += expense.amount;
       storedEvents[index].financial.balance -= expense.amount;
@@ -247,7 +246,6 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
       
       localStorage.setItem('demo_events', JSON.stringify(storedEvents));
     } else {
-      // Event is from MOCK_EVENTS, add it to demo_events with the expense
       const updatedEvent = {
         ...event,
         expenses: [...(event.expenses || []), expense],
@@ -262,13 +260,10 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
       localStorage.setItem('demo_events', JSON.stringify(storedEvents));
     }
     
-    if (isSuspicious) {
-      toast.warning('Gasto registrado - Actividad marcada como sospechosa');
-    } else {
-      toast.success('Gasto registrado correctamente');
-    }
+    toast.success(expense.isPredetermined ? 'Ingrediente registrado en Comida (Insumos)' : 'Gasto adicional registrado correctamente');
     
     setShowAddForm(false);
+    setShowAddIngredient(false);
     setNewExpense({
       category: '',
       amount: 0,
