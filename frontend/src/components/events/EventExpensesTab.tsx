@@ -402,29 +402,24 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-bold text-destructive">
-              S/ {(
-                totalExpenses + 
-                (event.decoration?.reduce((sum, d) => sum + (d.totalPrice || 0), 0) || 0) +
-                (event.staff?.reduce((sum, s) => sum + (s.totalCost || 0), 0) || 0) +
-                (event.foodDetails ? (event.foodDetails.cantidadDePlatos * event.foodDetails.precioPorPlato * 0.7) : 0)
-              ).toLocaleString()}
+              S/ {totalExpenses.toLocaleString()}
             </p>
             <div className="mt-3 space-y-1 text-xs text-muted-foreground">
               <div className="flex justify-between">
                 <span>Comida (Insumos):</span>
-                <span className="font-medium">S/ {event.foodDetails ? (event.foodDetails.cantidadDePlatos * event.foodDetails.precioPorPlato * 0.7).toFixed(2) : '0.00'}</span>
+                <span className="font-medium">S/ {comidaInsumosCost.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
                 <span>Decoración:</span>
-                <span className="font-medium">S/ {(event.decoration?.reduce((sum, d) => sum + (d.totalPrice || 0), 0) || 0).toLocaleString()}</span>
+                <span className="font-medium">S/ {decoracionCost.toLocaleString()}</span>
               </div>
               <div className="flex justify-between">
                 <span>Personal:</span>
-                <span className="font-medium">S/ {(event.staff?.reduce((sum, s) => sum + (s.totalCost || 0), 0) || 0).toLocaleString()}</span>
+                <span className="font-medium">S/ {personalCost.toLocaleString()}</span>
               </div>
               <div className="flex justify-between">
                 <span>Gastos Adicionales:</span>
-                <span className="font-medium">S/ {totalExpenses.toLocaleString()}</span>
+                <span className="font-medium">S/ {gastosAdicionalesCost.toLocaleString()}</span>
               </div>
             </div>
           </CardContent>
@@ -450,32 +445,13 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Gastado:</span>
                 <span className="font-medium text-destructive">
-                  - S/ {(
-                    totalExpenses + 
-                    (event.decoration?.reduce((sum, d) => sum + (d.totalPrice || 0), 0) || 0) +
-                    (event.staff?.reduce((sum, s) => sum + (s.totalCost || 0), 0) || 0) +
-                    (event.foodDetails ? (event.foodDetails.cantidadDePlatos * event.foodDetails.precioPorPlato * 0.7) : 0)
-                  ).toLocaleString()}
+                  - S/ {totalExpenses.toLocaleString()}
                 </span>
               </div>
               <div className="flex justify-between text-base font-bold mt-2 pt-2 border-t">
                 <span>Sobrante:</span>
-                <span className={
-                  ((event.contract?.presupuestoAsignado || 0) - (
-                    totalExpenses + 
-                    (event.decoration?.reduce((sum, d) => sum + (d.totalPrice || 0), 0) || 0) +
-                    (event.staff?.reduce((sum, s) => sum + (s.totalCost || 0), 0) || 0) +
-                    (event.foodDetails ? (event.foodDetails.cantidadDePlatos * event.foodDetails.precioPorPlato * 0.7) : 0)
-                  )) >= 0 ? 'text-success' : 'text-destructive'
-                }>
-                  S/ {(
-                    (event.contract?.presupuestoAsignado || 0) - (
-                      totalExpenses + 
-                      (event.decoration?.reduce((sum, d) => sum + (d.totalPrice || 0), 0) || 0) +
-                      (event.staff?.reduce((sum, s) => sum + (s.totalCost || 0), 0) || 0) +
-                      (event.foodDetails ? (event.foodDetails.cantidadDePlatos * event.foodDetails.precioPorPlato * 0.7) : 0)
-                    )
-                  ).toLocaleString()}
+                <span className={((event.contract?.presupuestoAsignado || 0) - totalExpenses) >= 0 ? 'text-success' : 'text-destructive'}>
+                  S/ {((event.contract?.presupuestoAsignado || 0) - totalExpenses).toLocaleString()}
                 </span>
               </div>
             </div>
