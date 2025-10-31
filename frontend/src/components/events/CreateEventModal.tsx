@@ -609,6 +609,7 @@ export function CreateEventModal({ open, onClose, initialDate }: CreateEventModa
       : 0;
     
     const decorationTotalCost = decorationItems.reduce((sum, item) => sum + item.totalCost, 0);
+    const decorationProviderCost = decorationItems.reduce((sum, item) => sum + item.providerCost, 0);
     const decorationClientCost = decorationItems.reduce((sum, item) => sum + item.clientCost, 0);
     const decorationProfit = decorationItems.reduce((sum, item) => sum + item.profit, 0);
     
@@ -623,6 +624,7 @@ export function CreateEventModal({ open, onClose, initialDate }: CreateEventModa
       foodCost,
       cervezaCost,
       decorationTotalCost,
+      decorationProviderCost,
       decorationClientCost,
       decorationProfit,
       garantia,
