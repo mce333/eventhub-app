@@ -844,8 +844,8 @@ export function CreateEventModal({ open, onClose, initialDate }: CreateEventModa
                           <Card key={bev.id} className={isSaved ? "border-green-500 bg-green-50" : "border-2"}>
                             <CardContent className="pt-4 space-y-3">
                               {!isSaved ? (
-                              <div className="flex items-start justify-between gap-4">
-                                <div className="flex-1 space-y-3">
+                                <div className="flex items-start justify-between gap-4">
+                                  <div className="flex-1 space-y-3">
                                   {/* Tipo de bebida */}
                                   <div>
                                     <Label className="text-sm">Tipo de Bebida *</Label>
