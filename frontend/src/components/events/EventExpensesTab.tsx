@@ -729,7 +729,7 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
                             </div>
                             <Button
                               size="sm"
-                              onClick={() => handleRegisterExpense(expense.id)}
+                              onClick={() => registerPredefinedExpense(expense.id)}
                               className="w-full mt-2 bg-gradient-primary"
                             >
                               <Save className="h-4 w-4 mr-2" />
@@ -740,6 +740,92 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
                       </div>
                     );
                   })}
+
+                  {/* Add Ingredient Form */}
+                  {showAddIngredient && canEdit && (
+                    <div className="mt-4 p-4 border-2 border-primary/20 rounded-lg bg-primary/5">
+                      <h4 className="font-semibold mb-3 text-sm">Agregar Ingrediente Adicional</h4>
+                      <div className="grid grid-cols-3 gap-3">
+                        <div>
+                          <Label className="text-xs">Ingrediente</Label>
+                          <Input
+                            placeholder="Ej: Sal, Aceite..."
+                            value={newExpense.category}
+                            onChange={(e) => setNewExpense({ ...newExpense, category: e.target.value })}
+                          />
+                        </div>
+                        <div>
+                          <Label className="text-xs">Cantidad</Label>
+                          <Input
+                            type="number"
+                            placeholder=""
+                            value={newExpense.quantity || ''}
+                            onChange={(e) => {
+                              const qty = parseInt(e.target.value) || 0;
+                              setNewExpense({ 
+                                ...newExpense, 
+                                quantity: qty,
+                                amount: qty * newExpense.unitPrice 
+                              });
+                            }}
+                          />
+                        </div>
+                        <div>
+                          <Label className="text-xs">Precio Unit.</Label>
+                          <Input
+                            type="number"
+                            step="0.01"
+                            placeholder=""
+                            value={newExpense.unitPrice || ''}
+                            onChange={(e) => {
+                              const price = parseFloat(e.target.value) || 0;
+                              setNewExpense({ 
+                                ...newExpense, 
+                                unitPrice: price,
+                                amount: newExpense.quantity * price 
+                              });
+                            }}
+                          />
+                        </div>
+                      </div>
+                      <div className="mt-3 p-2 bg-background rounded border">
+                        <div className="flex justify-between text-sm">
+                          <span>Total:</span>
+                          <span className="font-bold">S/ {newExpense.amount.toFixed(2)}</span>
+                        </div>
+                      </div>
+                      <div className="flex gap-2 mt-3">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setShowAddIngredient(false);
+                            setNewExpense({
+                              category: '',
+                              amount: 0,
+                              quantity: 1,
+                              unitPrice: 0,
+                              paymentMethod: 'efectivo',
+                            });
+                          }}
+                          className="flex-1"
+                        >
+                          <X className="h-4 w-4 mr-2" />
+                          Cancelar
+                        </Button>
+                        <Button
+                          type="button"
+                          size="sm"
+                          onClick={handleAddIngredient}
+                          className="flex-1 bg-gradient-primary"
+                        >
+                          <Save className="h-4 w-4 mr-2" />
+                          Guardar Ingrediente
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
