@@ -211,6 +211,7 @@ export function CreateEventModal({ open, onClose, initialDate }: CreateEventModa
         imageUrl: getEventImageByType(formData.type!),
         serviceType: formData.serviceType!,
         foodDetails: formData.foodDetails,
+        beverages: formData.beverages || [],
         rentalDetails: formData.rentalDetails,
         client: {
           id: Date.now(),
