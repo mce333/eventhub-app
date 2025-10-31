@@ -1112,3 +1112,9 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
 
       {/* Sección BEBIDAS */}
       {event.beverages && event.beverages.length > 0 && (
+        null
+      )}
+
+    </div>
+  );
+}
