@@ -767,6 +767,186 @@ export function CreateEventModal({ open, onClose, initialDate }: CreateEventModa
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-4">
+                    {/* Lista de bebidas agregadas */}
+                    {formData.beverages && formData.beverages.length > 0 ? (
+                      <div className="space-y-3">
+                        {formData.beverages.map((bev, index) => (
+                          <Card key={bev.id} className="border-2">
+                            <CardContent className="pt-4 space-y-3">
+                              <div className="flex items-start justify-between gap-4">
+                                <div className="flex-1 space-y-3">
+                                  {/* Tipo de bebida */}
+                                  <div>
+                                    <Label className="text-sm">Tipo de Bebida *</Label>
+                                    <Select
+                                      value={bev.tipo}
+                                      onValueChange={(value) => updateBeverage(index, 'tipo', value)}
+                                    >
+                                      <SelectTrigger>
+                                        <SelectValue />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        <SelectItem value="gaseosa">Gaseosa</SelectItem>
+                                        <SelectItem value="agua">Agua</SelectItem>
+                                        <SelectItem value="champan">Champán</SelectItem>
+                                        <SelectItem value="cerveza">Cerveza</SelectItem>
+                                        <SelectItem value="coctel">Cóctel</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
+
+                                  {/* Gaseosa, Agua, Champán - Litros */}
+                                  {(bev.tipo === 'gaseosa' || bev.tipo === 'agua' || bev.tipo === 'champan') && (
+                                    <div>
+                                      <Label className="text-sm">Número de Litros</Label>
+                                      <Input
+                                        type="number"
+                                        placeholder=""
+                                        value={bev.litros || ''}
+                                        onChange={(e) => updateBeverage(index, 'litros', parseInt(e.target.value) || 0)}
+                                      />
+                                    </div>
+                                  )}
+
+                                  {/* Cerveza */}
+                                  {bev.tipo === 'cerveza' && (
+                                    <div className="space-y-3 p-3 bg-yellow-500/5 rounded-lg border border-yellow-500/20">
+                                      <div>
+                                        <Label className="text-sm">Modalidad</Label>
+                                        <Select
+                                          value={bev.modalidad || 'cover'}
+                                          onValueChange={(value) => updateBeverage(index, 'modalidad', value)}
+                                        >
+                                          <SelectTrigger>
+                                            <SelectValue />
+                                          </SelectTrigger>
+                                          <SelectContent>
+                                            <SelectItem value="cover">Cover</SelectItem>
+                                            <SelectItem value="compra_local">Compra en el Local</SelectItem>
+                                          </SelectContent>
+                                        </Select>
+                                      </div>
+
+                                      {bev.modalidad === 'cover' && (
+                                        <div className="grid grid-cols-2 gap-3">
+                                          <div>
+                                            <Label className="text-xs">Número de Cajas</Label>
+                                            <Input
+                                              type="number"
+                                              placeholder=""
+                                              value={bev.numeroCajas || ''}
+                                              onChange={(e) => updateBeverage(index, 'numeroCajas', parseInt(e.target.value) || 0)}
+                                            />
+                                          </div>
+                                          <div>
+                                            <Label className="text-xs">Costo por Caja (S/)</Label>
+                                            <Input
+                                              type="number"
+                                              step="0.01"
+                                              placeholder=""
+                                              value={bev.costoPorCaja || ''}
+                                              onChange={(e) => updateBeverage(index, 'costoPorCaja', parseFloat(e.target.value) || 0)}
+                                            />
+                                          </div>
+                                        </div>
+                                      )}
+
+                                      {bev.modalidad === 'compra_local' && (
+                                        <div className="grid grid-cols-2 gap-3">
+                                          <div>
+                                            <Label className="text-xs">Costo Caja (Local) S/</Label>
+                                            <Input
+                                              type="number"
+                                              step="0.01"
+                                              placeholder=""
+                                              value={bev.costoCajaLocal || ''}
+                                              onChange={(e) => updateBeverage(index, 'costoCajaLocal', parseFloat(e.target.value) || 0)}
+                                            />
+                                          </div>
+                                          <div>
+                                            <Label className="text-xs">Costo Caja (Cliente) S/</Label>
+                                            <Input
+                                              type="number"
+                                              step="0.01"
+                                              placeholder=""
+                                              value={bev.costoCajaCliente || ''}
+                                              onChange={(e) => updateBeverage(index, 'costoCajaCliente', parseFloat(e.target.value) || 0)}
+                                            />
+                                          </div>
+                                          <div className="col-span-2 p-2 bg-green-500/10 rounded">
+                                            <div className="flex justify-between text-sm">
+                                              <span className="text-green-700">Utilidad por Caja:</span>
+                                              <span className="font-bold text-green-700">
+                                                S/ {((bev.costoCajaCliente || 0) - (bev.costoCajaLocal || 0)).toFixed(2)}
+                                              </span>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      )}
+                                    </div>
+                                  )}
+
+                                  {/* Cócteles */}
+                                  {bev.tipo === 'coctel' && (
+                                    <div className="space-y-3 p-3 bg-purple-500/5 rounded-lg border border-purple-500/20">
+                                      <div className="grid grid-cols-2 gap-3">
+                                        <div>
+                                          <Label className="text-xs">Costo Cóctel (Local) S/</Label>
+                                          <Input
+                                            type="number"
+                                            step="0.01"
+                                            placeholder=""
+                                            value={bev.costoCoctelLocal || ''}
+                                            onChange={(e) => updateBeverage(index, 'costoCoctelLocal', parseFloat(e.target.value) || 0)}
+                                          />
+                                        </div>
+                                        <div>
+                                          <Label className="text-xs">Costo Cóctel (Cliente) S/</Label>
+                                          <Input
+                                            type="number"
+                                            step="0.01"
+                                            placeholder=""
+                                            value={bev.costoCoctelCliente || ''}
+                                            onChange={(e) => updateBeverage(index, 'costoCoctelCliente', parseFloat(e.target.value) || 0)}
+                                          />
+                                        </div>
+                                        <div className="col-span-2 p-2 bg-green-500/10 rounded">
+                                          <div className="flex justify-between text-sm">
+                                            <span className="text-green-700">Utilidad por Cóctel:</span>
+                                            <span className="font-bold text-green-700">
+                                              S/ {((bev.costoCoctelCliente || 0) - (bev.costoCoctelLocal || 0)).toFixed(2)}
+                                            </span>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                                
+                                {/* Botón eliminar */}
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => removeBeverage(index)}
+                                  className="shrink-0"
+                                >
+                                  <Trash2 className="h-4 w-4 text-destructive" />
+                                </Button>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-8 text-muted-foreground">
+                        <p className="text-sm">No hay bebidas agregadas</p>
+                        <p className="text-xs mt-1">Haz clic en "Agregar Bebida" para comenzar</p>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </>
             )}
 
             {formData.serviceType === 'solo_alquiler' && (
