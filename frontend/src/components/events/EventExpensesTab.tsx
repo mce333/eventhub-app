@@ -161,7 +161,29 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
   const gastosAdicionalesCost = additionalExpenses.reduce((sum, e) => sum + e.amount, 0);
   const decoracionCost = event.decoration?.reduce((sum, d) => sum + (d.providerCost || d.totalPrice || 0), 0) || 0;
   const personalCost = event.staff?.reduce((sum, s) => sum + (s.totalCost || 0), 0) || 0;
-  const totalExpenses = comidaInsumosCost + gastosAdicionalesCost + decoracionCost + personalCost;
+  
+  // Calculate beverages cost (usando costo local para cerveza y coctel)
+  const bebidasCost = event.beverages?.reduce((sum, bev) => {
+    let cost = 0;
+    if (bev.tipo === 'gaseosa' || bev.tipo === 'agua' || bev.tipo === 'champan' || bev.tipo === 'vino') {
+      cost = (bev.cantidad || 0) * (bev.precioUnitario || 0);
+    } else if (bev.tipo === 'cerveza') {
+      if (bev.modalidad === 'cover') {
+        cost = (bev.numeroCajas || 0) * (bev.costoPorCaja || 0);
+      } else {
+        cost = (bev.cantidad || 0) * (bev.costoCajaLocal || 0);
+      }
+    } else if (bev.tipo === 'coctel') {
+      if (bev.modalidad === 'cover') {
+        cost = 0;
+      } else {
+        cost = (bev.cantidad || 0) * (bev.costoCoctelLocal || 0);
+      }
+    }
+    return sum + cost;
+  }, 0) || 0;
+  
+  const totalExpenses = comidaInsumosCost + gastosAdicionalesCost + decoracionCost + personalCost + bebidasCost;
 
   const handleAddExpense = () => {
     if (!newExpense.category || newExpense.amount <= 0) {
