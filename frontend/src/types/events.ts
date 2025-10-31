@@ -32,6 +32,8 @@ export interface BeverageItem {
   id: number;
   tipo: 'gaseosa' | 'agua' | 'champan' | 'cerveza' | 'coctel';
   litros?: number;
+  cantidad?: number; // Cantidad de unidades/cajas/cocteles
+  precioUnitario?: number; // Precio por unidad para gaseosa/agua/champan
   numeroCajas?: number;
   modalidad?: 'cover' | 'compra_local';
   costoPorCaja?: number;
