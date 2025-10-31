@@ -77,6 +77,8 @@ export function CreateEventModal({ open, onClose, initialDate }: CreateEventModa
   const [decorationItems, setDecorationItems] = useState<DecorationItem[]>([]);
   const [selectedServiceUsers, setSelectedServiceUsers] = useState<number[]>([]);
   const [savedStaffIndexes, setSavedStaffIndexes] = useState<Set<number>>(new Set());
+  const [isFoodSaved, setIsFoodSaved] = useState(false);
+  const [areBeveragesSaved, setAreBeveragesSaved] = useState(false);
   const [formData, setFormData] = useState<Partial<CreateEventDTO>>({
     serviceType: 'con_comida',
     decoration: [],
