@@ -577,6 +577,11 @@ export function CreateEventModal({ open, onClose, initialDate }: CreateEventModa
       [field]: value,
     };
     
+    // Si cambia el tipo a cerveza, inicializar modalidad
+    if (field === 'tipo' && value === 'cerveza' && !updated[index].modalidad) {
+      updated[index].modalidad = 'cover';
+    }
+    
     // Calcular utilidad si es cerveza o coctel
     if (updated[index].tipo === 'cerveza' && updated[index].modalidad === 'compra_local') {
       updated[index].utilidad = (updated[index].costoCajaCliente || 0) - (updated[index].costoCajaLocal || 0);
