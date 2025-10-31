@@ -493,6 +493,30 @@ export function CreateEventModal({ open, onClose, initialDate }: CreateEventModa
     setFormData({ ...formData, staff: updated });
   };
 
+  const updateBeverage = (index: number, field: string, value: any) => {
+    const updated = [...(formData.beverages || [])];
+    updated[index] = {
+      ...updated[index],
+      [field]: value,
+    };
+    
+    // Calcular utilidad si es cerveza o coctel
+    if (updated[index].tipo === 'cerveza' && updated[index].modalidad === 'compra_local') {
+      updated[index].utilidad = (updated[index].costoCajaCliente || 0) - (updated[index].costoCajaLocal || 0);
+    } else if (updated[index].tipo === 'coctel') {
+      updated[index].utilidad = (updated[index].costoCoctelCliente || 0) - (updated[index].costoCoctelLocal || 0);
+    }
+    
+    setFormData({ ...formData, beverages: updated });
+  };
+
+  const removeBeverage = (index: number) => {
+    setFormData({
+      ...formData,
+      beverages: formData.beverages?.filter((_, i) => i !== index),
+    });
+  };
+
   const calculateTotals = () => {
     const foodCost = formData.serviceType === 'con_comida' && formData.foodDetails
       ? formData.foodDetails.cantidadDePlatos * formData.foodDetails.precioPorPlato
