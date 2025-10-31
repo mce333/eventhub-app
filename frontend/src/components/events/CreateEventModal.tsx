@@ -704,12 +704,6 @@ export function CreateEventModal({ open, onClose, initialDate }: CreateEventModa
 
             {formData.serviceType === 'con_comida' && (
               <>
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">Detalles de Comida y Bebidas</CardTitle>
-                  </CardHeader>
-                </Card>
-
                 {/* Sección COMIDA */}
                 <Card>
                   <CardHeader className="pb-3">
