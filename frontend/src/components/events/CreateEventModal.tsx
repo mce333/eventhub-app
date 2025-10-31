@@ -1076,7 +1076,7 @@ export function CreateEventModal({ open, onClose, initialDate }: CreateEventModa
                               )}
                             </CardContent>
                           </Card>
-                        );
+                          );
                         })}
                       </div>
                     ) : (
