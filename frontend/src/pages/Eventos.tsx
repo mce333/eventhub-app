@@ -442,6 +442,137 @@ export default function Eventos() {
                 </CardContent>
               </Card>
             )}
+              </TabsContent>
+              
+              <TabsContent value="reservas" className="mt-6">
+                {/* Events Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredEvents.map((event) => (
+                    <Card
+                      key={event.id}
+                      className="bg-gradient-card border-border hover:border-primary/50 transition-all animate-fade-in-up cursor-pointer group"
+                      onClick={() => navigate(`/eventos/${event.id}`)}
+                    >
+                      {event.imageUrl && (
+                        <div className="h-48 overflow-hidden rounded-t-xl">
+                          <img
+                            src={event.imageUrl}
+                            alt={event.name}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                        </div>
+                      )}
+                      <CardContent className="p-6">
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="flex-1">
+                            <h3 className="text-lg font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
+                              {event.name}
+                            </h3>
+                            <Badge variant="outline" className={cn('text-xs', statusConfig[event.status].color)}>
+                              {statusConfig[event.status].label}
+                            </Badge>
+                          </div>
+                          {!isEncargadoCompras && !isServicio && (
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                                <Button variant="ghost" size="icon" className="h-8 w-8">
+                                  <MoreVertical className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem onClick={(e) => {
+                                  e.stopPropagation();
+                                  navigate(`/eventos/${event.id}`);
+                                }}>
+                                  <Eye className="mr-2 h-4 w-4" />
+                                  Ver Detalle
+                                </DropdownMenuItem>
+                                {canEdit && (
+                                  <DropdownMenuItem onClick={(e) => {
+                                    e.stopPropagation();
+                                    toast.info('Función en desarrollo');
+                                  }}>
+                                    <Edit className="mr-2 h-4 w-4" />
+                                    Editar
+                                  </DropdownMenuItem>
+                                )}
+                                <DropdownMenuItem onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDuplicate(event);
+                                }}>
+                                  <Copy className="mr-2 h-4 w-4" />
+                                  Duplicar
+                                </DropdownMenuItem>
+                                {canDelete && (
+                                  <DropdownMenuItem
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleDelete(event.id);
+                                    }}
+                                    className="text-destructive focus:text-destructive"
+                                  >
+                                    <Trash className="mr-2 h-4 w-4" />
+                                    Eliminar
+                                  </DropdownMenuItem>
+                                )}
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          )}
+                        </div>
+
+                        <div className="space-y-3 text-sm">
+                          <div className="flex items-center text-muted-foreground">
+                            <Calendar className="w-4 h-4 mr-2" />
+                            {new Date(event.date).toLocaleDateString('es-ES', {
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric'
+                            })}
+                          </div>
+                          <div className="flex items-center text-muted-foreground">
+                            <MapPin className="w-4 h-4 mr-2" />
+                            {event.location}
+                          </div>
+                          <div className="flex items-center text-muted-foreground">
+                            <Users className="w-4 h-4 mr-2" />
+                            {event.maxAttendees} personas
+                          </div>
+                          {canViewFinancial && (
+                            <div className="flex items-center text-muted-foreground">
+                              <DollarSign className="w-4 h-4 mr-2" />
+                              S/ {event.financial.budget.toLocaleString()}
+                            </div>
+                          )}
+                        </div>
+
+                        {isEncargadoCompras && (
+                          <Button className="w-full mt-4" variant="outline" onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/eventos/${event.id}`);
+                          }}>
+                            Registrar Gastos
+                          </Button>
+                        )}
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+
+                {filteredEvents.length === 0 && (
+                  <Card className="bg-gradient-card border-border">
+                    <CardContent className="p-12 text-center">
+                      <Calendar className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+                      <h3 className="text-lg font-semibold text-foreground mb-2">No se encontraron reservas</h3>
+                      <p className="text-muted-foreground">
+                        {isServicio 
+                          ? 'No tienes reservas asignadas actualmente'
+                          : 'Intenta ajustar los filtros o crea una nueva reserva'}
+                      </p>
+                    </CardContent>
+                  </Card>
+                )}
+              </TabsContent>
+            </Tabs>
           </div>
         </main>
       </div>
