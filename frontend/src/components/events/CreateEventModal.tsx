@@ -1030,20 +1030,47 @@ export function CreateEventModal({ open, onClose, initialDate }: CreateEventModa
                                   )}
                                 </div>
                                 
-                                {/* Botón eliminar */}
-                                <Button
-                                  type="button"
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => removeBeverage(index)}
-                                  className="shrink-0"
-                                >
-                                  <Trash2 className="h-4 w-4 text-destructive" />
-                                </Button>
+                                {/* Botones */}
+                                <div className="flex flex-col gap-2 shrink-0">
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => removeBeverage(index)}
+                                  >
+                                    <Trash2 className="h-4 w-4 text-destructive" />
+                                  </Button>
+                                  <Button
+                                    type="button"
+                                    size="sm"
+                                    onClick={() => saveBeverage(index)}
+                                  >
+                                    Registrar
+                                  </Button>
+                                </div>
                               </div>
+                              ) : (
+                                <div className="space-y-2 text-sm">
+                                  <div className="flex justify-between items-center">
+                                    <div className="space-y-1">
+                                      <p className="font-medium capitalize">{bev.tipo}</p>
+                                      <p className="text-xs text-muted-foreground">
+                                        {bev.tipo === 'gaseosa' || bev.tipo === 'agua' || bev.tipo === 'champan' 
+                                          ? `${bev.cantidad || 0} unid. × S/ ${bev.precioUnitario || 0}`
+                                          : bev.tipo === 'cerveza'
+                                          ? `${bev.cantidad || bev.numeroCajas || 0} cajas`
+                                          : `${bev.cantidad || 0} cócteles`
+                                        }
+                                      </p>
+                                    </div>
+                                    <Badge className="bg-green-500">Guardado</Badge>
+                                  </div>
+                                </div>
+                              )}
                             </CardContent>
                           </Card>
-                        ))}
+                        );
+                        })}
                       </div>
                     ) : (
                       <div className="text-center py-8 text-muted-foreground">
@@ -1051,26 +1078,6 @@ export function CreateEventModal({ open, onClose, initialDate }: CreateEventModa
                         <p className="text-xs mt-1">Haz clic en "Agregar Bebida" para comenzar</p>
                       </div>
                     )}
-                  </>
-                  ) : (
-                    <div className="space-y-2 text-sm">
-                      <p className="font-medium text-green-700">✓ Bebidas guardadas correctamente</p>
-                      <div className="text-muted-foreground">
-                        {formData.beverages && formData.beverages.length > 0 ? (
-                          <div className="space-y-1">
-                            {formData.beverages.map((bev, idx) => (
-                              <div key={idx} className="flex justify-between">
-                                <span className="capitalize">{bev.tipo}:</span>
-                                <span>{bev.cantidad || bev.numeroCajas || bev.litros} {bev.tipo === 'gaseosa' || bev.tipo === 'agua' || bev.tipo === 'champan' ? 'litros' : bev.tipo === 'cerveza' ? 'cajas' : 'unidades'}</span>
-                              </div>
-                            ))}
-                          </div>
-                        ) : (
-                          <p>No hay bebidas registradas</p>
-                        )}
-                      </div>
-                    </div>
-                  )}
                   </CardContent>
                 </Card>
               </>
