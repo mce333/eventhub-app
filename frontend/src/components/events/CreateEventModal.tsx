@@ -1038,28 +1038,39 @@ export function CreateEventModal({ open, onClose, initialDate }: CreateEventModa
                                 </div>
                                 
                                 {/* Botones */}
-                                <div className="flex flex-col gap-2 shrink-0">
+                                <div className="flex items-center gap-2 shrink-0">
+                                  {!isSaved && (
+                                    <Button
+                                      type="button"
+                                      size="sm"
+                                      onClick={() => saveBeverage(index)}
+                                      className="bg-gradient-primary"
+                                    >
+                                      <Save className="h-4 w-4 mr-2" />
+                                      Registrar
+                                    </Button>
+                                  )}
                                   <Button
                                     type="button"
                                     variant="ghost"
                                     size="icon"
                                     onClick={() => removeBeverage(index)}
+                                    className="shrink-0"
                                   >
                                     <Trash2 className="h-4 w-4 text-destructive" />
-                                  </Button>
-                                  <Button
-                                    type="button"
-                                    size="sm"
-                                    onClick={() => saveBeverage(index)}
-                                  >
                                   </Button>
                                 </div>
                               </div>
                               ) : (
-                                <div className="space-y-2 text-sm">
-                                  <div className="flex justify-between items-center">
-                                    <div className="space-y-1">
-                                      <p className="font-medium capitalize">{bev.tipo}</p>
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-3">
+                                    <div className="h-10 w-10 rounded-full bg-green-500/20 flex items-center justify-center">
+                                      <span className="text-lg font-bold text-green-700 capitalize">
+                                        {bev.tipo.charAt(0)}
+                                      </span>
+                                    </div>
+                                    <div>
+                                      <p className="font-semibold text-sm capitalize">{bev.tipo}</p>
                                       <p className="text-xs text-muted-foreground">
                                         {bev.tipo === 'gaseosa' || bev.tipo === 'agua' || bev.tipo === 'champan' 
                                           ? `${bev.cantidad || 0} unid. × S/ ${bev.precioUnitario || 0}`
@@ -1069,8 +1080,10 @@ export function CreateEventModal({ open, onClose, initialDate }: CreateEventModa
                                         }
                                       </p>
                                     </div>
-                                    <Badge className="bg-green-500">Guardado</Badge>
                                   </div>
+                                  <Badge variant="outline" className="bg-green-500/20 text-green-700 border-green-500/30 text-xs">
+                                    ✓ Registrado
+                                  </Badge>
                                 </div>
                               )}
                             </CardContent>
