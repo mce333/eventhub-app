@@ -867,8 +867,8 @@ export function CreateEventModal({ open, onClose, initialDate }: CreateEventModa
                                     </Select>
                                   </div>
 
-                                  {/* Gaseosa, Agua, Champán - Litros, Cantidad, Precio */}
-                                  {(bev.tipo === 'gaseosa' || bev.tipo === 'agua' || bev.tipo === 'champan') && (
+                                  {/* Gaseosa, Agua, Champán, Vino - Litros, Cantidad, Precio */}
+                                  {(bev.tipo === 'gaseosa' || bev.tipo === 'agua' || bev.tipo === 'champan' || bev.tipo === 'vino') && (
                                     <div className="space-y-3">
                                       <div>
                                         <Label className="text-sm">Número de Litros</Label>
