@@ -1013,14 +1013,26 @@ export function CreateEventModal({ open, onClose, initialDate }: CreateEventModa
                                       </div>
 
                                       {bev.modalidad === 'cover' && (
-                                        <div>
-                                          <Label className="text-xs">Cantidad (Cócteles)</Label>
-                                          <Input
-                                            type="number"
-                                            placeholder=""
-                                            value={bev.cantidad || ''}
-                                            onChange={(e) => updateBeverage(index, 'cantidad', parseInt(e.target.value) || 0)}
-                                          />
+                                        <div className="grid grid-cols-2 gap-3">
+                                          <div>
+                                            <Label className="text-xs">Número de Cócteles</Label>
+                                            <Input
+                                              type="number"
+                                              placeholder=""
+                                              value={bev.cantidad || ''}
+                                              onChange={(e) => updateBeverage(index, 'cantidad', parseInt(e.target.value) || 0)}
+                                            />
+                                          </div>
+                                          <div>
+                                            <Label className="text-xs">Costo por Cóctel (S/)</Label>
+                                            <Input
+                                              type="number"
+                                              step="0.01"
+                                              placeholder=""
+                                              value={bev.costoPorCaja || ''}
+                                              onChange={(e) => updateBeverage(index, 'costoPorCaja', parseFloat(e.target.value) || 0)}
+                                            />
+                                          </div>
                                         </div>
                                       )}
 
