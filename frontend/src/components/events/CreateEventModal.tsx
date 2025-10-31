@@ -1823,13 +1823,26 @@ export function CreateEventModal({ open, onClose, initialDate }: CreateEventModa
                 {/* Comida */}
                 {totals.foodCost > 0 && (
                   <div className="p-3 bg-background rounded-lg border">
-                    <div className="flex justify-between items-center">
+                    <div className="flex justify-between items-center mb-2">
                       <span className="font-semibold">Comida</span>
                       <span className="font-bold">S/ {totals.foodCost.toFixed(2)}</span>
                     </div>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Costo total de comida
-                    </p>
+                    {formData.foodDetails && (
+                      <div className="space-y-1 text-xs text-muted-foreground">
+                        <div className="flex justify-between">
+                          <span>Plato:</span>
+                          <span className="font-medium">{formData.foodDetails.tipoDePlato}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Cantidad de platos:</span>
+                          <span className="font-medium">{formData.foodDetails.cantidadDePlatos}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Precio por plato:</span>
+                          <span className="font-medium">S/ {formData.foodDetails.precioPorPlato.toFixed(2)}</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
                 
