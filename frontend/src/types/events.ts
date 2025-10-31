@@ -152,6 +152,7 @@ export interface Event {
   description: string;
   type: EventType;
   status: EventStatus;
+  eventCategory?: 'evento' | 'reserva'; // Nueva categoría para diferenciar eventos de reservas
   date: string;
   endDate?: string;
   location: string;
