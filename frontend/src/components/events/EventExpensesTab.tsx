@@ -217,21 +217,7 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
   };
 
   const saveExpenseToEvent = (expense: EventExpense) => {
-    const auditLog = isSuspicious ? {
-      id: Date.now(),
-      eventId: event.id,
-      userId: user?.id || 0,
-      userName: `${user?.name} ${user?.last_name}`,
-      userRole: user?.role?.name || '',
-      action: 'expense_added' as const,
-      section: 'gastos',
-      description: `Gasto agregado: ${expense.description} - S/ ${expense.amount}`,
-      timestamp: new Date().toISOString(),
-      changes: {},
-      isSuspicious: true,
-    } : undefined;
-
-    // Update event in localStorage
+    // NO agregar auditoría aquí - los gastos tienen su propio registro
     const storedEvents = JSON.parse(localStorage.getItem('demo_events') || '[]');
     const index = storedEvents.findIndex((e: Event) => e.id === event.id);
     
@@ -239,10 +225,6 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
       storedEvents[index].expenses = [...(storedEvents[index].expenses || []), expense];
       storedEvents[index].financial.totalExpenses += expense.amount;
       storedEvents[index].financial.balance -= expense.amount;
-      
-      if (auditLog) {
-        storedEvents[index].auditLog = [...(storedEvents[index].auditLog || []), auditLog];
-      }
       
       localStorage.setItem('demo_events', JSON.stringify(storedEvents));
     } else {
@@ -254,7 +236,6 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
           totalExpenses: (event.financial?.totalExpenses || 0) + expense.amount,
           balance: (event.financial?.balance || 0) - expense.amount,
         },
-        auditLog: auditLog ? [...(event.auditLog || []), auditLog] : event.auditLog,
       };
       storedEvents.push(updatedEvent);
       localStorage.setItem('demo_events', JSON.stringify(storedEvents));
