@@ -641,6 +641,22 @@ export function CreateEventModal({ open, onClose, initialDate }: CreateEventModa
         return (
           <div className="space-y-4">
             <div>
+              <Label>Categoría *</Label>
+              <Select
+                value={formData.eventCategory || 'evento'}
+                onValueChange={(value: 'evento' | 'reserva') => setFormData({ ...formData, eventCategory: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecciona la categoría" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="evento">Evento</SelectItem>
+                  <SelectItem value="reserva">Reserva</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
               <Label>Tipo de Evento *</Label>
               <Select
                 value={formData.type}
