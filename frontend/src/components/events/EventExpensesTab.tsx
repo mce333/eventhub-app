@@ -626,7 +626,9 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
                 </AlertDescription>
               </Alert>
             )}
+          </div>
           </CardContent>
+          )}
         </Card>
       )}
 
