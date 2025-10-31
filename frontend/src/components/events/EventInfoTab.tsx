@@ -267,6 +267,58 @@ export function EventInfoTab({ event, isEditing, onUpdate }: EventInfoTabProps) 
         </Card>
       )}
 
+      {/* Detalles de Bebidas */}
+      {event.serviceType === 'con_comida' && event.beverages && event.beverages.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Detalles de Bebidas</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {event.beverages.map((bev, idx) => (
+                <div key={idx} className="p-3 bg-muted/50 rounded-lg">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-semibold capitalize">{bev.tipo}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {bev.tipo === 'gaseosa' || bev.tipo === 'agua' || bev.tipo === 'champan' || bev.tipo === 'vino'
+                          ? `${bev.cantidad || 0} unidades × S/ ${bev.precioUnitario || 0}`
+                          : bev.tipo === 'cerveza'
+                          ? bev.modalidad === 'cover'
+                            ? `Cover - ${bev.numeroCajas || 0} cajas × S/ ${bev.costoPorCaja || 0}`
+                            : `Local - ${bev.cantidad || 0} cajas × S/ ${bev.costoCajaLocal || 0}`
+                          : bev.tipo === 'coctel'
+                          ? bev.modalidad === 'cover'
+                            ? `Cover - ${bev.cantidad || 0} cócteles`
+                            : `Local - ${bev.cantidad || 0} cócteles × S/ ${bev.costoCoctelLocal || 0}`
+                          : ''
+                        }
+                      </p>
+                    </div>
+                    <p className="font-bold">
+                      S/ {
+                        bev.tipo === 'gaseosa' || bev.tipo === 'agua' || bev.tipo === 'champan' || bev.tipo === 'vino'
+                          ? ((bev.cantidad || 0) * (bev.precioUnitario || 0)).toFixed(2)
+                          : bev.tipo === 'cerveza'
+                          ? bev.modalidad === 'cover'
+                            ? ((bev.numeroCajas || 0) * (bev.costoPorCaja || 0)).toFixed(2)
+                            : ((bev.cantidad || 0) * (bev.costoCajaLocal || 0)).toFixed(2)
+                          : bev.tipo === 'coctel'
+                          ? bev.modalidad === 'cover'
+                            ? '0.00'
+                            : ((bev.cantidad || 0) * (bev.costoCoctelLocal || 0)).toFixed(2)
+                          : '0.00'
+                      }
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+
       {/* Auditoría */}
       <Card>
         <CardHeader>
