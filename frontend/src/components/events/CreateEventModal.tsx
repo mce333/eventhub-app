@@ -438,6 +438,32 @@ export function CreateEventModal({ open, onClose, initialDate }: CreateEventModa
     toast.success('Sección de comida guardada correctamente');
   };
 
+  const saveBeverage = (index: number) => {
+    const beverage = formData.beverages?.[index];
+    if (!beverage) return;
+
+    // Validar campos según tipo
+    if (beverage.tipo === 'gaseosa' || beverage.tipo === 'agua' || beverage.tipo === 'champan') {
+      if (!beverage.cantidad || !beverage.precioUnitario) {
+        toast.error('Por favor completa cantidad y precio por unidad');
+        return;
+      }
+    } else if (beverage.tipo === 'cerveza') {
+      if (!beverage.cantidad && !beverage.numeroCajas) {
+        toast.error('Por favor completa la cantidad');
+        return;
+      }
+    } else if (beverage.tipo === 'coctel') {
+      if (!beverage.cantidad) {
+        toast.error('Por favor completa la cantidad');
+        return;
+      }
+    }
+
+    setSavedBeverageIndexes(prev => new Set([...prev, index]));
+    toast.success('Bebida registrada correctamente');
+  };
+
   const saveBeveragesSection = () => {
     // Validar que se hayan llenado los campos necesarios
     if (formData.beverages && formData.beverages.length > 0) {
@@ -459,6 +485,19 @@ export function CreateEventModal({ open, onClose, initialDate }: CreateEventModa
     }
     setAreBeveragesSaved(true);
     toast.success('Sección de bebidas guardada correctamente');
+  };
+
+  const addBeverage = () => {
+    setFormData({
+      ...formData,
+      beverages: [
+        ...(formData.beverages || []),
+        {
+          id: Date.now(),
+          tipo: 'gaseosa',
+        },
+      ],
+    });
   };
 
 
