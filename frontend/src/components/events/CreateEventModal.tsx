@@ -875,16 +875,39 @@ export function CreateEventModal({ open, onClose, initialDate }: CreateEventModa
                                     </Select>
                                   </div>
 
-                                  {/* Gaseosa, Agua, Champán - Litros */}
+                                  {/* Gaseosa, Agua, Champán - Litros, Cantidad, Precio */}
                                   {(bev.tipo === 'gaseosa' || bev.tipo === 'agua' || bev.tipo === 'champan') && (
-                                    <div>
-                                      <Label className="text-sm">Número de Litros</Label>
-                                      <Input
-                                        type="number"
-                                        placeholder=""
-                                        value={bev.litros || ''}
-                                        onChange={(e) => updateBeverage(index, 'litros', parseInt(e.target.value) || 0)}
-                                      />
+                                    <div className="space-y-3">
+                                      <div>
+                                        <Label className="text-sm">Número de Litros</Label>
+                                        <Input
+                                          type="number"
+                                          placeholder=""
+                                          value={bev.litros || ''}
+                                          onChange={(e) => updateBeverage(index, 'litros', parseInt(e.target.value) || 0)}
+                                        />
+                                      </div>
+                                      <div className="grid grid-cols-2 gap-3">
+                                        <div>
+                                          <Label className="text-sm">Cantidad</Label>
+                                          <Input
+                                            type="number"
+                                            placeholder="Unidades"
+                                            value={bev.cantidad || ''}
+                                            onChange={(e) => updateBeverage(index, 'cantidad', parseInt(e.target.value) || 0)}
+                                          />
+                                        </div>
+                                        <div>
+                                          <Label className="text-sm">Precio por Unidad (S/)</Label>
+                                          <Input
+                                            type="number"
+                                            step="0.01"
+                                            placeholder=""
+                                            value={bev.precioUnitario || ''}
+                                            onChange={(e) => updateBeverage(index, 'precioUnitario', parseFloat(e.target.value) || 0)}
+                                          />
+                                        </div>
+                                      </div>
                                     </div>
                                   )}
 
