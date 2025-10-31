@@ -1872,8 +1872,8 @@ export function CreateEventModal({ open, onClose, initialDate }: CreateEventModa
                     </div>
                     <div className="grid grid-cols-2 gap-2 text-xs">
                       <div>
-                        <p className="text-muted-foreground">Costo Total:</p>
-                        <p className="font-medium">S/ {totals.decorationTotalCost.toFixed(2)}</p>
+                        <p className="text-muted-foreground">Costo del Proveedor:</p>
+                        <p className="font-medium">S/ {totals.decorationProviderCost.toFixed(2)}</p>
                       </div>
                       <div>
                         <p className="text-muted-foreground">Costo al Cliente:</p>
