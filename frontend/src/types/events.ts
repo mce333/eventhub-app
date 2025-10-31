@@ -158,6 +158,7 @@ export interface Event {
   // Tipo de servicio
   serviceType: ServiceType;
   foodDetails?: FoodDetails;
+  beverages?: BeverageItem[];
   rentalDetails?: RentalDetails;
   
   // Cliente y contrato
