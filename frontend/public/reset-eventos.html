@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Reset Eventos</title>
+</head>
+<body>
+    <h1>Reseteando Eventos...</h1>
+    <script>
+        // Clear old events
+        localStorage.removeItem('demo_events');
+        
+        // Create 10 new events with beverages
+        const events = [];
+        for (let i = 1; i <= 10; i++) {
+            events.push({
+                id: 3000 + i,
+                name: `Evento Nuevo ${i}`,
+                description: `Evento de prueba con bebidas ${i}`,
+                type: i % 3 === 0 ? 'boda' : i % 3 === 1 ? 'quince_años' : 'cumpleaños',
+                status: 'confirmed',
+                date: `2025-${String(10 + (i % 3)).padStart(2, '0')}-${String(i * 2).padStart(2, '0')}`,
+                location: i % 2 === 0 ? 'solaz' : 'praga',
+                venue: i % 2 === 0 ? 'Local Solaz' : 'Local Praga',
+                attendees: 100 + i * 10,
+                maxAttendees: 100 + i * 10,
+                serviceType: 'con_comida',
+                foodDetails: {
+                    tipoDePlato: 'Lomo Saltado',
+                    cantidadDePlatos: 100 + i * 10,
+                    precioPorPlato: 45,
+                    tipoMenu: 'buffet',
+                    incluyeCerveza: false,
+                    tipoDePago: 'compra_local'
+                },
+                beverages: [
+                    { id: 1, tipo: 'gaseosa', cantidad: 40, precioUnitario: 3.5, litros: 80 },
+                    { id: 2, tipo: 'agua', cantidad: 25, precioUnitario: 2, litros: 50 },
+                    { id: 3, tipo: 'cerveza', modalidad: 'compra_local', cantidad: 8, costoCajaLocal: 80, costoCajaCliente: 120, utilidad: 40 },
+                    { id: 4, tipo: 'vino', cantidad: 15, precioUnitario: 35 },
+                    { id: 5, tipo: 'coctel', modalidad: 'compra_local', cantidad: 50, costoCoctelLocal: 12, costoCoctelCliente: 18, utilidad: 6 }
+                ],
+                client: { id: i, name: `Cliente ${i}`, email: `cliente${i}@email.com`, phone: `987654${i}21` },
+                contract: { precioTotal: 12000, pagoAdelantado: 4000, saldoPendiente: 8000, presupuestoAsignado: 6000, recibos: [] },
+                financial: { budget: 12000, totalIncome: 4000, totalExpenses: 0, balance: 4000, advancePayment: 4000, pendingPayment: 8000 },
+                expenses: [],
+                decoration: [
+                    { id: 1, item: 'Paquete Premium', quantity: 1, unitPrice: 2500, totalPrice: 2500, providerCost: 1800, profit: 700, supplier: 'Deco Flores', estado: 'pendiente' }
+                ],
+                staff: [],
+                auditLog: [],
+                assignedServiceUsers: [],
+                createdBy: 1,
+                createdByName: 'Admin Sistema',
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            });
+        }
+        
+        localStorage.setItem('demo_events', JSON.stringify(events));
+        console.log(`✓ Created ${events.length} events with beverages`);
+        alert(`✓ Created ${events.length} new events with beverages!\n\nAhora ve a /eventos para verlos`);
+        
+        // Redirect to eventos
+        setTimeout(() => {
+            window.location.href = '/eventos';
+        }, 2000);
+    </script>
+</body>
+</html>
