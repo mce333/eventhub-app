@@ -154,7 +154,13 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
   // Separate predefined and additional expenses
   const predefinedExpenses = event.expenses?.filter(e => e.isPredetermined) || [];
   const additionalExpenses = event.expenses?.filter(e => !e.isPredetermined) || [];
-  const totalExpenses = event.expenses?.reduce((sum, e) => sum + e.amount, 0) || 0;
+  
+  // Calculate specific totals
+  const comidaInsumosCost = predefinedExpenses.reduce((sum, e) => sum + e.amount, 0);
+  const gastosAdicionalesCost = additionalExpenses.reduce((sum, e) => sum + e.amount, 0);
+  const decoracionCost = event.decoration?.reduce((sum, d) => sum + (d.totalPrice || 0), 0) || 0;
+  const personalCost = event.staff?.reduce((sum, s) => sum + (s.totalCost || 0), 0) || 0;
+  const totalExpenses = comidaInsumosCost + gastosAdicionalesCost + decoracionCost + personalCost;
 
   const handleAddExpense = () => {
     if (!newExpense.category || newExpense.amount <= 0) {
