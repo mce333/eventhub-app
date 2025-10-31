@@ -996,44 +996,76 @@ export function CreateEventModal({ open, onClose, initialDate }: CreateEventModa
                                   {bev.tipo === 'coctel' && (
                                     <div className="space-y-3 p-3 bg-purple-500/5 rounded-lg border border-purple-500/20">
                                       <div>
-                                        <Label className="text-xs">Cantidad (Cócteles)</Label>
-                                        <Input
-                                          type="number"
-                                          placeholder=""
-                                          value={bev.cantidad || ''}
-                                          onChange={(e) => updateBeverage(index, 'cantidad', parseInt(e.target.value) || 0)}
-                                        />
+                                        <Label className="text-sm">Modalidad</Label>
+                                        <Select
+                                          value={bev.modalidad || 'cover'}
+                                          onValueChange={(value) => updateBeverage(index, 'modalidad', value)}
+                                        >
+                                          <SelectTrigger>
+                                            <SelectValue />
+                                          </SelectTrigger>
+                                          <SelectContent>
+                                            <SelectItem value="cover">Cover</SelectItem>
+                                            <SelectItem value="compra_local">Compra en el Local</SelectItem>
+                                          </SelectContent>
+                                        </Select>
                                       </div>
-                                      <div className="grid grid-cols-2 gap-3">
+
+                                      {bev.modalidad === 'cover' && (
                                         <div>
-                                          <Label className="text-xs">Costo Cóctel (Local) S/</Label>
+                                          <Label className="text-xs">Cantidad (Cócteles)</Label>
                                           <Input
                                             type="number"
-                                            step="0.01"
                                             placeholder=""
-                                            value={bev.costoCoctelLocal || ''}
-                                            onChange={(e) => updateBeverage(index, 'costoCoctelLocal', parseFloat(e.target.value) || 0)}
+                                            value={bev.cantidad || ''}
+                                            onChange={(e) => updateBeverage(index, 'cantidad', parseInt(e.target.value) || 0)}
                                           />
                                         </div>
-                                        <div>
-                                          <Label className="text-xs">Costo Cóctel (Cliente) S/</Label>
-                                          <Input
-                                            type="number"
-                                            step="0.01"
-                                            placeholder=""
-                                            value={bev.costoCoctelCliente || ''}
-                                            onChange={(e) => updateBeverage(index, 'costoCoctelCliente', parseFloat(e.target.value) || 0)}
-                                          />
-                                        </div>
-                                        <div className="col-span-2 p-2 bg-green-500/10 rounded">
-                                          <div className="flex justify-between text-sm">
-                                            <span className="text-green-700">Utilidad por Cóctel:</span>
-                                            <span className="font-bold text-green-700">
-                                              S/ {((bev.costoCoctelCliente || 0) - (bev.costoCoctelLocal || 0)).toFixed(2)}
-                                            </span>
+                                      )}
+
+                                      {bev.modalidad === 'compra_local' && (
+                                        <div className="space-y-3">
+                                          <div>
+                                            <Label className="text-xs">Cantidad (Cócteles)</Label>
+                                            <Input
+                                              type="number"
+                                              placeholder=""
+                                              value={bev.cantidad || ''}
+                                              onChange={(e) => updateBeverage(index, 'cantidad', parseInt(e.target.value) || 0)}
+                                            />
+                                          </div>
+                                          <div className="grid grid-cols-2 gap-3">
+                                            <div>
+                                              <Label className="text-xs">Costo Cóctel (Local) S/</Label>
+                                              <Input
+                                                type="number"
+                                                step="0.01"
+                                                placeholder=""
+                                                value={bev.costoCoctelLocal || ''}
+                                                onChange={(e) => updateBeverage(index, 'costoCoctelLocal', parseFloat(e.target.value) || 0)}
+                                              />
+                                            </div>
+                                            <div>
+                                              <Label className="text-xs">Costo Cóctel (Cliente) S/</Label>
+                                              <Input
+                                                type="number"
+                                                step="0.01"
+                                                placeholder=""
+                                                value={bev.costoCoctelCliente || ''}
+                                                onChange={(e) => updateBeverage(index, 'costoCoctelCliente', parseFloat(e.target.value) || 0)}
+                                              />
+                                            </div>
+                                          </div>
+                                          <div className="p-2 bg-green-500/10 rounded">
+                                            <div className="flex justify-between text-sm">
+                                              <span className="text-green-700">Utilidad por Cóctel:</span>
+                                              <span className="font-bold text-green-700">
+                                                S/ {((bev.costoCoctelCliente || 0) - (bev.costoCoctelLocal || 0)).toFixed(2)}
+                                              </span>
+                                            </div>
                                           </div>
                                         </div>
-                                      </div>
+                                      )}
                                     </div>
                                   )}
                                 </div>
