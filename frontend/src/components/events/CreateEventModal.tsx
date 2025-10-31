@@ -1105,7 +1105,7 @@ export function CreateEventModal({ open, onClose, initialDate }: CreateEventModa
                                     <div>
                                       <p className="font-semibold text-sm capitalize">{bev.tipo}</p>
                                       <p className="text-xs text-muted-foreground">
-                                        {bev.tipo === 'gaseosa' || bev.tipo === 'agua' || bev.tipo === 'champan' 
+                                        {bev.tipo === 'gaseosa' || bev.tipo === 'agua' || bev.tipo === 'champan' || bev.tipo === 'vino'
                                           ? `${bev.cantidad || 0} unid. × S/ ${bev.precioUnitario || 0}`
                                           : bev.tipo === 'cerveza'
                                           ? `${bev.cantidad || bev.numeroCajas || 0} cajas`
