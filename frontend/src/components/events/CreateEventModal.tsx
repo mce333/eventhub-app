@@ -642,145 +642,107 @@ export function CreateEventModal({ open, onClose, initialDate }: CreateEventModa
             </div>
 
             {formData.serviceType === 'con_comida' && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Detalles de Comida</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <Label>Tipo de Plato *</Label>
-                    <Select
-                      value={formData.foodDetails?.tipoDePlato || ''}
-                      onValueChange={(value) => {
-                        const selectedItem = menuItems.find(item => item.name === value);
-                        setFormData({
-                          ...formData,
-                          foodDetails: {
-                            ...formData.foodDetails!,
-                            tipoDePlato: value,
-                            precioPorPlato: selectedItem?.price || 0,
-                          },
-                        });
-                      }}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecciona un plato" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {menuItems.map((item) => (
-                          <SelectItem key={item.id} value={item.name}>
-                            {item.name} - S/ {item.price}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+              <>
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Detalles de Comida y Bebidas</CardTitle>
+                  </CardHeader>
+                </Card>
 
-                  <div>
-                    <Label>Cantidad de Platos *</Label>
-                    <Input
-                      type="number"
-                      placeholder="Número de platos"
-                      value={formData.foodDetails?.cantidadDePlatos || ''}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          foodDetails: {
-                            ...formData.foodDetails!,
-                            cantidadDePlatos: parseInt(e.target.value),
-                          },
-                        })
-                      }
-                    />
-                  </div>
-
-                  <div>
-                    <Label>Precio por Plato *</Label>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      value={formData.foodDetails?.precioPorPlato || ''}
-                      disabled={!!formData.foodDetails?.tipoDePlato}
-                      className={formData.foodDetails?.tipoDePlato ? 'bg-muted' : ''}
-                    />
-                  </div>
-
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="cerveza"
-                      checked={formData.foodDetails?.incluyeCerveza || false}
-                      onCheckedChange={(checked) =>
-                        setFormData({
-                          ...formData,
-                          foodDetails: { ...formData.foodDetails!, incluyeCerveza: checked as boolean },
-                        })
-                      }
-                    />
-                    <Label htmlFor="cerveza">¿Incluye Cerveza?</Label>
-                  </div>
-
-                  {formData.foodDetails?.incluyeCerveza && (
-                    <div className="grid grid-cols-2 gap-3 p-3 bg-primary/5 rounded-lg border border-primary/20">
-                      <div>
-                        <Label className="text-sm">Número de Cajas</Label>
-                        <Input
-                          type="number"
-                          placeholder="0"
-                          value={formData.foodDetails?.numeroCajasCerveza || ''}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              foodDetails: { 
-                                ...formData.foodDetails!, 
-                                numeroCajasCerveza: parseInt(e.target.value) || 0 
-                              },
-                            })
-                          }
-                        />
-                      </div>
-                      <div>
-                        <Label className="text-sm">Costo por Caja (S/)</Label>
-                        <Input
-                          type="number"
-                          step="0.01"
-                          placeholder="0.00"
-                          value={formData.foodDetails?.costoPorCaja || ''}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              foodDetails: { 
-                                ...formData.foodDetails!, 
-                                costoPorCaja: parseFloat(e.target.value) || 0 
-                              },
-                            })
-                          }
-                        />
-                      </div>
+                {/* Sección COMIDA */}
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-base">🍽️ Comida</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div>
+                      <Label>Tipo de Plato *</Label>
+                      <Select
+                        value={formData.foodDetails?.tipoDePlato || ''}
+                        onValueChange={(value) => {
+                          const selectedItem = menuItems.find(item => item.name === value);
+                          setFormData({
+                            ...formData,
+                            foodDetails: {
+                              ...formData.foodDetails!,
+                              tipoDePlato: value,
+                              precioPorPlato: selectedItem?.price || 0,
+                            },
+                          });
+                        }}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecciona un plato" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {menuItems.map((item) => (
+                            <SelectItem key={item.id} value={item.name}>
+                              {item.name} - S/ {item.price}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
-                  )}
 
-                  <div>
-                    <Label>Tipo de Pago *</Label>
-                    <Select
-                      value={formData.foodDetails?.tipoDePago || 'cover'}
-                      onValueChange={(value) =>
-                        setFormData({
-                          ...formData,
-                          foodDetails: { ...formData.foodDetails!, tipoDePago: value as PaymentType },
-                        })
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="cover">Cover (pago fijo)</SelectItem>
-                        <SelectItem value="compra_local">Compra en el local</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </CardContent>
-              </Card>
+                    <div>
+                      <Label>Cantidad de Platos *</Label>
+                      <Input
+                        type="number"
+                        placeholder="Número de platos"
+                        value={formData.foodDetails?.cantidadDePlatos || ''}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            foodDetails: {
+                              ...formData.foodDetails!,
+                              cantidadDePlatos: parseInt(e.target.value) || 0,
+                            },
+                          })
+                        }
+                      />
+                    </div>
+
+                    <div>
+                      <Label>Precio por Plato *</Label>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        value={formData.foodDetails?.precioPorPlato || ''}
+                        disabled={!!formData.foodDetails?.tipoDePlato}
+                        className={formData.foodDetails?.tipoDePlato ? 'bg-muted' : ''}
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Sección BEBIDAS */}
+                <Card>
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-base">🍺 Bebidas</CardTitle>
+                      <Button
+                        type="button"
+                        size="sm"
+                        onClick={() => {
+                          setFormData({
+                            ...formData,
+                            beverages: [
+                              ...(formData.beverages || []),
+                              {
+                                id: Date.now(),
+                                tipo: 'gaseosa',
+                              },
+                            ],
+                          });
+                        }}
+                        variant="outline"
+                      >
+                        <Plus className="h-4 w-4 mr-2" />
+                        Agregar Bebida
+                      </Button>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
             )}
 
             {formData.serviceType === 'solo_alquiler' && (
