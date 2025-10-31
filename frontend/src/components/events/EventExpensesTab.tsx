@@ -496,7 +496,7 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
       </div>
 
       {/* Sección COMIDA - Guía de Compras + Comida (Insumos) */}
-      {event.foodDetails?.cantidadDePlatos && canEdit && userRole !== 'servicio' && (
+      {event.foodDetails?.cantidadDePlatos && (
         <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
