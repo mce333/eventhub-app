@@ -955,28 +955,39 @@ export function CreateEventModal({ open, onClose, initialDate }: CreateEventModa
                                       )}
 
                                       {bev.modalidad === 'compra_local' && (
-                                        <div className="grid grid-cols-2 gap-3">
+                                        <div className="space-y-3">
                                           <div>
-                                            <Label className="text-xs">Costo Caja (Local) S/</Label>
+                                            <Label className="text-xs">Cantidad (Cajas)</Label>
                                             <Input
                                               type="number"
-                                              step="0.01"
                                               placeholder=""
-                                              value={bev.costoCajaLocal || ''}
-                                              onChange={(e) => updateBeverage(index, 'costoCajaLocal', parseFloat(e.target.value) || 0)}
+                                              value={bev.cantidad || ''}
+                                              onChange={(e) => updateBeverage(index, 'cantidad', parseInt(e.target.value) || 0)}
                                             />
                                           </div>
-                                          <div>
-                                            <Label className="text-xs">Costo Caja (Cliente) S/</Label>
-                                            <Input
-                                              type="number"
-                                              step="0.01"
-                                              placeholder=""
-                                              value={bev.costoCajaCliente || ''}
-                                              onChange={(e) => updateBeverage(index, 'costoCajaCliente', parseFloat(e.target.value) || 0)}
-                                            />
+                                          <div className="grid grid-cols-2 gap-3">
+                                            <div>
+                                              <Label className="text-xs">Costo Caja (Local) S/</Label>
+                                              <Input
+                                                type="number"
+                                                step="0.01"
+                                                placeholder=""
+                                                value={bev.costoCajaLocal || ''}
+                                                onChange={(e) => updateBeverage(index, 'costoCajaLocal', parseFloat(e.target.value) || 0)}
+                                              />
+                                            </div>
+                                            <div>
+                                              <Label className="text-xs">Costo Caja (Cliente) S/</Label>
+                                              <Input
+                                                type="number"
+                                                step="0.01"
+                                                placeholder=""
+                                                value={bev.costoCajaCliente || ''}
+                                                onChange={(e) => updateBeverage(index, 'costoCajaCliente', parseFloat(e.target.value) || 0)}
+                                              />
+                                            </div>
                                           </div>
-                                          <div className="col-span-2 p-2 bg-green-500/10 rounded">
+                                          <div className="p-2 bg-green-500/10 rounded">
                                             <div className="flex justify-between text-sm">
                                               <span className="text-green-700">Utilidad por Caja:</span>
                                               <span className="font-bold text-green-700">
