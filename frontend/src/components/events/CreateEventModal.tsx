@@ -811,67 +811,32 @@ export function CreateEventModal({ open, onClose, initialDate }: CreateEventModa
                 </Card>
 
                 {/* Sección BEBIDAS */}
-                <Card className={areBeveragesSaved ? 'border-green-500 bg-green-50' : ''}>
+                <Card>
                   <CardHeader className="pb-3">
                     <div className="flex items-center justify-between">
                       <CardTitle className="text-base">🍺 Bebidas</CardTitle>
-                      <div className="flex items-center gap-2">
-                        {areBeveragesSaved && <Badge className="bg-green-500">Guardado</Badge>}
-                        {!areBeveragesSaved && (
-                          <>
-                            <Button
-                              type="button"
-                              size="sm"
-                              onClick={() => {
-                                setFormData({
-                                  ...formData,
-                                  beverages: [
-                                    ...(formData.beverages || []),
-                                    {
-                                      id: Date.now(),
-                                      tipo: 'gaseosa',
-                                    },
-                                  ],
-                                });
-                              }}
-                              variant="outline"
-                            >
-                              <Plus className="h-4 w-4 mr-2" />
-                              Agregar Bebida
-                            </Button>
-                            {formData.beverages && formData.beverages.length > 0 && (
-                              <Button
-                                type="button"
-                                size="sm"
-                                onClick={saveBeveragesSection}
-                              >
-                                <Save className="h-4 w-4 mr-2" />
-                                Guardar
-                              </Button>
-                            )}
-                          </>
-                        )}
-                        {areBeveragesSaved && (
-                          <Button
-                            type="button"
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => setAreBeveragesSaved(false)}
-                          >
-                            Editar
-                          </Button>
-                        )}
-                      </div>
+                      <Button
+                        type="button"
+                        size="sm"
+                        onClick={addBeverage}
+                        variant="outline"
+                      >
+                        <Plus className="h-4 w-4 mr-2" />
+                        Agregar Bebida
+                      </Button>
                     </div>
                   </CardHeader>
-                  <CardContent className="space-y-4">{!areBeveragesSaved ? (
-                      <>
+                  <CardContent className="space-y-3">
                     {/* Lista de bebidas agregadas */}
                     {formData.beverages && formData.beverages.length > 0 ? (
                       <div className="space-y-3">
-                        {formData.beverages.map((bev, index) => (
-                          <Card key={bev.id} className="border-2">
+                        {formData.beverages.map((bev, index) => {
+                          const isSaved = savedBeverageIndexes.has(index);
+                          
+                          return (
+                          <Card key={bev.id} className={isSaved ? "border-green-500 bg-green-50" : "border-2"}>
                             <CardContent className="pt-4 space-y-3">
+                              {!isSaved ? (
                               <div className="flex items-start justify-between gap-4">
                                 <div className="flex-1 space-y-3">
                                   {/* Tipo de bebida */}
