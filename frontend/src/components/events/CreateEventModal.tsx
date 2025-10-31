@@ -200,6 +200,7 @@ export function CreateEventModal({ open, onClose, initialDate }: CreateEventModa
         id: newEventId,
         name: formData.name!,
         type: formData.type!,
+        eventCategory: formData.eventCategory || 'evento',
         date: formData.date!,
         endDate: formData.date,
         location: formData.location!,
