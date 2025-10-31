@@ -1840,6 +1840,59 @@ export function CreateEventModal({ open, onClose, initialDate }: CreateEventModa
                   </div>
                 )}
                 
+                {/* Bebidas */}
+                {formData.beverages && formData.beverages.length > 0 && (
+                  <div className="p-3 bg-background rounded-lg border">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="font-semibold">Bebidas</span>
+                      <span className="font-bold">S/ {
+                        formData.beverages.reduce((total, bev) => {
+                          let cost = 0;
+                          if (bev.tipo === 'gaseosa' || bev.tipo === 'agua' || bev.tipo === 'champan') {
+                            cost = (bev.cantidad || 0) * (bev.precioUnitario || 0);
+                          } else if (bev.tipo === 'cerveza') {
+                            if (bev.modalidad === 'cover') {
+                              cost = (bev.numeroCajas || 0) * (bev.costoPorCaja || 0);
+                            } else {
+                              cost = (bev.cantidad || 0) * (bev.costoCajaCliente || 0);
+                            }
+                          } else if (bev.tipo === 'coctel') {
+                            cost = (bev.cantidad || 0) * (bev.costoCoctelCliente || 0);
+                          }
+                          return total + cost;
+                        }, 0).toFixed(2)
+                      }</span>
+                    </div>
+                    <div className="space-y-1 text-xs text-muted-foreground">
+                      {formData.beverages.map((bev, idx) => {
+                        let cost = 0;
+                        let desc = '';
+                        if (bev.tipo === 'gaseosa' || bev.tipo === 'agua' || bev.tipo === 'champan') {
+                          cost = (bev.cantidad || 0) * (bev.precioUnitario || 0);
+                          desc = `${bev.cantidad || 0} unid. × S/ ${bev.precioUnitario || 0}`;
+                        } else if (bev.tipo === 'cerveza') {
+                          if (bev.modalidad === 'cover') {
+                            cost = (bev.numeroCajas || 0) * (bev.costoPorCaja || 0);
+                            desc = `${bev.numeroCajas || 0} cajas × S/ ${bev.costoPorCaja || 0} (Cover)`;
+                          } else {
+                            cost = (bev.cantidad || 0) * (bev.costoCajaCliente || 0);
+                            desc = `${bev.cantidad || 0} cajas × S/ ${bev.costoCajaCliente || 0} (Compra local)`;
+                          }
+                        } else if (bev.tipo === 'coctel') {
+                          cost = (bev.cantidad || 0) * (bev.costoCoctelCliente || 0);
+                          desc = `${bev.cantidad || 0} cócteles × S/ ${bev.costoCoctelCliente || 0}`;
+                        }
+                        return (
+                          <div key={idx} className="flex justify-between">
+                            <span className="capitalize">{bev.tipo}:</span>
+                            <span>S/ {cost.toFixed(2)} ({desc})</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+                
                 {/* Decoración */}
                 {totals.decorationClientCost > 0 && (
                   <div className="p-3 bg-background rounded-lg border">
