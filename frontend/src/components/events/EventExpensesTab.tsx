@@ -610,10 +610,7 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
                 <Button
                   type="button"
                   size="sm"
-                  onClick={() => {
-                    setNewExpense({ ...newExpense, category: 'otros' });
-                    setShowAddForm(true);
-                  }}
+                  onClick={() => setShowAddIngredient(true)}
                   variant="outline"
                 >
                   <Plus className="h-4 w-4 mr-2" />
