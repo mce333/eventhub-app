@@ -271,11 +271,30 @@ export function EventInfoTab({ event, isEditing, onUpdate }: EventInfoTabProps) 
       {event.serviceType === 'con_comida' && event.beverages && event.beverages.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>Detalles de Bebidas</CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle>Detalles de Bebidas</CardTitle>
+              {editingCard === 'bebidas' ? (
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm" onClick={handleCancelEdit}>
+                    <X className="h-4 w-4 mr-2" />
+                    Cancelar
+                  </Button>
+                  <Button size="sm" onClick={() => handleSaveEdit('bebidas', 'Detalles de Bebidas')} className="bg-gradient-primary">
+                    <Save className="h-4 w-4 mr-2" />
+                    Guardar
+                  </Button>
+                </div>
+              ) : (
+                <Button size="sm" onClick={() => handleStartEdit('bebidas', { beverages: event.beverages })} className="bg-gradient-primary">
+                  <Edit className="h-4 w-4 mr-2" />
+                  Editar
+                </Button>
+              )}
+            </div>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {event.beverages.map((bev, idx) => (
+              {(editingCard === 'bebidas' ? (tempData.beverages || []) : event.beverages).map((bev, idx) => (
                 <div key={idx} className="p-3 bg-muted/50 rounded-lg">
                   <div className="flex items-center justify-between">
                     <div>
