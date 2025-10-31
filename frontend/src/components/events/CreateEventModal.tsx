@@ -1367,26 +1367,6 @@ export function CreateEventModal({ open, onClose, initialDate }: CreateEventModa
                 Presupuesto asignado para todos los gastos del evento
               </p>
             </div>
-
-            <div>
-              <Label>Foto del Contrato</Label>
-              <div className="flex items-center gap-2">
-                <Input type="file" accept="image/*" />
-                <Button type="button" variant="outline" size="icon">
-                  <Upload className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-
-            <div>
-              <Label>Recibos de Pago</Label>
-              <div className="flex items-center gap-2">
-                <Input type="file" accept="image/*" multiple />
-                <Button type="button" variant="outline" size="icon">
-                  <Upload className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
           </div>
         );
 
