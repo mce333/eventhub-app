@@ -104,6 +104,8 @@ export interface EventDecoration {
   providerCost?: number; // Costo con proveedor
   profit?: number; // Utilidad
   estado: 'pendiente' | 'comprado' | 'instalado';
+  estadoPago?: 'pendiente' | 'adelanto' | 'pagado'; // Estado de pago
+  montoPagado?: number; // Monto pagado (adelanto o completo)
   notes?: string;
 }
 
