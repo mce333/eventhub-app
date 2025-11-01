@@ -5,8 +5,9 @@ import { Event, EventClient } from '@/types/events';
 export const ROLES: UserRole[] = [
   { id: 1, name: 'admin', displayName: 'Administrador' },
   { id: 2, name: 'socio', displayName: 'Socio' },
-  { id: 3, name: 'encargado_compras', displayName: 'Encargado de Compras' },
-  { id: 4, name: 'servicio', displayName: 'Personal de Servicio' },
+  { id: 3, name: 'coordinador', displayName: 'Coordinador' },
+  { id: 4, name: 'encargado_compras', displayName: 'Encargado de Compras' },
+  { id: 5, name: 'servicio', displayName: 'Personal de Servicio' },
 ];
 
 // Mock Users (Demo mode)
