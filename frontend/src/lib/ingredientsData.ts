@@ -182,3 +182,29 @@ export function generatePredeterminedExpenses(dishId: string, numberOfPortions: 
     isPredetermined: true,
   }));
 }
+
+// Opciones de verduras disponibles con precios por kilo
+export const VEGETABLE_OPTIONS = [
+  { name: 'Tomate', pricePerKg: 3.5 },
+  { name: 'Lechuga', pricePerKg: 2.5 },
+  { name: 'Zanahoria', pricePerKg: 2.0 },
+  { name: 'Cebolla', pricePerKg: 3.0 },
+  { name: 'Pimiento', pricePerKg: 4.0 },
+  { name: 'Pepino', pricePerKg: 2.8 },
+  { name: 'Culantro', pricePerKg: 5.0 },
+];
+
+// Opciones de ajíes disponibles con precios por kilo
+export const CHILI_OPTIONS = [
+  { name: 'Ají Rojo', pricePerKg: 8.0 },
+  { name: 'Ají Amarillo', pricePerKg: 10.0 },
+  { name: 'Ají Panka', pricePerKg: 12.0 },
+  { name: 'Ají Limo', pricePerKg: 15.0 },
+];
+
+// Función para verificar si un plato requiere ajíes
+export function dishRequiresChili(dishId: string): boolean {
+  const chilliDishes = ['ceviche', 'lomo-saltado', 'pollo-parrilla', 'aji-gallina'];
+  return chilliDishes.includes(dishId);
+}
+
