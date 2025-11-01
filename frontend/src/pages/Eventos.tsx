@@ -80,11 +80,11 @@ export default function Eventos() {
     // Cargar SOLO eventos guardados en localStorage
     const storedEvents = JSON.parse(localStorage.getItem('demo_events') || '[]');
     
-    // Ordenar por fecha de creación (más recientes primero)
+    // Ordenar por fecha de creación (más recientes primero) - DESCENDENTE
     const sortedEvents = storedEvents.sort((a: Event, b: Event) => {
       const dateA = new Date(a.createdAt).getTime();
       const dateB = new Date(b.createdAt).getTime();
-      return dateB - dateA; // Descendente
+      return dateB - dateA; // Descendente: más reciente primero
     });
     
     console.log('📊 Eventos cargados desde localStorage:', sortedEvents.length);
