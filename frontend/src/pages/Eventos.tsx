@@ -311,6 +311,8 @@ export default function Eventos() {
             </Card>
 
             {/* Tabs: Eventos / Reservas */}
+            {/* Coordinador y Encargado de Compras NO ven tab de Reservas */}
+            {!isCoordinador && !isEncargadoCompras ? (
             <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'eventos' | 'reservas')} className="w-full">
               <TabsList className="grid w-full max-w-md grid-cols-2">
                 <TabsTrigger value="eventos">
