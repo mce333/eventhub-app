@@ -579,6 +579,18 @@ export default function Eventos() {
                 )}
               </TabsContent>
             </Tabs>
+            ) : (
+              /* Vista sin tabs para Coordinador y Encargado de Compras - Solo Eventos */
+              <div className="mt-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {eventsByCategory.eventos.filter((event) => {
+                    const matchesSearch =
+                      event.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                      event.location.toLowerCase().includes(searchTerm.toLowerCase());
+                    const matchesStatus = statusFilter === 'all' || event.status === statusFilter;
+                    const matchesType = typeFilter === 'all' || event.type === typeFilter;
+                    return matchesSearch && matchesStatus && matchesType;
+                  }).map((event) => (
           </div>
         </main>
       </div>
