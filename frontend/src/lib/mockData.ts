@@ -43,7 +43,7 @@ export const DEMO_USERS: MockUser[] = [
     password: 'coord123',
     name: 'Coordinador',
     last_name: 'General',
-    role: ROLES[3], // servicio role que se usará para coordinadores
+    role: ROLES[2], // Rol coordinador
     phone: '+51 999 777 666',
     address: 'Lima',
     document_type: 'DNI',
