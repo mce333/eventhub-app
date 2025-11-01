@@ -1050,6 +1050,184 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
                       </div>
                     </div>
                   )}
+
+                  {/* Cerveza */}
+                  {newBeverage.tipo === 'cerveza' && (
+                    <div className="space-y-3 p-3 bg-yellow-500/5 rounded-lg border border-yellow-500/20">
+                      <div>
+                        <Label className="text-xs">Modalidad</Label>
+                        <Select
+                          value={newBeverage.modalidad || 'cover'}
+                          onValueChange={(value: 'cover' | 'compra_local') => setNewBeverage({ ...newBeverage, modalidad: value })}
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="cover">Cover</SelectItem>
+                            <SelectItem value="compra_local">Compra en el Local</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {newBeverage.modalidad === 'cover' && (
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <Label className="text-xs">Número de Cajas</Label>
+                            <Input
+                              type="number"
+                              placeholder=""
+                              value={newBeverage.numeroCajas || ''}
+                              onChange={(e) => setNewBeverage({ ...newBeverage, numeroCajas: parseInt(e.target.value) || 0 })}
+                            />
+                          </div>
+                          <div>
+                            <Label className="text-xs">Costo por Caja (S/)</Label>
+                            <Input
+                              type="number"
+                              step="0.01"
+                              placeholder=""
+                              value={newBeverage.costoPorCaja || ''}
+                              onChange={(e) => setNewBeverage({ ...newBeverage, costoPorCaja: parseFloat(e.target.value) || 0 })}
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      {newBeverage.modalidad === 'compra_local' && (
+                        <div className="space-y-3">
+                          <div>
+                            <Label className="text-xs">Cantidad (Cajas)</Label>
+                            <Input
+                              type="number"
+                              placeholder=""
+                              value={newBeverage.cantidad || ''}
+                              onChange={(e) => setNewBeverage({ ...newBeverage, cantidad: parseInt(e.target.value) || 0 })}
+                            />
+                          </div>
+                          <div className="grid grid-cols-2 gap-3">
+                            <div>
+                              <Label className="text-xs">Costo Caja (Local) S/</Label>
+                              <Input
+                                type="number"
+                                step="0.01"
+                                placeholder=""
+                                value={newBeverage.costoCajaLocal || ''}
+                                onChange={(e) => setNewBeverage({ ...newBeverage, costoCajaLocal: parseFloat(e.target.value) || 0 })}
+                              />
+                            </div>
+                            <div>
+                              <Label className="text-xs">Costo Caja (Cliente) S/</Label>
+                              <Input
+                                type="number"
+                                step="0.01"
+                                placeholder=""
+                                value={newBeverage.costoCajaCliente || ''}
+                                onChange={(e) => setNewBeverage({ ...newBeverage, costoCajaCliente: parseFloat(e.target.value) || 0 })}
+                              />
+                            </div>
+                          </div>
+                          <div className="p-2 bg-green-500/10 rounded">
+                            <div className="flex justify-between text-sm">
+                              <span className="text-green-700">Utilidad por Caja:</span>
+                              <span className="font-bold text-green-700">
+                                S/ {((newBeverage.costoCajaCliente || 0) - (newBeverage.costoCajaLocal || 0)).toFixed(2)}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Cócteles */}
+                  {newBeverage.tipo === 'coctel' && (
+                    <div className="space-y-3 p-3 bg-purple-500/5 rounded-lg border border-purple-500/20">
+                      <div>
+                        <Label className="text-xs">Modalidad</Label>
+                        <Select
+                          value={newBeverage.modalidad || 'cover'}
+                          onValueChange={(value: 'cover' | 'compra_local') => setNewBeverage({ ...newBeverage, modalidad: value })}
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="cover">Cover</SelectItem>
+                            <SelectItem value="compra_local">Compra en el Local</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {newBeverage.modalidad === 'cover' && (
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <Label className="text-xs">Número de Cócteles</Label>
+                            <Input
+                              type="number"
+                              placeholder=""
+                              value={newBeverage.cantidad || ''}
+                              onChange={(e) => setNewBeverage({ ...newBeverage, cantidad: parseInt(e.target.value) || 0 })}
+                            />
+                          </div>
+                          <div>
+                            <Label className="text-xs">Costo por Cóctel (S/)</Label>
+                            <Input
+                              type="number"
+                              step="0.01"
+                              placeholder=""
+                              value={newBeverage.costoPorCaja || ''}
+                              onChange={(e) => setNewBeverage({ ...newBeverage, costoPorCaja: parseFloat(e.target.value) || 0 })}
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      {newBeverage.modalidad === 'compra_local' && (
+                        <div className="space-y-3">
+                          <div>
+                            <Label className="text-xs">Cantidad (Cócteles)</Label>
+                            <Input
+                              type="number"
+                              placeholder=""
+                              value={newBeverage.cantidad || ''}
+                              onChange={(e) => setNewBeverage({ ...newBeverage, cantidad: parseInt(e.target.value) || 0 })}
+                            />
+                          </div>
+                          <div className="grid grid-cols-2 gap-3">
+                            <div>
+                              <Label className="text-xs">Costo Cóctel (Local) S/</Label>
+                              <Input
+                                type="number"
+                                step="0.01"
+                                placeholder=""
+                                value={newBeverage.costoCoctelLocal || ''}
+                                onChange={(e) => setNewBeverage({ ...newBeverage, costoCoctelLocal: parseFloat(e.target.value) || 0 })}
+                              />
+                            </div>
+                            <div>
+                              <Label className="text-xs">Costo Cóctel (Cliente) S/</Label>
+                              <Input
+                                type="number"
+                                step="0.01"
+                                placeholder=""
+                                value={newBeverage.costoCoctelCliente || ''}
+                                onChange={(e) => setNewBeverage({ ...newBeverage, costoCoctelCliente: parseFloat(e.target.value) || 0 })}
+                              />
+                            </div>
+                          </div>
+                          <div className="p-2 bg-green-500/10 rounded">
+                            <div className="flex justify-between text-sm">
+                              <span className="text-green-700">Utilidad por Cóctel:</span>
+                              <span className="font-bold text-green-700">
+                                S/ {((newBeverage.costoCoctelCliente || 0) - (newBeverage.costoCoctelLocal || 0)).toFixed(2)}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
                   
                   <div className="flex gap-2 mt-3">
                     <Button
