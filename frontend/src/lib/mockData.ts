@@ -63,7 +63,7 @@ export const DEMO_USERS: MockUser[] = [
     password: 'compras123',
     name: 'Encargado',
     last_name: 'de Compras',
-    role: ROLES[2],
+    role: ROLES[3], // Encargado de Compras (índice 3 ahora)
     phone: '+51 999 666 555',
     address: 'Lima',
     document_type: 'DNI',
