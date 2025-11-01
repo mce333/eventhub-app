@@ -80,6 +80,31 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission> = {
     canViewWarehouse: false,
     canManageWarehouse: false,
   },
+  coordinador: {
+    canViewDashboard: false,
+    canViewEvents: true, // Solo eventos asignados
+    canCreateEvent: false,
+    canEditEvent: false,
+    canDeleteEvent: false,
+    canViewClients: false,
+    canManageClients: false,
+    canViewFinancial: false,
+    canViewReports: false,
+    canViewStatistics: false,
+    canManageUsers: false,
+    canRegisterExpenses: true, // Solo para eventos asignados
+    canViewAllExpenses: false,
+    canViewDecoration: false,
+    canEditDecoration: false,
+    canViewFurniture: false,
+    canEditFurniture: false,
+    canViewStaff: false,
+    canManageStaff: false,
+    canViewSpaces: false,
+    canManageSpaces: false,
+    canViewWarehouse: false, // Coordinador NO puede ver almacén
+    canManageWarehouse: false,
+  },
   encargado_compras: {
     canViewDashboard: false,
     canViewEvents: true,
