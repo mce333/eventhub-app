@@ -163,7 +163,7 @@ export function getUserRole(user: { role?: { name?: string } } | null): UserRole
   }
   
   const roleName = user.role.name;
-  if (roleName === 'admin' || roleName === 'socio' || roleName === 'encargado_compras' || roleName === 'servicio') {
+  if (roleName === 'admin' || roleName === 'socio' || roleName === 'coordinador' || roleName === 'encargado_compras' || roleName === 'servicio') {
     return roleName as UserRole;
   }
   
