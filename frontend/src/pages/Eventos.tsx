@@ -549,12 +549,12 @@ export default function Eventos() {
                           )}
                         </div>
 
-                        {isEncargadoCompras && (
+                        {(isCoordinador || isEncargadoCompras) && (
                           <Button className="w-full mt-4" variant="outline" onClick={(e) => {
                             e.stopPropagation();
                             navigate(`/eventos/${event.id}`);
                           }}>
-                            Registrar Gastos
+                            {isCoordinador ? 'Registrar Gastos e Ingresos' : 'Registrar Gastos'}
                           </Button>
                         )}
                       </CardContent>
