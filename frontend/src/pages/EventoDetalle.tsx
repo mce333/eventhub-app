@@ -286,13 +286,13 @@ export default function EventoDetalle() {
                 <EventExpensesTab event={event} onUpdate={loadEvent} />
               </TabsContent>
 
-              {(userRole === 'admin' || userRole === 'servicio') && (
+              {(userRole === 'admin' || userRole === 'coordinador') && (
                 <TabsContent value="incomes">
                   <EventIncomesTab event={event} onUpdate={loadEvent} />
                 </TabsContent>
               )}
 
-              {!isEncargadoCompras && !isServicio && (
+              {!isEncargadoCompras && !isServicio && !isCoordinador && (
                 <TabsContent value="gallery">
                   <EventGalleryTab event={event} />
                 </TabsContent>
