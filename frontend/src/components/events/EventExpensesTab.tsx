@@ -1258,8 +1258,6 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
                       </div>
                     </div>
                   ))}
-                    );
-                  })}
 
                   {/* Add Ingredient Form */}
                   {showAddIngredient && canEdit && (
