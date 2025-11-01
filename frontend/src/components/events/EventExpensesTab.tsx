@@ -128,6 +128,15 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
     paymentMethod: 'efectivo',
   });
 
+  // Estados para verduras y ajíes
+  const [showAddVegetable, setShowAddVegetable] = useState(false);
+  const [showAddChili, setShowAddChili] = useState(false);
+  const [selectedVegetables, setSelectedVegetables] = useState<Array<{name: string, kg: number, pricePerKg: number, total: number}>>([]);
+  const [selectedChilis, setSelectedChilis] = useState<Array<{name: string, kg: number, pricePerKg: number, total: number}>>([]);
+  const [newVegetable, setNewVegetable] = useState({ name: '', kg: 0, pricePerKg: 0 });
+  const [newChili, setNewChili] = useState({ name: '', kg: 0, pricePerKg: 0 });
+
+
   // Sync registered expenses when event changes
   useEffect(() => {
     const registered: {[key: number]: boolean} = {};
