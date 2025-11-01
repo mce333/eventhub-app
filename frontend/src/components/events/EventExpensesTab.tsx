@@ -584,6 +584,8 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
       )}
 
       {/* Summary Cards - Gastos Totales y Caja Chica */}
+      {/* Ocultar para Coordinador y Encargado de Compras */}
+      {!isCoordinador && !isEncargadoCompras && (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Total Gastos del Evento */}
         <Card className="bg-gradient-to-br from-destructive/10 to-destructive/5 border-destructive/20">
@@ -655,9 +657,11 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
           </CardContent>
         </Card>
       </div>
+      )}
 
       {/* Sección COMIDA - Guía de Compras + Comida (Insumos) */}
-      {event.foodDetails?.cantidadDePlatos && (
+      {/* Mostrar solo si NO es coordinador (encargado_compras y admin sí la ven) */}
+      {!isCoordinador && event.foodDetails?.cantidadDePlatos && (
         <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
