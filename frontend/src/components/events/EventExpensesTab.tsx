@@ -455,6 +455,23 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
         ];
         
         storedEvents[index].beverages = updatedBeverages;
+        
+        // Crear entrada de auditoría
+        const auditEntry = {
+          id: Date.now() + 1,
+          eventId: event.id,
+          userId: user?.id || 1,
+          userName: `${user?.name} ${user?.last_name}`,
+          userRole: user?.role?.name || 'admin',
+          action: 'added' as const,
+          section: 'Bebidas',
+          description: `Bebida agregada: ${newBeverage.tipo} (${newBeverage.cantidad} unidades)`,
+          timestamp: new Date().toISOString(),
+        };
+        
+        storedEvents[index].auditLog = [...(storedEvents[index].auditLog || []), auditEntry];
+        storedEvents[index].updatedAt = new Date().toISOString();
+        
         localStorage.setItem('demo_events', JSON.stringify(storedEvents));
         
         toast.success('Bebida agregada correctamente');
@@ -471,6 +488,47 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
     } catch (error) {
       console.error('Error al agregar bebida:', error);
       toast.error('Error al agregar la bebida');
+    }
+  };
+
+  const handleDeleteBeverage = (beverageIndex: number) => {
+    if (!confirm('¿Estás seguro de eliminar esta bebida?')) return;
+
+    try {
+      const storedEvents = JSON.parse(localStorage.getItem('demo_events') || '[]');
+      const index = storedEvents.findIndex((e: Event) => e.id === event.id);
+      
+      if (index !== -1) {
+        const beverageToDelete = storedEvents[index].beverages[beverageIndex];
+        
+        // Eliminar bebida del array
+        const updatedBeverages = storedEvents[index].beverages.filter((_: any, idx: number) => idx !== beverageIndex);
+        storedEvents[index].beverages = updatedBeverages;
+        
+        // Crear entrada de auditoría
+        const auditEntry = {
+          id: Date.now(),
+          eventId: event.id,
+          userId: user?.id || 1,
+          userName: `${user?.name} ${user?.last_name}`,
+          userRole: user?.role?.name || 'admin',
+          action: 'deleted' as const,
+          section: 'Bebidas',
+          description: `Bebida eliminada: ${beverageToDelete.tipo} (${beverageToDelete.cantidad} unidades)`,
+          timestamp: new Date().toISOString(),
+        };
+        
+        storedEvents[index].auditLog = [...(storedEvents[index].auditLog || []), auditEntry];
+        storedEvents[index].updatedAt = new Date().toISOString();
+        
+        localStorage.setItem('demo_events', JSON.stringify(storedEvents));
+        
+        toast.success('Bebida eliminada correctamente');
+        onUpdate();
+      }
+    } catch (error) {
+      console.error('Error al eliminar bebida:', error);
+      toast.error('Error al eliminar la bebida');
     }
   };
 
