@@ -172,6 +172,8 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
   const canEdit = canEditExpenses(user, event);
   const isSuspicious = isSuspiciousExpenseEdit(user);
   const userRole = getUserRole(user);
+  const isCoordinador = userRole === 'coordinador';
+  const isEncargadoCompras = userRole === 'encargado_compras';
 
   // Separate predefined and additional expenses
   const predefinedExpenses = event.expenses?.filter(e => e.isPredetermined) || [];
