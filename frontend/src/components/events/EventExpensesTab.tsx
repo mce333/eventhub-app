@@ -1482,22 +1482,6 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
                     </div>
                     <div className="text-right">
                       <p className="text-lg font-bold">S/ {(expense.amount || 0).toLocaleString()}</p>
-                      <Badge
-                        variant="outline"
-                        className={
-                          expense.status === 'approved'
-                            ? 'bg-success/10 text-success border-success/20'
-                            : expense.status === 'pending'
-                            ? 'bg-warning/10 text-warning border-warning/20'
-                            : 'bg-destructive/10 text-destructive border-destructive/20'
-                        }
-                      >
-                        {expense.status === 'approved'
-                          ? 'Aprobado'
-                          : expense.status === 'pending'
-                          ? 'Pendiente'
-                          : 'Rechazado'}
-                      </Badge>
                     </div>
                   </div>
 
