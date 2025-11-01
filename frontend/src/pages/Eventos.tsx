@@ -420,12 +420,12 @@ export default function Eventos() {
                       )}
                     </div>
 
-                    {(isEncargadoCompras || isServicio) && (
+                    {(isCoordinador || isEncargadoCompras || isServicio) && (
                       <Button className="w-full mt-4" variant="outline" onClick={(e) => {
                         e.stopPropagation();
                         navigate(`/eventos/${event.id}`);
                       }}>
-                        Registrar Gastos
+                        {isCoordinador ? 'Registrar Gastos e Ingresos' : 'Registrar Gastos'}
                       </Button>
                     )}
                   </CardContent>
