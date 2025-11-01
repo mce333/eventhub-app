@@ -192,18 +192,23 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
   const predefinedExpenses = event.expenses?.filter(e => e.isPredetermined) || [];
   const additionalExpenses = event.expenses?.filter(e => !e.isPredetermined) || [];
   
+  // Lista de verduras a excluir (ya se manejan en la sección de Verduras)
+  const EXCLUDED_VEGETABLES = ['tomate', 'lechuga', 'limón', 'limon', 'zanahoria', 'cebolla', 'pimiento', 'pepino', 'culantro'];
+  
   // Generar ingredientes dinámicamente basados en el plato seleccionado
   const dynamicIngredients = selectedDish && event.foodDetails?.cantidadDePlatos 
-    ? suggestedIngredients.map((ing, idx) => ({
-        id: `dynamic-${selectedDish}-${idx}`,
-        category: ing.category,
-        description: ing.name,
-        cantidad: ing.totalQuantity,
-        costoUnitario: ing.estimatedCost,
-        amount: ing.totalCost,
-        unit: ing.unit,
-        isDynamic: true, // Marca para identificar ingredientes dinámicos
-      }))
+    ? suggestedIngredients
+        .filter(ing => !EXCLUDED_VEGETABLES.some(vegName => ing.name.toLowerCase().includes(vegName)))
+        .map((ing, idx) => ({
+          id: `dynamic-${selectedDish}-${idx}`,
+          category: ing.category,
+          description: ing.name,
+          cantidad: ing.totalQuantity,
+          costoUnitario: ing.estimatedCost,
+          amount: ing.totalCost,
+          unit: ing.unit,
+          isDynamic: true, // Marca para identificar ingredientes dinámicos
+        }))
     : [];
   
   // Calculate specific totals
