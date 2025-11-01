@@ -51,6 +51,24 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
   const [isComidaSectionCollapsed, setIsComidaSectionCollapsed] = useState(true); // Minimizada por defecto
   const [isInsumosSectionCollapsed, setIsInsumosSectionCollapsed] = useState(true); // Minimizada por defecto
   const [isBebidasSectionCollapsed, setIsBebidasSectionCollapsed] = useState(true); // Minimizada por defecto
+  const [showAddBeverage, setShowAddBeverage] = useState(false);
+  const [newBeverage, setNewBeverage] = useState<{
+    tipo: 'gaseosa' | 'agua' | 'champan' | 'vino' | 'cerveza' | 'coctel';
+    cantidad: number;
+    precioUnitario?: number;
+    litros?: number;
+    modalidad?: 'cover' | 'compra_local';
+    numeroCajas?: number;
+    costoPorCaja?: number;
+    costoCajaLocal?: number;
+    costoCajaCliente?: number;
+    costoCoctelLocal?: number;
+    costoCoctelCliente?: number;
+  }>({
+    tipo: 'gaseosa',
+    cantidad: 0,
+    precioUnitario: 0,
+  });
   
   // Función para mapear el tipoDePlato del evento a un dishId válido
   const mapTipoDePlatoToDishId = (tipoDePlato: string | undefined): string => {
