@@ -1073,7 +1073,7 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
                               <SelectContent>
                                 {VEGETABLE_OPTIONS.map((veg) => (
                                   <SelectItem key={veg.name} value={veg.name}>
-                                    {veg.name} - S/ {veg.pricePerKg}/kg
+                                    {veg.name}
                                   </SelectItem>
                                 ))}
                               </SelectContent>
