@@ -6,6 +6,8 @@ export interface Ingredient {
   unit: string;
   category: ExpenseCategory;
   estimatedCost: number; // Costo unitario estimado
+  isVegetable?: boolean; // Si es una verdura seleccionable
+  isChili?: boolean; // Si es un tipo de ají
 }
 
 export interface DishIngredients {
