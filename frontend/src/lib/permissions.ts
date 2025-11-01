@@ -220,13 +220,8 @@ export function canEditExpenses(user: User | null, event: Event): boolean {
     return true;
   }
   
-  // Encargado Compras can edit all events
-  if (role === 'encargado_compras') {
-    return true;
-  }
-  
-  // Servicio users can only edit expenses for assigned events
-  if (role === 'servicio') {
+  // Coordinador, Encargado Compras y Servicio pueden editar solo eventos asignados
+  if (role === 'coordinador' || role === 'encargado_compras' || role === 'servicio') {
     const assignedEventIds = (user as any).assignedEventIds || [];
     return assignedEventIds.includes(event.id);
   }
