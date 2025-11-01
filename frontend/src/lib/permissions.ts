@@ -102,8 +102,8 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission> = {
     canManageStaff: false,
     canViewSpaces: false,
     canManageSpaces: false,
-    canViewWarehouse: false, // Coordinador NO puede ver almacén
-    canManageWarehouse: false,
+    canViewWarehouse: true, // SÍ tiene acceso a almacén (pero solo su historial)
+    canManageWarehouse: true,
   },
   encargado_compras: {
     canViewDashboard: false,
