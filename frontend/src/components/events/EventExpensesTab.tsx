@@ -1291,19 +1291,82 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
                   )}
 
                   {/* INGREDIENTES DINÁMICOS DEL PLATO */}
-                  {dynamicIngredients.map((ingredient) => (
-                    <div key={ingredient.id} className="p-3 border rounded-lg bg-primary/5">
-                      <div className="flex items-center justify-between">
-                        <div className="flex-1">
-                          <h4 className="font-semibold text-sm">{ingredient.description}</h4>
-                          <p className="text-xs text-muted-foreground">
-                            {ingredient.cantidad.toFixed(2)} {ingredient.unit} × S/ {ingredient.costoUnitario.toFixed(2)}/{ingredient.unit}
-                          </p>
+                  {dynamicIngredients.map((ingredient) => {
+                    const isRegistered = registeredDynamicIngredients[ingredient.id];
+                    const values = dynamicIngredientValues[ingredient.id] || { cantidad: 0, costoUnitario: 0 };
+                    const total = values.cantidad * values.costoUnitario;
+
+                    return (
+                      <div key={ingredient.id} className={`p-3 border rounded-lg ${isRegistered ? 'bg-green-500/5 border-green-500/30' : 'bg-primary/5'}`}>
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2">
+                              <h4 className="font-semibold text-sm">{ingredient.description}</h4>
+                              {isRegistered && (
+                                <Badge variant="outline" className="bg-green-500/20 text-green-700 border-green-500/30 text-xs">
+                                  ✓ Registrado
+                                </Badge>
+                              )}
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                              Sugerido: {ingredient.cantidad.toFixed(2)} {ingredient.unit} × S/ {ingredient.costoUnitario.toFixed(2)}/{ingredient.unit}
+                            </p>
+                          </div>
+                          {isRegistered && (
+                            <p className="text-lg font-bold text-green-600">S/ {total.toFixed(2)}</p>
+                          )}
                         </div>
-                        <p className="text-lg font-bold">S/ {ingredient.amount.toFixed(2)}</p>
+
+                        {canEdit && !isRegistered && (
+                          <>
+                            <div className="grid grid-cols-3 gap-2 pt-2 border-t">
+                              <div>
+                                <Label className="text-xs">Cantidad</Label>
+                                <Input
+                                  type="number"
+                                  placeholder="0"
+                                  value={values.cantidad || ''}
+                                  onChange={(e) => handleDynamicIngredientChange(ingredient.id, 'cantidad', parseFloat(e.target.value) || 0)}
+                                  className="h-8 text-sm"
+                                  min="0"
+                                />
+                                <p className="text-xs text-muted-foreground mt-0.5">{ingredient.unit}</p>
+                              </div>
+                              <div>
+                                <Label className="text-xs">Costo Unitario (S/)</Label>
+                                <Input
+                                  type="number"
+                                  step="0.01"
+                                  placeholder="0.00"
+                                  value={values.costoUnitario || ''}
+                                  onChange={(e) => handleDynamicIngredientChange(ingredient.id, 'costoUnitario', parseFloat(e.target.value) || 0)}
+                                  className="h-8 text-sm"
+                                  min="0"
+                                />
+                              </div>
+                              <div>
+                                <Label className="text-xs">Total</Label>
+                                <Input
+                                  value={`S/ ${total.toFixed(2)}`}
+                                  disabled
+                                  className="h-8 text-sm font-bold bg-muted"
+                                />
+                              </div>
+                            </div>
+                            <Button
+                              size="sm"
+                              onClick={() => handleRegisterDynamicIngredient(ingredient)}
+                              className="w-full mt-2 bg-gradient-primary"
+                              disabled={values.cantidad <= 0 || values.costoUnitario <= 0}
+                            >
+                              <Save className="h-4 w-4 mr-2" />
+                              Registrar
+                            </Button>
+                          </>
+                        )}
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
 
                   {/* Add Ingredient Form */}
                   {showAddIngredient && canEdit && (
