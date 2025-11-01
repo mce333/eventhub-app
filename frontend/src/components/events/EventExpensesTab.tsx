@@ -136,6 +136,10 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
   const [newVegetable, setNewVegetable] = useState({ name: '', kg: 0, pricePerKg: 0 });
   const [newChili, setNewChili] = useState({ name: '', kg: 0, pricePerKg: 0 });
 
+  // Estado para ingredientes dinámicos editables
+  const [dynamicIngredientValues, setDynamicIngredientValues] = useState<{[key: string]: {cantidad: number, costoUnitario: number}}>({});
+  const [registeredDynamicIngredients, setRegisteredDynamicIngredients] = useState<{[key: string]: boolean}>({});
+
 
   // Sync registered expenses when event changes
   useEffect(() => {
