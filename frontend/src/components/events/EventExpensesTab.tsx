@@ -1095,27 +1095,40 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
                             : `Local - ${bev.cantidad || 0} cajas × S/ ${bev.costoCajaLocal || 0}`
                           : bev.tipo === 'coctel'
                           ? bev.modalidad === 'cover'
-                            ? `Cover - ${bev.cantidad || 0} cócteles`
+                            ? `Cover - ${bev.cantidad || 0} cócteles × S/ ${bev.costoPorCaja || 0}`
                             : `Local - ${bev.cantidad || 0} cócteles × S/ ${bev.costoCoctelLocal || 0}`
                           : ''
                         }
                       </p>
                     </div>
-                    <p className="text-lg font-bold">
-                      S/ {
-                        bev.tipo === 'gaseosa' || bev.tipo === 'agua' || bev.tipo === 'champan' || bev.tipo === 'vino'
-                          ? ((bev.cantidad || 0) * (bev.precioUnitario || 0)).toFixed(2)
-                          : bev.tipo === 'cerveza'
-                          ? bev.modalidad === 'cover'
-                            ? ((bev.numeroCajas || 0) * (bev.costoPorCaja || 0)).toFixed(2)
-                            : ((bev.cantidad || 0) * (bev.costoCajaLocal || 0)).toFixed(2)
-                          : bev.tipo === 'coctel'
-                          ? bev.modalidad === 'cover'
-                            ? '0.00'
-                            : ((bev.cantidad || 0) * (bev.costoCoctelLocal || 0)).toFixed(2)
-                          : '0.00'
-                      }
-                    </p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-lg font-bold">
+                        S/ {
+                          bev.tipo === 'gaseosa' || bev.tipo === 'agua' || bev.tipo === 'champan' || bev.tipo === 'vino'
+                            ? ((bev.cantidad || 0) * (bev.precioUnitario || 0)).toFixed(2)
+                            : bev.tipo === 'cerveza'
+                            ? bev.modalidad === 'cover'
+                              ? ((bev.numeroCajas || 0) * (bev.costoPorCaja || 0)).toFixed(2)
+                              : ((bev.cantidad || 0) * (bev.costoCajaLocal || 0)).toFixed(2)
+                            : bev.tipo === 'coctel'
+                            ? bev.modalidad === 'cover'
+                              ? ((bev.cantidad || 0) * (bev.costoPorCaja || 0)).toFixed(2)
+                              : ((bev.cantidad || 0) * (bev.costoCoctelLocal || 0)).toFixed(2)
+                            : '0.00'
+                        }
+                      </p>
+                      {canEdit && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleDeleteBeverage(idx)}
+                          className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 </div>
               ))}
