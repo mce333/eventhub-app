@@ -920,114 +920,344 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
           </div>
 
           {/* Comida (Insumos) */}
-          {predefinedExpenses.length > 0 && (
+          {(dynamicIngredients.length > 0 || selectedDish) && (
             <div className="space-y-3 p-3 bg-background rounded-lg border mt-4">
               <div className="flex items-center justify-between">
                 <Label className="text-sm font-medium">Comida (Insumos)</Label>
-                <div className="flex gap-2">
-                  {canEdit && (
-                    <Button
-                      type="button"
-                      size="sm"
-                      onClick={() => setShowAddIngredient(true)}
-                      variant="outline"
-                      className="h-7 px-2"
-                    >
-                      <Plus className="h-3 w-3 mr-2" />
-                      Añadir
-                    </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setIsInsumosSectionCollapsed(!isInsumosSectionCollapsed)}
+                  className="h-7 px-2"
+                >
+                  {isInsumosSectionCollapsed ? (
+                    <>
+                      <ChevronDown className="h-3 w-3 mr-1" />
+                      Expandir
+                    </>
+                  ) : (
+                    <>
+                      <ChevronUp className="h-3 w-3 mr-1" />
+                      Minimizar
+                    </>
                   )}
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setIsInsumosSectionCollapsed(!isInsumosSectionCollapsed)}
-                    className="h-7 px-2"
-                  >
-                    {isInsumosSectionCollapsed ? (
-                      <>
-                        <ChevronDown className="h-3 w-3 mr-1" />
-                        Expandir
-                      </>
-                    ) : (
-                      <>
-                        <ChevronUp className="h-3 w-3 mr-1" />
-                        Minimizar
-                      </>
-                    )}
-                  </Button>
-                </div>
+                </Button>
               </div>
 
               {!isInsumosSectionCollapsed && (
-                <div className="space-y-2 mt-3">
-                  {predefinedExpenses.map((expense) => {
-                    const isRegistered = registeredExpenses[expense.id] || (expense as any).isRegistered;
-                    
-                    return (
-                      <div key={expense.id} className={`p-3 border rounded-lg ${isRegistered ? 'bg-green-500/5 border-green-500/30' : 'bg-primary/5'}`}>
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2">
-                              <h4 className="font-semibold text-sm">{expense.category}</h4>
-                              {isRegistered && (
-                                <Badge variant="outline" className="bg-green-500/20 text-green-700 border-green-500/30 text-xs">
-                                  ✓ Registrado
-                                </Badge>
-                              )}
-                            </div>
-                            <p className="text-xs text-muted-foreground">{expense.description}</p>
-                          </div>
-                          <p className="text-lg font-bold">S/ {(expense.amount || 0).toLocaleString()}</p>
-                        </div>
-                        
-                        {canEdit && !isRegistered && (
-                          <>
-                            <div className="grid grid-cols-3 gap-2 pt-2 border-t">
-                              <div>
-                                <Label className="text-xs">Cantidad</Label>
-                                <Input
-                                  key={`cantidad-${expense.id}`}
-                                  type="number"
-                                  value={getExpenseValue(expense, 'cantidad')}
-                                  onChange={(e) => handleExpenseInputChange(expense.id, 'cantidad', e.target.value)}
-                                  onBlur={() => handleExpenseInputBlur(expense.id, 'quantity')}
-                                  className="h-8 text-sm"
-                                  min="0"
-                                />
-                              </div>
-                              <div>
-                                <Label className="text-xs">Costo Unitario</Label>
-                                <Input
-                                  key={`costo-${expense.id}`}
-                                  type="number"
-                                  step="0.01"
-                                  value={getExpenseValue(expense, 'costoUnitario')}
-                                  onChange={(e) => handleExpenseInputChange(expense.id, 'costoUnitario', e.target.value)}
-                                  onBlur={() => handleExpenseInputBlur(expense.id, 'unitPrice')}
-                                  className="h-8 text-sm"
-                                  min="0"
-                                />
-                              </div>
-                              <div>
-                                <Label className="text-xs">Total</Label>
-                                <Input
-                                  value={`S/ ${(expense.amount || 0).toFixed(2)}`}
-                                  disabled
-                                  className="h-8 text-sm font-bold bg-muted"
-                                />
-                              </div>
-                            </div>
-                            <Button
-                              size="sm"
-                              onClick={() => registerPredefinedExpense(expense.id)}
-                              className="w-full mt-2 bg-gradient-primary"
-                            >
-                              <Save className="h-4 w-4 mr-2" />
-                              Registrar
-                            </Button>
-                          </>
+                <div className="space-y-4 mt-3">
+                  {/* VERDURAS - AL INICIO */}
+                  {!isCoordinador && (
+                    <div className="p-3 bg-green-500/5 rounded-lg border border-green-500/20">
+                      <div className="flex items-center justify-between mb-3">
+                        <Label className="text-sm font-medium text-green-700">Verduras</Label>
+                        {canEdit && (
+                          <Button
+                            onClick={() => setShowAddVegetable(true)}
+                            size="sm"
+                            variant="outline"
+                            className="h-7 text-xs"
+                          >
+                            <Plus className="h-3 w-3 mr-1" />
+                            Agregar
+                          </Button>
                         )}
                       </div>
+
+                      {/* Verduras agregadas pendientes de guardar */}
+                      {selectedVegetables.length > 0 && (
+                        <div className="space-y-2 mb-3">
+                          <p className="text-xs text-muted-foreground">Pendientes de registro:</p>
+                          {selectedVegetables.map((veg, index) => (
+                            <div key={index} className="flex items-center justify-between p-2 bg-background rounded border text-sm">
+                              <div className="flex-1">
+                                <p className="font-medium">{veg.name}</p>
+                                <p className="text-xs text-muted-foreground">
+                                  {veg.kg} kg × S/ {veg.pricePerKg}/kg
+                                </p>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <p className="font-semibold text-green-600">S/ {veg.total.toFixed(2)}</p>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleDeleteVegetable(index)}
+                                  className="h-6 w-6 p-0 text-red-500"
+                                >
+                                  <Trash2 className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            </div>
+                          ))}
+                          <Button
+                            onClick={handleSaveVegetables}
+                            size="sm"
+                            className="w-full bg-green-600 hover:bg-green-700"
+                          >
+                            <Save className="h-3 w-3 mr-2" />
+                            Registrar Verduras (S/ {selectedVegetables.reduce((sum, v) => sum + v.total, 0).toFixed(2)})
+                          </Button>
+                        </div>
+                      )}
+
+                      {/* Formulario agregar verdura */}
+                      {showAddVegetable && (
+                        <div className="p-3 border rounded-lg bg-background space-y-2">
+                          <div>
+                            <Label className="text-xs">Tipo de Verdura</Label>
+                            <Select
+                              value={newVegetable.name}
+                              onValueChange={(value) => {
+                                const vegOption = VEGETABLE_OPTIONS.find(v => v.name === value);
+                                setNewVegetable({
+                                  name: value,
+                                  kg: newVegetable.kg,
+                                  pricePerKg: vegOption?.pricePerKg || 0
+                                });
+                              }}
+                            >
+                              <SelectTrigger className="h-8">
+                                <SelectValue placeholder="Selecciona" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {VEGETABLE_OPTIONS.map((veg) => (
+                                  <SelectItem key={veg.name} value={veg.name}>
+                                    {veg.name} - S/ {veg.pricePerKg}/kg
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="grid grid-cols-2 gap-2">
+                            <div>
+                              <Label className="text-xs">Kilogramos</Label>
+                              <Input
+                                type="number"
+                                step="0.1"
+                                className="h-8"
+                                value={newVegetable.kg || ''}
+                                onChange={(e) => setNewVegetable({ ...newVegetable, kg: parseFloat(e.target.value) || 0 })}
+                              />
+                            </div>
+                            <div>
+                              <Label className="text-xs">Precio/Kg</Label>
+                              <Input
+                                type="number"
+                                step="0.01"
+                                className="h-8"
+                                value={newVegetable.pricePerKg || ''}
+                                onChange={(e) => setNewVegetable({ ...newVegetable, pricePerKg: parseFloat(e.target.value) || 0 })}
+                              />
+                            </div>
+                          </div>
+                          {newVegetable.kg > 0 && newVegetable.pricePerKg > 0 && (
+                            <p className="text-xs text-green-600 font-semibold">
+                              Total: S/ {(newVegetable.kg * newVegetable.pricePerKg).toFixed(2)}
+                            </p>
+                          )}
+                          <div className="flex gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                setShowAddVegetable(false);
+                                setNewVegetable({ name: '', kg: 0, pricePerKg: 0 });
+                              }}
+                              className="flex-1 h-7 text-xs"
+                            >
+                              Cancelar
+                            </Button>
+                            <Button
+                              size="sm"
+                              onClick={handleAddVegetable}
+                              className="flex-1 h-7 text-xs bg-green-600 hover:bg-green-700"
+                            >
+                              Agregar
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Verduras ya registradas */}
+                      {event.expenses?.filter(e => e.isPredetermined && e.category === 'verduras' && !e.description.toLowerCase().includes('ají')).length > 0 && (
+                        <div className="space-y-1 mt-2">
+                          <p className="text-xs text-muted-foreground">Registradas:</p>
+                          {event.expenses.filter(e => e.isPredetermined && e.category === 'verduras' && !e.description.toLowerCase().includes('ají')).map((expense) => (
+                            <div key={expense.id} className="flex items-center justify-between p-2 bg-green-500/10 rounded text-sm">
+                              <div className="flex-1">
+                                <p className="font-medium text-xs">{expense.description}</p>
+                              </div>
+                              <p className="font-semibold text-green-600 text-xs">S/ {expense.amount.toFixed(2)}</p>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* AJÍES - Solo si aplica */}
+                  {!isCoordinador && selectedDish && dishRequiresChili(selectedDish) && (
+                    <div className="p-3 bg-red-500/5 rounded-lg border border-red-500/20">
+                      <div className="flex items-center justify-between mb-3">
+                        <Label className="text-sm font-medium text-red-700">Ajíes</Label>
+                        {canEdit && (
+                          <Button
+                            onClick={() => setShowAddChili(true)}
+                            size="sm"
+                            variant="outline"
+                            className="h-7 text-xs"
+                          >
+                            <Plus className="h-3 w-3 mr-1" />
+                            Agregar
+                          </Button>
+                        )}
+                      </div>
+
+                      {/* Ajíes pendientes */}
+                      {selectedChilis.length > 0 && (
+                        <div className="space-y-2 mb-3">
+                          <p className="text-xs text-muted-foreground">Pendientes de registro:</p>
+                          {selectedChilis.map((chili, index) => (
+                            <div key={index} className="flex items-center justify-between p-2 bg-background rounded border text-sm">
+                              <div className="flex-1">
+                                <p className="font-medium">{chili.name}</p>
+                                <p className="text-xs text-muted-foreground">
+                                  {chili.kg} kg × S/ {chili.pricePerKg}/kg
+                                </p>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <p className="font-semibold text-red-600">S/ {chili.total.toFixed(2)}</p>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleDeleteChili(index)}
+                                  className="h-6 w-6 p-0 text-red-500"
+                                >
+                                  <Trash2 className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            </div>
+                          ))}
+                          <Button
+                            onClick={handleSaveChilis}
+                            size="sm"
+                            className="w-full bg-red-600 hover:bg-red-700"
+                          >
+                            <Save className="h-3 w-3 mr-2" />
+                            Registrar Ajíes (S/ {selectedChilis.reduce((sum, c) => sum + c.total, 0).toFixed(2)})
+                          </Button>
+                        </div>
+                      )}
+
+                      {/* Formulario agregar ají */}
+                      {showAddChili && (
+                        <div className="p-3 border rounded-lg bg-background space-y-2">
+                          <div>
+                            <Label className="text-xs">Tipo de Ají</Label>
+                            <Select
+                              value={newChili.name}
+                              onValueChange={(value) => {
+                                const chiliOption = CHILI_OPTIONS.find(c => c.name === value);
+                                setNewChili({
+                                  name: value,
+                                  kg: newChili.kg,
+                                  pricePerKg: chiliOption?.pricePerKg || 0
+                                });
+                              }}
+                            >
+                              <SelectTrigger className="h-8">
+                                <SelectValue placeholder="Selecciona" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {CHILI_OPTIONS.map((chili) => (
+                                  <SelectItem key={chili.name} value={chili.name}>
+                                    {chili.name} - S/ {chili.pricePerKg}/kg
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="grid grid-cols-2 gap-2">
+                            <div>
+                              <Label className="text-xs">Kilogramos</Label>
+                              <Input
+                                type="number"
+                                step="0.1"
+                                className="h-8"
+                                value={newChili.kg || ''}
+                                onChange={(e) => setNewChili({ ...newChili, kg: parseFloat(e.target.value) || 0 })}
+                              />
+                            </div>
+                            <div>
+                              <Label className="text-xs">Precio/Kg</Label>
+                              <Input
+                                type="number"
+                                step="0.01"
+                                className="h-8"
+                                value={newChili.pricePerKg || ''}
+                                onChange={(e) => setNewChili({ ...newChili, pricePerKg: parseFloat(e.target.value) || 0 })}
+                              />
+                            </div>
+                          </div>
+                          {newChili.kg > 0 && newChili.pricePerKg > 0 && (
+                            <p className="text-xs text-red-600 font-semibold">
+                              Total: S/ {(newChili.kg * newChili.pricePerKg).toFixed(2)}
+                            </p>
+                          )}
+                          <div className="flex gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                setShowAddChili(false);
+                                setNewChili({ name: '', kg: 0, pricePerKg: 0 });
+                              }}
+                              className="flex-1 h-7 text-xs"
+                            >
+                              Cancelar
+                            </Button>
+                            <Button
+                              size="sm"
+                              onClick={handleAddChili}
+                              className="flex-1 h-7 text-xs bg-red-600 hover:bg-red-700"
+                            >
+                              Agregar
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Ajíes registrados */}
+                      {event.expenses?.filter(e => e.isPredetermined && e.category === 'verduras' && e.description.toLowerCase().includes('ají')).length > 0 && (
+                        <div className="space-y-1 mt-2">
+                          <p className="text-xs text-muted-foreground">Registrados:</p>
+                          {event.expenses.filter(e => e.isPredetermined && e.category === 'verduras' && e.description.toLowerCase().includes('ají')).map((expense) => (
+                            <div key={expense.id} className="flex items-center justify-between p-2 bg-red-500/10 rounded text-sm">
+                              <div className="flex-1">
+                                <p className="font-medium text-xs">{expense.description}</p>
+                              </div>
+                              <p className="font-semibold text-red-600 text-xs">S/ {expense.amount.toFixed(2)}</p>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* INGREDIENTES DINÁMICOS DEL PLATO */}
+                  {dynamicIngredients.map((ingredient) => (
+                    <div key={ingredient.id} className="p-3 border rounded-lg bg-primary/5">
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-sm">{ingredient.description}</h4>
+                          <p className="text-xs text-muted-foreground">
+                            {ingredient.cantidad.toFixed(2)} {ingredient.unit} × S/ {ingredient.costoUnitario.toFixed(2)}/{ingredient.unit}
+                          </p>
+                        </div>
+                        <p className="text-lg font-bold">S/ {ingredient.amount.toFixed(2)}</p>
+                      </div>
+                    </div>
+                  ))}
                     );
                   })}
 
