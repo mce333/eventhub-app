@@ -217,6 +217,9 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
   const decoracionCost = event.decoration?.reduce((sum, d) => sum + (d.providerCost || d.totalPrice || 0), 0) || 0;
   const personalCost = event.staff?.reduce((sum, s) => sum + (s.totalCost || 0), 0) || 0;
   
+  // Calculate vegetables total (verduras registradas)
+  const verdurasTotal = event.expenses?.filter(e => e.isPredetermined && e.category === 'verduras').reduce((sum, e) => sum + e.amount, 0) || 0;
+  
   // Calculate beverages cost (usando costo local para cerveza y coctel)
   const bebidasCost = event.beverages?.reduce((sum, bev) => {
     let cost = 0;
