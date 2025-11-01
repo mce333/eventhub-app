@@ -560,6 +560,48 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
     toast.success('Ajíes registrados correctamente');
   };
 
+  // Función para registrar ingrediente dinámico
+  const handleRegisterDynamicIngredient = (ingredient: any) => {
+    const values = dynamicIngredientValues[ingredient.id];
+    
+    if (!values || values.cantidad <= 0 || values.costoUnitario <= 0) {
+      toast.error('Por favor completa cantidad y costo unitario');
+      return;
+    }
+
+    const expense: EventExpense = {
+      id: Date.now() + Math.random(),
+      eventId: event.id,
+      category: ingredient.category,
+      description: `${ingredient.description} (${selectedDish})`,
+      cantidad: values.cantidad,
+      costoUnitario: values.costoUnitario,
+      amount: values.cantidad * values.costoUnitario,
+      date: new Date().toISOString().split('T')[0],
+      registeredBy: user?.id || 0,
+      registeredByName: `${user?.name} ${user?.last_name}`,
+      registeredAt: new Date().toISOString(),
+      isPredetermined: true,
+    };
+
+    saveExpenseToEvent(expense);
+    setRegisteredDynamicIngredients(prev => ({ ...prev, [ingredient.id]: true }));
+    toast.success(`${ingredient.description} registrado`);
+  };
+
+  const handleDynamicIngredientChange = (ingredientId: string, field: 'cantidad' | 'costoUnitario', value: number) => {
+    setDynamicIngredientValues(prev => ({
+      ...prev,
+      [ingredientId]: {
+        cantidad: prev[ingredientId]?.cantidad || 0,
+        costoUnitario: prev[ingredientId]?.costoUnitario || 0,
+        ...prev[ingredientId],
+        [field]: value
+      }
+    }));
+  };
+
+
   const handleAddBeverage = () => {
     // Validaciones según tipo
     if (newBeverage.tipo === 'gaseosa' || newBeverage.tipo === 'agua' || newBeverage.tipo === 'champan' || newBeverage.tipo === 'vino') {
