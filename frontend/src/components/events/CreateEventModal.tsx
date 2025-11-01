@@ -243,6 +243,8 @@ export function CreateEventModal({ open, onClose, initialDate }: CreateEventModa
           providerCost: item.providerCost,
           profit: item.profit,
           estado: 'pendiente' as const,
+          estadoPago: item.estadoPago || 'pendiente',
+          montoPagado: item.montoPagado || 0,
         })),
         furniture: [],
         staff: formData.staff || [],
