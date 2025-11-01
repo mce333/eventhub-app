@@ -70,7 +70,7 @@ export function EventIncomesTab({ event, onUpdate }: EventIncomesTabProps) {
   });
 
   const canEdit = userRole === 'admin' || userRole === 'servicio';
-  const isCoordinador = userRole === 'servicio';
+  const isCoordinador = userRole === 'coordinador';
 
   // Cargar ingresos del evento
   const ingresos: Income[] = (event as any).ingresos || [];
