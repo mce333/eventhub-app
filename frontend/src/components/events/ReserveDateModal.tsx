@@ -44,6 +44,7 @@ export function ReserveDateModal({ open, onClose, selectedDate }: ReserveDateMod
         name: `Reserva - ${formData.clientName}`,
         description: `Fecha reservada por ${formData.clientName}`,
         type: 'otro',
+        eventCategory: 'reserva', // Marcar como reserva
         status: 'confirmed',
         date: dateStr,
         endDate: dateStr,
