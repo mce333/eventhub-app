@@ -50,7 +50,7 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
   const [isGuideCollapsed, setIsGuideCollapsed] = useState(true); // Minimizada por defecto
   const [isComidaSectionCollapsed, setIsComidaSectionCollapsed] = useState(true); // Minimizada por defecto
   const [isInsumosSectionCollapsed, setIsInsumosSectionCollapsed] = useState(true); // Minimizada por defecto
-  const [isBebidasSectionCollapsed, setIsBebidasSectionCollapsed] = useState(false);
+  const [isBebidasSectionCollapsed, setIsBebidasSectionCollapsed] = useState(true); // Minimizada por defecto
   
   // Función para mapear el tipoDePlato del evento a un dishId válido
   const mapTipoDePlatoToDishId = (tipoDePlato: string | undefined): string => {
