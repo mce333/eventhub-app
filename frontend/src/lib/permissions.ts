@@ -195,13 +195,13 @@ export function canViewEvent(user: User | null, event: Event): boolean {
   
   const role = getUserRole(user);
   
-  // Admin, Socio, and Encargado Compras can view all events
-  if (role === 'admin' || role === 'socio' || role === 'encargado_compras') {
+  // Admin y Socio pueden ver todos los eventos
+  if (role === 'admin' || role === 'socio') {
     return true;
   }
   
-  // Servicio users can only view events they're assigned to
-  if (role === 'servicio') {
+  // Coordinador, Encargado de Compras y Servicio solo ven eventos asignados
+  if (role === 'coordinador' || role === 'encargado_compras' || role === 'servicio') {
     const assignedEventIds = (user as any).assignedEventIds || [];
     return assignedEventIds.includes(event.id);
   }
