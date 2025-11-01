@@ -1002,7 +1002,8 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
       )}
 
       {/* Sección BEBIDAS */}
-      {event.beverages && event.beverages.length > 0 && (
+      {/* Ocultar para Coordinador y Encargado de Compras */}
+      {!isCoordinador && !isEncargadoCompras && event.beverages && event.beverages.length > 0 && (
         <Card className="bg-gradient-to-br from-blue-500/5 to-blue-500/10 border-blue-500/20">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
