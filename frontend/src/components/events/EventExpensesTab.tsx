@@ -440,6 +440,108 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
     }
   };
 
+  // Funciones para manejar verduras
+  const handleAddVegetable = () => {
+    if (!newVegetable.name || newVegetable.kg <= 0 || newVegetable.pricePerKg <= 0) {
+      toast.error('Por favor completa todos los campos de verdura');
+      return;
+    }
+
+    const total = newVegetable.kg * newVegetable.pricePerKg;
+    const vegetableItem = { ...newVegetable, total };
+    
+    setSelectedVegetables([...selectedVegetables, vegetableItem]);
+    setNewVegetable({ name: '', kg: 0, pricePerKg: 0 });
+    setShowAddVegetable(false);
+    toast.success(`${newVegetable.name} agregado`);
+  };
+
+  const handleDeleteVegetable = (index: number) => {
+    const updated = selectedVegetables.filter((_, i) => i !== index);
+    setSelectedVegetables(updated);
+    toast.success('Verdura eliminada');
+  };
+
+  const handleSaveVegetables = () => {
+    if (selectedVegetables.length === 0) {
+      toast.error('No hay verduras para registrar');
+      return;
+    }
+
+    selectedVegetables.forEach((veg) => {
+      const expense: EventExpense = {
+        id: Date.now() + Math.random(),
+        eventId: event.id,
+        category: 'verduras',
+        description: `${veg.name} - ${veg.kg} kg`,
+        cantidad: veg.kg,
+        costoUnitario: veg.pricePerKg,
+        amount: veg.total,
+        date: new Date().toISOString().split('T')[0],
+        registeredBy: user?.id || 0,
+        registeredByName: `${user?.name} ${user?.last_name}`,
+        registeredAt: new Date().toISOString(),
+        isPredetermined: true,
+      };
+      
+      saveExpenseToEvent(expense);
+    });
+
+    setSelectedVegetables([]);
+    toast.success('Verduras registradas correctamente');
+  };
+
+  // Funciones para manejar ajíes
+  const handleAddChili = () => {
+    if (!newChili.name || newChili.kg <= 0 || newChili.pricePerKg <= 0) {
+      toast.error('Por favor completa todos los campos de ají');
+      return;
+    }
+
+    const total = newChili.kg * newChili.pricePerKg;
+    const chiliItem = { ...newChili, total };
+    
+    setSelectedChilis([...selectedChilis, chiliItem]);
+    setNewChili({ name: '', kg: 0, pricePerKg: 0 });
+    setShowAddChili(false);
+    toast.success(`${newChili.name} agregado`);
+  };
+
+  const handleDeleteChili = (index: number) => {
+    const updated = selectedChilis.filter((_, i) => i !== index);
+    setSelectedChilis(updated);
+    toast.success('Ají eliminado');
+  };
+
+  const handleSaveChilis = () => {
+    if (selectedChilis.length === 0) {
+      toast.error('No hay ajíes para registrar');
+      return;
+    }
+
+    selectedChilis.forEach((chili) => {
+      const expense: EventExpense = {
+        id: Date.now() + Math.random(),
+        eventId: event.id,
+        category: 'verduras',
+        description: `${chili.name} - ${chili.kg} kg`,
+        cantidad: chili.kg,
+        costoUnitario: chili.pricePerKg,
+        amount: chili.total,
+        date: new Date().toISOString().split('T')[0],
+        registeredBy: user?.id || 0,
+        registeredByName: `${user?.name} ${user?.last_name}`,
+        registeredAt: new Date().toISOString(),
+        isPredetermined: true,
+      };
+      
+      saveExpenseToEvent(expense);
+    });
+
+    setSelectedChilis([]);
+    toast.success('Ajíes registrados correctamente');
+  };
+
   const handleAddBeverage = () => {
     // Validaciones según tipo
     if (newBeverage.tipo === 'gaseosa' || newBeverage.tipo === 'agua' || newBeverage.tipo === 'champan' || newBeverage.tipo === 'vino') {
