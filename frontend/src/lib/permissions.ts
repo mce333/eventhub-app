@@ -1,7 +1,7 @@
 import { User } from '@/types/auth.types';
 import { Event } from '@/types/events';
 
-export type UserRole = 'admin' | 'socio' | 'encargado_compras' | 'servicio';
+export type UserRole = 'admin' | 'socio' | 'coordinador' | 'encargado_compras' | 'servicio';
 
 export interface Permission {
   canViewDashboard: boolean;
