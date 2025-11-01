@@ -188,6 +188,20 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
   const predefinedExpenses = event.expenses?.filter(e => e.isPredetermined) || [];
   const additionalExpenses = event.expenses?.filter(e => !e.isPredetermined) || [];
   
+  // Generar ingredientes dinámicamente basados en el plato seleccionado
+  const dynamicIngredients = selectedDish && event.foodDetails?.cantidadDePlatos 
+    ? suggestedIngredients.map((ing, idx) => ({
+        id: `dynamic-${selectedDish}-${idx}`,
+        category: ing.category,
+        description: ing.name,
+        cantidad: ing.totalQuantity,
+        costoUnitario: ing.estimatedCost,
+        amount: ing.totalCost,
+        unit: ing.unit,
+        isDynamic: true, // Marca para identificar ingredientes dinámicos
+      }))
+    : [];
+  
   // Calculate specific totals
   const comidaInsumosCost = predefinedExpenses.reduce((sum, e) => sum + e.amount, 0);
   const gastosAdicionalesCost = additionalExpenses.reduce((sum, e) => sum + e.amount, 0);
