@@ -913,12 +913,12 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
                   <Button
                     type="button"
                     size="sm"
-                    onClick={() => toast.info('Funcionalidad de añadir bebida en desarrollo')}
-                    variant="outline"
+                    onClick={() => setShowAddBeverage(!showAddBeverage)}
+                    variant={showAddBeverage ? 'outline' : 'default'}
                     className="h-8 px-3"
                   >
                     <Plus className="h-4 w-4 mr-2" />
-                    Añadir Bebida
+                    {showAddBeverage ? 'Cancelar' : 'Añadir Bebida'}
                   </Button>
                 )}
                 <Button
@@ -943,7 +943,85 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
             </div>
           </CardHeader>
           {!isBebidasSectionCollapsed && (
-          <CardContent>
+          <CardContent className="space-y-3">
+            {/* Formulario para añadir bebida */}
+            {showAddBeverage && (
+              <div className="p-4 border-2 border-blue-500/30 rounded-lg bg-blue-500/5">
+                <h4 className="font-semibold mb-3 text-sm">Añadir Nueva Bebida</h4>
+                <div className="space-y-3">
+                  <div>
+                    <Label className="text-xs">Tipo de Bebida *</Label>
+                    <Select
+                      value={newBeverage.tipo}
+                      onValueChange={(value: any) => setNewBeverage({ ...newBeverage, tipo: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="gaseosa">Gaseosa</SelectItem>
+                        <SelectItem value="agua">Agua</SelectItem>
+                        <SelectItem value="champan">Champán</SelectItem>
+                        <SelectItem value="vino">Vino</SelectItem>
+                        <SelectItem value="cerveza">Cerveza</SelectItem>
+                        <SelectItem value="coctel">Cóctel</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {(newBeverage.tipo === 'gaseosa' || newBeverage.tipo === 'agua' || newBeverage.tipo === 'champan' || newBeverage.tipo === 'vino') && (
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <Label className="text-xs">Cantidad *</Label>
+                        <Input
+                          type="number"
+                          placeholder="Unidades"
+                          value={newBeverage.cantidad || ''}
+                          onChange={(e) => setNewBeverage({ ...newBeverage, cantidad: parseInt(e.target.value) || 0 })}
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-xs">Precio por Unidad (S/) *</Label>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          placeholder="Precio"
+                          value={newBeverage.precioUnitario || ''}
+                          onChange={(e) => setNewBeverage({ ...newBeverage, precioUnitario: parseFloat(e.target.value) || 0 })}
+                        />
+                      </div>
+                    </div>
+                  )}
+                  
+                  <div className="flex gap-2 mt-3">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setShowAddBeverage(false);
+                        setNewBeverage({ tipo: 'gaseosa', cantidad: 0, precioUnitario: 0 });
+                      }}
+                      className="flex-1"
+                    >
+                      <X className="h-4 w-4 mr-2" />
+                      Cancelar
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={handleAddBeverage}
+                      className="flex-1 bg-gradient-primary"
+                    >
+                      <Save className="h-4 w-4 mr-2" />
+                      Guardar Bebida
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Lista de bebidas */}
             <div className="space-y-2">
               {event.beverages.map((bev, idx) => (
                 <div key={idx} className="p-3 border rounded-lg bg-blue-500/5">
