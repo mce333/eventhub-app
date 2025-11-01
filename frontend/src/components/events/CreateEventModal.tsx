@@ -276,7 +276,8 @@ export function CreateEventModal({ open, onClose, initialDate }: CreateEventModa
       newEvent.assignedServiceUsers = staffWithAccess;
 
       const existingEvents = JSON.parse(localStorage.getItem('demo_events') || '[]');
-      const updatedEvents = [...existingEvents, newEvent];
+      // Insertar al principio del array para que aparezca en primera fila
+      const updatedEvents = [newEvent, ...existingEvents];
       localStorage.setItem('demo_events', JSON.stringify(updatedEvents));
       
       // Update assigned events for service users with system access
