@@ -70,6 +70,7 @@ export default function Eventos() {
   const canDelete = hasPermission(userRole, 'canDeleteEvent');
   const canViewFinancial = hasPermission(userRole, 'canViewFinancial');
   const isEncargadoCompras = userRole === 'encargado_compras';
+  const isCoordinador = userRole === 'coordinador';
   const isServicio = userRole === 'servicio';
 
   useEffect(() => {
@@ -92,10 +93,10 @@ export default function Eventos() {
     // Filter events based on user role
     let filteredEvents = sortedEvents;
     
-    if (isServicio && user) {
-      // Service users only see events they're assigned to
+    // Coordinador, Encargado de Compras y usuarios de servicio solo ven eventos asignados
+    if ((isServicio || isCoordinador || isEncargadoCompras) && user) {
       filteredEvents = sortedEvents.filter(event => canViewEvent(user, event));
-      console.log('🔒 Eventos filtrados para servicio:', filteredEvents.length);
+      console.log('🔒 Eventos filtrados para usuario con rol restringido:', filteredEvents.length);
     }
     
     setEvents(filteredEvents);
@@ -103,8 +104,9 @@ export default function Eventos() {
 
   // Filter events by category (eventos or reservas)
   const eventsByCategory = {
+    // Coordinador NO puede ver reservas
     eventos: events.filter(e => (e.eventCategory || 'evento') === 'evento'),
-    reservas: events.filter(e => e.eventCategory === 'reserva'),
+    reservas: isCoordinador ? [] : events.filter(e => e.eventCategory === 'reserva'),
   };
 
   // Filter events
