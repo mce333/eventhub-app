@@ -242,8 +242,8 @@ export default function EventoDetalle() {
 
             {/* Tabs */}
             <Tabs defaultValue={defaultTab} className="w-full">
-              <TabsList className={isEncargadoCompras || isServicio ? "grid w-full grid-cols-2" : "grid w-full grid-cols-6"}>
-                {!isEncargadoCompras && !isServicio && (
+              <TabsList className={isEncargadoCompras || isServicio || isCoordinador ? "grid w-full grid-cols-2" : "grid w-full grid-cols-6"}>
+                {!isEncargadoCompras && !isServicio && !isCoordinador && (
                   <>
                     <TabsTrigger value="contract">Información del Contrato</TabsTrigger>
                     <TabsTrigger value="decoration">Decoración</TabsTrigger>
@@ -251,15 +251,15 @@ export default function EventoDetalle() {
                   </>
                 )}
                 <TabsTrigger value="expenses">Gastos</TabsTrigger>
-                {(userRole === 'admin' || userRole === 'servicio') && (
+                {(userRole === 'admin' || userRole === 'coordinador') && (
                   <TabsTrigger value="incomes">Ingresos</TabsTrigger>
                 )}
-                {!isEncargadoCompras && !isServicio && (
+                {!isEncargadoCompras && !isServicio && !isCoordinador && (
                   <TabsTrigger value="gallery">Galería</TabsTrigger>
                 )}
               </TabsList>
 
-              {!isEncargadoCompras && !isServicio && (
+              {!isEncargadoCompras && !isServicio && !isCoordinador && (
                 <>
                   <TabsContent value="contract">
                     <div className="space-y-6">
