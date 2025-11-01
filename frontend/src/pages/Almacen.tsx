@@ -373,12 +373,22 @@ export default function Almacen() {
                   <div>
                     <h3 className="font-semibold mb-4 flex items-center gap-2">
                       <Clock className="h-4 w-4" />
-                      Historial de Movimientos ({selected.historial.length})
+                      Historial de Movimientos ({
+                        userRole === 'coordinador'
+                          ? selected.historial.filter((entry) => entry.registradoPor === `${user?.name} ${user?.last_name}`).length
+                          : selected.historial.length
+                      })
                     </h3>
                     
-                    {selected.historial.length > 0 ? (
-                      <div className="space-y-3 max-h-96 overflow-y-auto">
-                        {selected.historial.map((entry) => (
+                    {(() => {
+                      // Filtrar historial para coordinador (solo sus movimientos)
+                      const filteredHistorial = userRole === 'coordinador'
+                        ? selected.historial.filter((entry) => entry.registradoPor === `${user?.name} ${user?.last_name}`)
+                        : selected.historial;
+                      
+                      return filteredHistorial.length > 0 ? (
+                        <div className="space-y-3 max-h-96 overflow-y-auto">
+                          {filteredHistorial.map((entry) => (
                           <Card key={entry.id} className="bg-muted/30">
                             <CardContent className="pt-4">
                               <div className="flex items-start justify-between">
