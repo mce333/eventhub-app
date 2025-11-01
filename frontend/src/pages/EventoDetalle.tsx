@@ -43,6 +43,7 @@ export default function EventoDetalle() {
   const canEdit = hasPermission(userRole, 'canEditEvent');
   const canViewFinancial = hasPermission(userRole, 'canViewFinancial');
   const isEncargadoCompras = userRole === 'encargado_compras';
+  const isCoordinador = userRole === 'coordinador';
   const isServicio = userRole === 'servicio';
 
   useEffect(() => {
