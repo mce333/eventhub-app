@@ -591,6 +591,73 @@ export default function Eventos() {
                     const matchesType = typeFilter === 'all' || event.type === typeFilter;
                     return matchesSearch && matchesStatus && matchesType;
                   }).map((event) => (
+                    <Card
+                      key={event.id}
+                      className="bg-gradient-card border-border hover:border-primary/50 transition-all animate-fade-in-up cursor-pointer group"
+                      onClick={() => navigate(`/eventos/${event.id}`)}
+                    >
+                      {event.imageUrl && (
+                        <div className="h-48 overflow-hidden rounded-t-xl">
+                          <img
+                            src={event.imageUrl}
+                            alt={event.name}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                        </div>
+                      )}
+                      <CardContent className="p-6">
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="flex-1">
+                            <h3 className="text-lg font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
+                              {event.name}
+                            </h3>
+                            <Badge variant="outline" className={cn('text-xs', statusConfig[event.status].color)}>
+                              {statusConfig[event.status].label}
+                            </Badge>
+                          </div>
+                        </div>
+
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <Calendar className="w-4 h-4" />
+                            <span>{new Date(event.date).toLocaleDateString('es-ES')}</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <MapPin className="w-4 h-4" />
+                            <span>{event.location}</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <Users className="w-4 h-4" />
+                            <span>
+                              {event.attendees} / {event.maxAttendees} personas
+                            </span>
+                          </div>
+                        </div>
+
+                        <Button className="w-full mt-4" variant="outline" onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/eventos/${event.id}`);
+                        }}>
+                          {isCoordinador ? 'Registrar Gastos e Ingresos' : 'Registrar Gastos'}
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+
+                {eventsByCategory.eventos.length === 0 && (
+                  <Card className="bg-gradient-card border-border">
+                    <CardContent className="p-12 text-center">
+                      <Calendar className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+                      <h3 className="text-lg font-semibold text-foreground mb-2">No se encontraron eventos</h3>
+                      <p className="text-muted-foreground">
+                        No tienes eventos asignados actualmente
+                      </p>
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
+            )}
           </div>
         </main>
       </div>
