@@ -428,10 +428,11 @@ export default function Almacen() {
                     ) : (
                       <Card>
                         <CardContent className="py-8 text-center text-muted-foreground">
-                          <p>No hay movimientos registrados</p>
+                          <p>{userRole === 'coordinador' ? 'No tienes movimientos registrados' : 'No hay movimientos registrados'}</p>
                         </CardContent>
                       </Card>
-                    )}
+                    );
+                    })()}
                   </div>
                 </CardContent>
               </Card>
