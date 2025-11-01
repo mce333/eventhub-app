@@ -429,6 +429,51 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
     }
   };
 
+  const handleAddBeverage = () => {
+    if (newBeverage.cantidad <= 0) {
+      toast.error('Por favor ingresa una cantidad válida');
+      return;
+    }
+
+    if ((newBeverage.tipo === 'gaseosa' || newBeverage.tipo === 'agua' || newBeverage.tipo === 'champan' || newBeverage.tipo === 'vino') && !newBeverage.precioUnitario) {
+      toast.error('Por favor ingresa el precio por unidad');
+      return;
+    }
+
+    try {
+      const storedEvents = JSON.parse(localStorage.getItem('demo_events') || '[]');
+      const index = storedEvents.findIndex((e: Event) => e.id === event.id);
+      
+      if (index !== -1) {
+        // Agregar bebida al array de beverages
+        const updatedBeverages = [
+          ...(storedEvents[index].beverages || []),
+          {
+            id: Date.now(),
+            ...newBeverage,
+          },
+        ];
+        
+        storedEvents[index].beverages = updatedBeverages;
+        localStorage.setItem('demo_events', JSON.stringify(storedEvents));
+        
+        toast.success('Bebida agregada correctamente');
+        
+        // Limpiar formulario
+        setNewBeverage({
+          tipo: 'gaseosa',
+          cantidad: 0,
+          precioUnitario: 0,
+        });
+        setShowAddBeverage(false);
+        onUpdate();
+      }
+    } catch (error) {
+      console.error('Error al agregar bebida:', error);
+      toast.error('Error al agregar la bebida');
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Permission Alert for Servicio users */}
