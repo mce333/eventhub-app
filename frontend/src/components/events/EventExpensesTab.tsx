@@ -17,7 +17,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { canEditExpenses, isSuspiciousExpenseEdit, getUserRole } from '@/lib/permissions';
 import { Receipt, Plus, AlertTriangle, TrendingUp, ChefHat, ChevronDown, ChevronUp, Wallet, Save, X, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { DISH_INGREDIENTS, calculateTotalIngredients, DishIngredients } from '@/lib/ingredientsData';
+import { DISH_INGREDIENTS, calculateTotalIngredients, DishIngredients, VEGETABLE_OPTIONS, CHILI_OPTIONS, dishRequiresChili } from '@/lib/ingredientsData';
 
 interface EventExpensesTabProps {
   event: Event;
