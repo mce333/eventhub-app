@@ -430,14 +430,52 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
   };
 
   const handleAddBeverage = () => {
-    if (newBeverage.cantidad <= 0) {
-      toast.error('Por favor ingresa una cantidad válida');
-      return;
-    }
-
-    if ((newBeverage.tipo === 'gaseosa' || newBeverage.tipo === 'agua' || newBeverage.tipo === 'champan' || newBeverage.tipo === 'vino') && !newBeverage.precioUnitario) {
-      toast.error('Por favor ingresa el precio por unidad');
-      return;
+    // Validaciones según tipo
+    if (newBeverage.tipo === 'gaseosa' || newBeverage.tipo === 'agua' || newBeverage.tipo === 'champan' || newBeverage.tipo === 'vino') {
+      if (newBeverage.cantidad <= 0) {
+        toast.error('Por favor ingresa una cantidad válida');
+        return;
+      }
+      if (!newBeverage.precioUnitario) {
+        toast.error('Por favor ingresa el precio por unidad');
+        return;
+      }
+    } else if (newBeverage.tipo === 'cerveza') {
+      if (newBeverage.modalidad === 'cover') {
+        if (!newBeverage.numeroCajas || newBeverage.numeroCajas <= 0) {
+          toast.error('Por favor ingresa el número de cajas');
+          return;
+        }
+        if (!newBeverage.costoPorCaja || newBeverage.costoPorCaja <= 0) {
+          toast.error('Por favor ingresa el costo por caja');
+          return;
+        }
+      } else {
+        if (!newBeverage.cantidad || newBeverage.cantidad <= 0) {
+          toast.error('Por favor ingresa la cantidad de cajas');
+          return;
+        }
+        if (!newBeverage.costoCajaLocal || newBeverage.costoCajaLocal <= 0) {
+          toast.error('Por favor ingresa el costo local por caja');
+          return;
+        }
+      }
+    } else if (newBeverage.tipo === 'coctel') {
+      if (!newBeverage.cantidad || newBeverage.cantidad <= 0) {
+        toast.error('Por favor ingresa la cantidad de cócteles');
+        return;
+      }
+      if (newBeverage.modalidad === 'cover') {
+        if (!newBeverage.costoPorCaja || newBeverage.costoPorCaja <= 0) {
+          toast.error('Por favor ingresa el costo por cóctel');
+          return;
+        }
+      } else {
+        if (!newBeverage.costoCoctelLocal || newBeverage.costoCoctelLocal <= 0) {
+          toast.error('Por favor ingresa el costo local por cóctel');
+          return;
+        }
+      }
     }
 
     try {
@@ -465,7 +503,7 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
           userRole: user?.role?.name || 'admin',
           action: 'added' as const,
           section: 'Bebidas',
-          description: `Bebida agregada: ${newBeverage.tipo} (${newBeverage.cantidad} unidades)`,
+          description: `Bebida agregada: ${newBeverage.tipo} (${newBeverage.cantidad || newBeverage.numeroCajas || 0} ${newBeverage.tipo === 'cerveza' && newBeverage.modalidad === 'cover' ? 'cajas' : 'unidades'})`,
           timestamp: new Date().toISOString(),
         };
         
