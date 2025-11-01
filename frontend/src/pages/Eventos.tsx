@@ -168,10 +168,12 @@ export default function Eventos() {
             <div className="flex items-center justify-between animate-fade-in">
               <div>
                 <h1 className="text-3xl font-bold text-foreground mb-2">
-                  {isEncargadoCompras ? 'Registrar Gastos' : isServicio ? 'Mis Eventos Asignados' : 'Gestión de Eventos'}
+                  {isCoordinador ? 'Registrar Gastos e Ingresos' : isEncargadoCompras ? 'Registrar Gastos' : isServicio ? 'Mis Eventos Asignados' : 'Gestión de Eventos'}
                 </h1>
                 <p className="text-muted-foreground">
-                  {isEncargadoCompras
+                  {isCoordinador
+                    ? 'Selecciona un evento para registrar gastos e ingresos'
+                    : isEncargadoCompras
                     ? 'Selecciona un evento para registrar gastos'
                     : isServicio
                     ? 'Eventos donde estás asignado como personal de servicio'
