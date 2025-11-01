@@ -1300,6 +1300,13 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
                     const isRegistered = registeredDynamicIngredients[ingredient.id];
                     const values = dynamicIngredientValues[ingredient.id] || { cantidad: 0, costoUnitario: 0 };
                     const total = values.cantidad * values.costoUnitario;
+                    
+                    // Buscar el gasto registrado para este ingrediente
+                    const registeredExpense = event.expenses?.find(e => 
+                      e.isPredetermined && 
+                      e.description.includes(ingredient.description) &&
+                      e.description.includes(selectedDish)
+                    );
 
                     return (
                       <div key={ingredient.id} className={`p-3 border rounded-lg ${isRegistered ? 'bg-green-500/5 border-green-500/30' : 'bg-primary/5'}`}>
@@ -1307,9 +1314,9 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
                           <div className="flex-1">
                             <div className="flex items-center gap-2">
                               <h4 className="font-semibold text-sm">{ingredient.description}</h4>
-                              {isRegistered && (
+                              {isRegistered && registeredExpense && (
                                 <Badge variant="outline" className="bg-green-500/20 text-green-700 border-green-500/30 text-xs">
-                                  ✓ Registrado
+                                  ✓ {registeredExpense.registeredByName || 'Registrado'}
                                 </Badge>
                               )}
                             </div>
@@ -1317,8 +1324,8 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
                               Sugerido: {ingredient.cantidad.toFixed(2)} {ingredient.unit} × S/ {ingredient.costoUnitario.toFixed(2)}/{ingredient.unit}
                             </p>
                           </div>
-                          {isRegistered && (
-                            <p className="text-lg font-bold text-green-600">S/ {total.toFixed(2)}</p>
+                          {isRegistered && registeredExpense && (
+                            <p className="text-lg font-bold text-green-600">S/ {registeredExpense.amount.toFixed(2)}</p>
                           )}
                         </div>
 
