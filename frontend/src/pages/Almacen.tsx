@@ -106,7 +106,7 @@ export default function Almacen() {
 
   // Solo Coordinador y Admin pueden acceder
   useEffect(() => {
-    if (userRole !== 'admin' && userRole !== 'servicio') {
+    if (userRole !== 'admin' && userRole !== 'coordinador') {
       toast.error('No tienes permiso para acceder al almacén');
       navigate('/');
     }
