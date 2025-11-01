@@ -784,6 +784,10 @@ export function EventExpensesTab({ event, onUpdate }: EventExpensesTabProps) {
                 <span className="font-medium">S/ {comidaInsumosCost.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
+                <span>Verduras - Total:</span>
+                <span className="font-medium text-green-600">S/ {verdurasTotal.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between">
                 <span>Bebidas:</span>
                 <span className="font-medium">S/ {bebidasCost.toFixed(2)}</span>
               </div>
