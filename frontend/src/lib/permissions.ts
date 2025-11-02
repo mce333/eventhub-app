@@ -1,7 +1,7 @@
 import { User } from '@/types/auth.types';
 import { Event } from '@/types/events';
 
-export type UserRole = 'admin' | 'socio' | 'encargado_compras' | 'servicio';
+export type UserRole = 'admin' | 'socio' | 'coordinador' | 'encargado_compras' | 'servicio';
 
 export interface Permission {
   canViewDashboard: boolean;
@@ -25,6 +25,8 @@ export interface Permission {
   canManageStaff: boolean;
   canViewSpaces: boolean;
   canManageSpaces: boolean;
+  canViewWarehouse: boolean;
+  canManageWarehouse: boolean;
 }
 
 export const ROLE_PERMISSIONS: Record<UserRole, Permission> = {
@@ -50,6 +52,8 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission> = {
     canManageStaff: true,
     canViewSpaces: true,
     canManageSpaces: true,
+    canViewWarehouse: true,
+    canManageWarehouse: true,
   },
   socio: {
     canViewDashboard: true,
@@ -73,6 +77,33 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission> = {
     canManageStaff: true,
     canViewSpaces: true,
     canManageSpaces: true,
+    canViewWarehouse: false,
+    canManageWarehouse: false,
+  },
+  coordinador: {
+    canViewDashboard: false,
+    canViewEvents: true, // Solo eventos asignados
+    canCreateEvent: false,
+    canEditEvent: false,
+    canDeleteEvent: false,
+    canViewClients: false,
+    canManageClients: false,
+    canViewFinancial: false,
+    canViewReports: false,
+    canViewStatistics: false,
+    canManageUsers: false,
+    canRegisterExpenses: true, // Solo para eventos asignados
+    canViewAllExpenses: false,
+    canViewDecoration: false,
+    canEditDecoration: false,
+    canViewFurniture: false,
+    canEditFurniture: false,
+    canViewStaff: false,
+    canManageStaff: false,
+    canViewSpaces: false,
+    canManageSpaces: false,
+    canViewWarehouse: true, // SÍ tiene acceso a almacén (pero solo su historial)
+    canManageWarehouse: true,
   },
   encargado_compras: {
     canViewDashboard: false,
@@ -96,6 +127,8 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission> = {
     canManageStaff: false,
     canViewSpaces: false,
     canManageSpaces: false,
+    canViewWarehouse: false,
+    canManageWarehouse: false,
   },
   servicio: {
     canViewDashboard: false,
@@ -119,6 +152,8 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission> = {
     canManageStaff: false,
     canViewSpaces: false,
     canManageSpaces: false,
+    canViewWarehouse: true,
+    canManageWarehouse: true,
   },
 };
 
@@ -128,7 +163,7 @@ export function getUserRole(user: { role?: { name?: string } } | null): UserRole
   }
   
   const roleName = user.role.name;
-  if (roleName === 'admin' || roleName === 'socio' || roleName === 'encargado_compras' || roleName === 'servicio') {
+  if (roleName === 'admin' || roleName === 'socio' || roleName === 'coordinador' || roleName === 'encargado_compras' || roleName === 'servicio') {
     return roleName as UserRole;
   }
   
@@ -143,9 +178,10 @@ export function canAccessRoute(role: UserRole, route: string): boolean {
   const routePermissions: Record<string, keyof Permission> = {
     '/': 'canViewDashboard',
     '/eventos': 'canViewEvents',
+    '/finanzas': 'canViewFinancial',
     '/clientes': 'canViewClients',
     '/estadisticas': 'canViewStatistics',
-    '/espacios': 'canViewSpaces',
+    '/almacen': 'canViewWarehouse',
     '/configuracion': 'canManageUsers',
   };
 
@@ -159,13 +195,13 @@ export function canViewEvent(user: User | null, event: Event): boolean {
   
   const role = getUserRole(user);
   
-  // Admin, Socio, and Encargado Compras can view all events
-  if (role === 'admin' || role === 'socio' || role === 'encargado_compras') {
+  // Admin y Socio pueden ver todos los eventos
+  if (role === 'admin' || role === 'socio') {
     return true;
   }
   
-  // Servicio users can only view events they're assigned to
-  if (role === 'servicio') {
+  // Coordinador, Encargado de Compras y Servicio solo ven eventos asignados
+  if (role === 'coordinador' || role === 'encargado_compras' || role === 'servicio') {
     const assignedEventIds = (user as any).assignedEventIds || [];
     return assignedEventIds.includes(event.id);
   }
@@ -184,13 +220,8 @@ export function canEditExpenses(user: User | null, event: Event): boolean {
     return true;
   }
   
-  // Encargado Compras can edit all events
-  if (role === 'encargado_compras') {
-    return true;
-  }
-  
-  // Servicio users can only edit expenses for assigned events
-  if (role === 'servicio') {
+  // Coordinador, Encargado Compras y Servicio pueden editar solo eventos asignados
+  if (role === 'coordinador' || role === 'encargado_compras' || role === 'servicio') {
     const assignedEventIds = (user as any).assignedEventIds || [];
     return assignedEventIds.includes(event.id);
   }

@@ -11,6 +11,11 @@ export interface EventClient {
   email: string;
   phone: string;
   company?: string;
+  tipoCliente?: 'individual' | 'corporativo';
+  last_name?: string;
+  address?: string;
+  document_type?: string;
+  document_number?: string;
 }
 
 export interface FoodDetails {
@@ -18,7 +23,25 @@ export interface FoodDetails {
   cantidadDePlatos: number;
   precioPorPlato: number;
   incluyeCerveza: boolean;
+  numeroCajasCerveza?: number;
+  costoPorCaja?: number;
   tipoDePago: PaymentType;
+}
+
+export interface BeverageItem {
+  id: number;
+  tipo: 'gaseosa' | 'agua' | 'champan' | 'vino' | 'cerveza' | 'coctel';
+  litros?: number;
+  cantidad?: number; // Cantidad de unidades/cajas/cocteles
+  precioUnitario?: number; // Precio por unidad para gaseosa/agua/champan/vino
+  numeroCajas?: number;
+  modalidad?: 'cover' | 'compra_local';
+  costoPorCaja?: number;
+  costoCajaLocal?: number;
+  costoCajaCliente?: number;
+  costoCoctelLocal?: number;
+  costoCoctelCliente?: number;
+  utilidad?: number;
 }
 
 export interface RentalDetails {
@@ -32,6 +55,8 @@ export interface EventContract {
   precioTotal: number;
   pagoAdelantado: number;
   saldoPendiente: number;
+  garantia?: number;
+  presupuestoAsignado?: number;
   contratoFoto?: string;
   recibos: string[]; // URLs de recibos
 }
@@ -76,7 +101,11 @@ export interface EventDecoration {
   unitPrice: number;
   totalPrice: number;
   supplier?: string;
+  providerCost?: number; // Costo con proveedor
+  profit?: number; // Utilidad
   estado: 'pendiente' | 'comprado' | 'instalado';
+  estadoPago?: 'pendiente' | 'adelanto' | 'pagado'; // Estado de pago
+  montoPagado?: number; // Monto pagado (adelanto o completo)
   notes?: string;
 }
 
@@ -90,13 +119,19 @@ export interface EventFurniture {
 }
 
 export interface EventStaff {
-  id: number;
+  id?: number;
   name: string;
   role: string;
-  hours: number;
+  roleId?: string; // ID del rol predeterminado
+  hours?: number;
+  plates?: number; // Para servicio de servido (tarifa por plato)
   hourlyRate: number;
   totalCost: number;
   contact: string;
+  userId?: number; // ID del usuario del sistema si tiene acceso
+  hasSystemAccess?: boolean; // Indica si se le dará acceso al sistema
+  systemEmail?: string; // Email para acceso al sistema
+  systemPassword?: string; // Contraseña temporal
 }
 
 export interface AuditLog {
@@ -119,6 +154,7 @@ export interface Event {
   description: string;
   type: EventType;
   status: EventStatus;
+  eventCategory?: 'evento' | 'reserva'; // Nueva categoría para diferenciar eventos de reservas
   date: string;
   endDate?: string;
   location: string;
@@ -129,6 +165,7 @@ export interface Event {
   // Tipo de servicio
   serviceType: ServiceType;
   foodDetails?: FoodDetails;
+  beverages?: BeverageItem[];
   rentalDetails?: RentalDetails;
   
   // Cliente y contrato

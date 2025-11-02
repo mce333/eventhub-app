@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Calendar,
   MapPin,
@@ -42,6 +43,7 @@ import { getUserRole, hasPermission, canViewEvent } from '@/lib/permissions';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { CreateEventModal } from '@/components/events/CreateEventModal';
+import { ChatbotHelper } from '@/components/dashboard/ChatbotHelper';
 
 const statusConfig: Record<EventStatus, { label: string; color: string }> = {
   draft: { label: 'Borrador', color: 'bg-muted/10 text-muted-foreground border-muted/20' },
@@ -61,12 +63,14 @@ export default function Eventos() {
   const [statusFilter, setStatusFilter] = useState<EventStatus | 'all'>('all');
   const [typeFilter, setTypeFilter] = useState<EventType | 'all'>('all');
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [activeTab, setActiveTab] = useState<'eventos' | 'reservas'>('eventos');
 
   const canCreate = hasPermission(userRole, 'canCreateEvent');
   const canEdit = hasPermission(userRole, 'canEditEvent');
   const canDelete = hasPermission(userRole, 'canDeleteEvent');
   const canViewFinancial = hasPermission(userRole, 'canViewFinancial');
   const isEncargadoCompras = userRole === 'encargado_compras';
+  const isCoordinador = userRole === 'coordinador';
   const isServicio = userRole === 'servicio';
 
   useEffect(() => {
@@ -74,37 +78,39 @@ export default function Eventos() {
   }, []);
 
   const loadEvents = () => {
-    const storedEvents = localStorage.getItem('demo_events');
-    if (storedEvents) {
-      const parsedEvents: Event[] = JSON.parse(storedEvents);
-      
-      // Filter events based on user role
-      let filteredEvents = parsedEvents;
-      
-      if (isServicio && user) {
-        // Service users only see events they're assigned to
-        const assignedEventIds = (user as any).assignedEventIds || [];
-        filteredEvents = parsedEvents.filter(event => 
-          canViewEvent(user, event)
-        );
-      }
-      
-      console.log('Eventos cargados:', filteredEvents);
-      setEvents(filteredEvents);
-    } else {
-      // Initialize with mock events
-      console.log('Inicializando con eventos mock');
-      const initialEvents = isServicio && user
-        ? MOCK_EVENTS.filter(event => canViewEvent(user, event))
-        : MOCK_EVENTS;
-      
-      setEvents(initialEvents);
-      localStorage.setItem('demo_events', JSON.stringify(MOCK_EVENTS));
+    // Cargar SOLO eventos guardados en localStorage
+    const storedEvents = JSON.parse(localStorage.getItem('demo_events') || '[]');
+    
+    // Ordenar por fecha de creación (más recientes primero) - DESCENDENTE
+    const sortedEvents = storedEvents.sort((a: Event, b: Event) => {
+      const dateA = new Date(a.createdAt).getTime();
+      const dateB = new Date(b.createdAt).getTime();
+      return dateB - dateA; // Descendente: más reciente primero
+    });
+    
+    console.log('📊 Eventos cargados desde localStorage:', sortedEvents.length);
+    
+    // Filter events based on user role
+    let filteredEvents = sortedEvents;
+    
+    // Coordinador, Encargado de Compras y usuarios de servicio solo ven eventos asignados
+    if ((isServicio || isCoordinador || isEncargadoCompras) && user) {
+      filteredEvents = sortedEvents.filter(event => canViewEvent(user, event));
+      console.log('🔒 Eventos filtrados para usuario con rol restringido:', filteredEvents.length);
     }
+    
+    setEvents(filteredEvents);
+  };
+
+  // Filter events by category (eventos or reservas)
+  const eventsByCategory = {
+    // Coordinador NO puede ver reservas
+    eventos: events.filter(e => (e.eventCategory || 'evento') === 'evento'),
+    reservas: isCoordinador ? [] : events.filter(e => e.eventCategory === 'reserva'),
   };
 
   // Filter events
-  const filteredEvents = events.filter((event) => {
+  const filteredEvents = eventsByCategory[activeTab].filter((event) => {
     const matchesSearch =
       event.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       event.location.toLowerCase().includes(searchTerm.toLowerCase());
@@ -123,9 +129,13 @@ export default function Eventos() {
 
   const handleDelete = (id: number) => {
     if (confirm('¿Estás seguro de eliminar este evento?')) {
-      const updatedEvents = events.filter((e) => e.id !== id);
-      setEvents(updatedEvents);
+      // Eliminar de localStorage
+      const storedEvents = JSON.parse(localStorage.getItem('demo_events') || '[]');
+      const updatedEvents = storedEvents.filter((e: Event) => e.id !== id);
       localStorage.setItem('demo_events', JSON.stringify(updatedEvents));
+      
+      // Recargar eventos
+      loadEvents();
       toast.success('Evento eliminado correctamente');
     }
   };
@@ -158,10 +168,12 @@ export default function Eventos() {
             <div className="flex items-center justify-between animate-fade-in">
               <div>
                 <h1 className="text-3xl font-bold text-foreground mb-2">
-                  {isEncargadoCompras ? 'Registrar Gastos' : isServicio ? 'Mis Eventos Asignados' : 'Gestión de Eventos'}
+                  {isCoordinador ? 'Registrar Gastos e Ingresos' : isEncargadoCompras ? 'Registrar Gastos' : isServicio ? 'Mis Eventos Asignados' : 'Gestión de Eventos'}
                 </h1>
                 <p className="text-muted-foreground">
-                  {isEncargadoCompras
+                  {isCoordinador
+                    ? 'Selecciona un evento para registrar gastos e ingresos'
+                    : isEncargadoCompras
                     ? 'Selecciona un evento para registrar gastos'
                     : isServicio
                     ? 'Eventos donde estás asignado como personal de servicio'
@@ -298,9 +310,23 @@ export default function Eventos() {
               </CardContent>
             </Card>
 
-            {/* Events Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredEvents.map((event) => (
+            {/* Tabs: Eventos / Reservas */}
+            {/* Coordinador y Encargado de Compras NO ven tab de Reservas */}
+            {!isCoordinador && !isEncargadoCompras ? (
+            <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'eventos' | 'reservas')} className="w-full">
+              <TabsList className="grid w-full max-w-md grid-cols-2">
+                <TabsTrigger value="eventos">
+                  Eventos ({eventsByCategory.eventos.length})
+                </TabsTrigger>
+                <TabsTrigger value="reservas">
+                  Reservas ({eventsByCategory.reservas.length})
+                </TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="eventos" className="mt-6">
+                {/* Events Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredEvents.map((event) => (
                 <Card
                   key={event.id}
                   className="bg-gradient-card border-border hover:border-primary/50 transition-all animate-fade-in-up cursor-pointer group"
@@ -396,12 +422,12 @@ export default function Eventos() {
                       )}
                     </div>
 
-                    {(isEncargadoCompras || isServicio) && (
+                    {(isCoordinador || isEncargadoCompras || isServicio) && (
                       <Button className="w-full mt-4" variant="outline" onClick={(e) => {
                         e.stopPropagation();
                         navigate(`/eventos/${event.id}`);
                       }}>
-                        Registrar Gastos
+                        {isCoordinador ? 'Registrar Gastos e Ingresos' : 'Registrar Gastos'}
                       </Button>
                     )}
                   </CardContent>
@@ -422,6 +448,216 @@ export default function Eventos() {
                 </CardContent>
               </Card>
             )}
+              </TabsContent>
+              
+              <TabsContent value="reservas" className="mt-6">
+                {/* Events Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredEvents.map((event) => (
+                    <Card
+                      key={event.id}
+                      className="bg-gradient-card border-border hover:border-primary/50 transition-all animate-fade-in-up cursor-pointer group"
+                      onClick={() => navigate(`/eventos/${event.id}`)}
+                    >
+                      {event.imageUrl && (
+                        <div className="h-48 overflow-hidden rounded-t-xl">
+                          <img
+                            src={event.imageUrl}
+                            alt={event.name}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                        </div>
+                      )}
+                      <CardContent className="p-6">
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="flex-1">
+                            <h3 className="text-lg font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
+                              {event.name}
+                            </h3>
+                            <Badge variant="outline" className={cn('text-xs', statusConfig[event.status].color)}>
+                              {statusConfig[event.status].label}
+                            </Badge>
+                          </div>
+                          {!isEncargadoCompras && !isServicio && (
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                                <Button variant="ghost" size="icon" className="h-8 w-8">
+                                  <MoreVertical className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem onClick={(e) => {
+                                  e.stopPropagation();
+                                  navigate(`/eventos/${event.id}`);
+                                }}>
+                                  <Eye className="mr-2 h-4 w-4" />
+                                  Ver Detalle
+                                </DropdownMenuItem>
+                                {canEdit && (
+                                  <DropdownMenuItem onClick={(e) => {
+                                    e.stopPropagation();
+                                    toast.info('Función en desarrollo');
+                                  }}>
+                                    <Edit className="mr-2 h-4 w-4" />
+                                    Editar
+                                  </DropdownMenuItem>
+                                )}
+                                <DropdownMenuItem onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDuplicate(event);
+                                }}>
+                                  <Copy className="mr-2 h-4 w-4" />
+                                  Duplicar
+                                </DropdownMenuItem>
+                                {canDelete && (
+                                  <DropdownMenuItem
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleDelete(event.id);
+                                    }}
+                                    className="text-destructive focus:text-destructive"
+                                  >
+                                    <Trash className="mr-2 h-4 w-4" />
+                                    Eliminar
+                                  </DropdownMenuItem>
+                                )}
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          )}
+                        </div>
+
+                        <div className="space-y-3 text-sm">
+                          <div className="flex items-center text-muted-foreground">
+                            <Calendar className="w-4 h-4 mr-2" />
+                            {new Date(event.date).toLocaleDateString('es-ES', {
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric'
+                            })}
+                          </div>
+                          <div className="flex items-center text-muted-foreground">
+                            <MapPin className="w-4 h-4 mr-2" />
+                            {event.location}
+                          </div>
+                          <div className="flex items-center text-muted-foreground">
+                            <Users className="w-4 h-4 mr-2" />
+                            {event.maxAttendees} personas
+                          </div>
+                          {canViewFinancial && (
+                            <div className="flex items-center text-muted-foreground">
+                              <DollarSign className="w-4 h-4 mr-2" />
+                              S/ {event.financial.budget.toLocaleString()}
+                            </div>
+                          )}
+                        </div>
+
+                        {(isCoordinador || isEncargadoCompras) && (
+                          <Button className="w-full mt-4" variant="outline" onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/eventos/${event.id}`);
+                          }}>
+                            {isCoordinador ? 'Registrar Gastos e Ingresos' : 'Registrar Gastos'}
+                          </Button>
+                        )}
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+
+                {filteredEvents.length === 0 && (
+                  <Card className="bg-gradient-card border-border">
+                    <CardContent className="p-12 text-center">
+                      <Calendar className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+                      <h3 className="text-lg font-semibold text-foreground mb-2">No se encontraron reservas</h3>
+                      <p className="text-muted-foreground">
+                        {isServicio 
+                          ? 'No tienes reservas asignadas actualmente'
+                          : 'Intenta ajustar los filtros o crea una nueva reserva'}
+                      </p>
+                    </CardContent>
+                  </Card>
+                )}
+              </TabsContent>
+            </Tabs>
+            ) : (
+              /* Vista sin tabs para Coordinador y Encargado de Compras - Solo Eventos */
+              <div className="mt-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {eventsByCategory.eventos.filter((event) => {
+                    const matchesSearch =
+                      event.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                      event.location.toLowerCase().includes(searchTerm.toLowerCase());
+                    const matchesStatus = statusFilter === 'all' || event.status === statusFilter;
+                    const matchesType = typeFilter === 'all' || event.type === typeFilter;
+                    return matchesSearch && matchesStatus && matchesType;
+                  }).map((event) => (
+                    <Card
+                      key={event.id}
+                      className="bg-gradient-card border-border hover:border-primary/50 transition-all animate-fade-in-up cursor-pointer group"
+                      onClick={() => navigate(`/eventos/${event.id}`)}
+                    >
+                      {event.imageUrl && (
+                        <div className="h-48 overflow-hidden rounded-t-xl">
+                          <img
+                            src={event.imageUrl}
+                            alt={event.name}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                        </div>
+                      )}
+                      <CardContent className="p-6">
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="flex-1">
+                            <h3 className="text-lg font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
+                              {event.name}
+                            </h3>
+                            <Badge variant="outline" className={cn('text-xs', statusConfig[event.status].color)}>
+                              {statusConfig[event.status].label}
+                            </Badge>
+                          </div>
+                        </div>
+
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <Calendar className="w-4 h-4" />
+                            <span>{new Date(event.date).toLocaleDateString('es-ES')}</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <MapPin className="w-4 h-4" />
+                            <span>{event.location}</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <Users className="w-4 h-4" />
+                            <span>
+                              {event.attendees} / {event.maxAttendees} personas
+                            </span>
+                          </div>
+                        </div>
+
+                        <Button className="w-full mt-4" variant="outline" onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/eventos/${event.id}`);
+                        }}>
+                          {isCoordinador ? 'Registrar Gastos e Ingresos' : 'Registrar Gastos'}
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+
+                {eventsByCategory.eventos.length === 0 && (
+                  <Card className="bg-gradient-card border-border">
+                    <CardContent className="p-12 text-center">
+                      <Calendar className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+                      <h3 className="text-lg font-semibold text-foreground mb-2">No se encontraron eventos</h3>
+                      <p className="text-muted-foreground">
+                        No tienes eventos asignados actualmente
+                      </p>
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
+            )}
           </div>
         </main>
       </div>
@@ -434,6 +670,9 @@ export default function Eventos() {
           loadEvents();
         }} 
       />
+
+      {/* Chatbot Helper */}
+      <ChatbotHelper />
     </div>
   );
 }

@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reparar Eventos Corruptos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .danger {
+            background: #f44336;
+        }
+        .danger:hover {
+            background: #da190b;
+        }
+        #output {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+        .success {
+            color: #4CAF50;
+        }
+        .error {
+            color: #f44336;
+        }
+        .warning {
+            color: #ff9800;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Herramienta de Reparación de Eventos</h1>
+        <p>Esta herramienta te ayuda a reparar eventos corruptos en localStorage.</p>
+        
+        <h3>Opciones:</h3>
+        <button onclick="analyzeEvents()">1. Analizar Eventos</button>
+        <button onclick="fixEvents()">2. Reparar Eventos Automáticamente</button>
+        <button onclick="backupEvents()">3. Hacer Backup</button>
+        <button class="danger" onclick="clearCorruptedEvents()">4. Eliminar Eventos Corruptos</button>
+        
+        <div id="output"></div>
+    </div>
+
+    <script>
+        const output = document.getElementById('output');
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type === 'success' ? 'success' : type === 'error' ? 'error' : type === 'warning' ? 'warning' : '';
+            output.innerHTML += `<div class="${className}">[${timestamp}] ${message}</div>`;
+        }
+
+        function analyzeEvents() {
+            output.innerHTML = '';
+            log('=== ANÁLISIS DE EVENTOS ===');
+            
+            try {
+                const eventsStr = localStorage.getItem('demo_events');
+                if (!eventsStr) {
+                    log('No hay eventos en localStorage', 'warning');
+                    return;
+                }
+                
+                const events = JSON.parse(eventsStr);
+                log(`Total de eventos: ${events.length}`, 'success');
+                
+                let corruptedCount = 0;
+                events.forEach((event, index) => {
+                    log(`\n--- Evento ${index + 1}: ${event.name || 'Sin nombre'} ---`);
+                    
+                    // Check for issues
+                    const issues = [];
+                    
+                    if (!event.id) issues.push('❌ Falta ID');
+                    if (!event.name) issues.push('⚠️ Sin nombre');
+                    if (!event.financial) issues.push('❌ Sin datos financieros');
+                    if (event.financial && (isNaN(event.financial.totalExpenses) || !isFinite(event.financial.totalExpenses))) {
+                        issues.push('❌ totalExpenses inválido');
+                    }
+                    if (event.financial && (isNaN(event.financial.balance) || !isFinite(event.financial.balance))) {
+                        issues.push('❌ balance inválido');
+                    }
+                    if (event.expenses) {
+                        event.expenses.forEach((exp, i) => {
+                            if (isNaN(exp.amount) || !isFinite(exp.amount)) {
+                                issues.push(`❌ Gasto ${i + 1} con amount inválido`);
+                            }
+                            if (exp.cantidad !== undefined && (isNaN(exp.cantidad) || exp.cantidad < 0)) {
+                                issues.push(`❌ Gasto ${i + 1} con cantidad inválida`);
+                            }
+                            if (exp.costoUnitario !== undefined && (isNaN(exp.costoUnitario) || exp.costoUnitario < 0)) {
+                                issues.push(`❌ Gasto ${i + 1} con costoUnitario inválido`);
+                            }
+                        });
+                    }
+                    
+                    if (issues.length > 0) {
+                        corruptedCount++;
+                        log(`❌ CORRUPTO:`, 'error');
+                        issues.forEach(issue => log(`  ${issue}`, 'error'));
+                    } else {
+                        log(`✅ OK`, 'success');
+                    }
+                });
+                
+                log(`\n=== RESUMEN ===`);
+                log(`Eventos corruptos: ${corruptedCount}`, corruptedCount > 0 ? 'warning' : 'success');
+                log(`Eventos válidos: ${events.length - corruptedCount}`, 'success');
+                
+            } catch (error) {
+                log(`Error al analizar: ${error.message}`, 'error');
+            }
+        }
+
+        function fixEvents() {
+            output.innerHTML = '';
+            log('=== REPARANDO EVENTOS ===');
+            
+            try {
+                const eventsStr = localStorage.getItem('demo_events');
+                if (!eventsStr) {
+                    log('No hay eventos para reparar', 'warning');
+                    return;
+                }
+                
+                const events = JSON.parse(eventsStr);
+                let fixedCount = 0;
+                
+                const fixedEvents = events.map((event, index) => {
+                    let fixed = false;
+                    
+                    // Fix financial data
+                    if (!event.financial) {
+                        event.financial = { totalExpenses: 0, totalIncome: 0, balance: 0 };
+                        fixed = true;
+                    }
+                    
+                    if (isNaN(event.financial.totalExpenses) || !isFinite(event.financial.totalExpenses)) {
+                        event.financial.totalExpenses = 0;
+                        fixed = true;
+                    }
+                    
+                    if (isNaN(event.financial.balance) || !isFinite(event.financial.balance)) {
+                        event.financial.balance = 0;
+                        fixed = true;
+                    }
+                    
+                    // Fix expenses
+                    if (event.expenses) {
+                        event.expenses = event.expenses.map(exp => {
+                            if (isNaN(exp.amount) || !isFinite(exp.amount)) {
+                                exp.amount = 0;
+                                fixed = true;
+                            }
+                            if (exp.cantidad !== undefined && (isNaN(exp.cantidad) || exp.cantidad < 0)) {
+                                exp.cantidad = 0;
+                                fixed = true;
+                            }
+                            if (exp.costoUnitario !== undefined && (isNaN(exp.costoUnitario) || exp.costoUnitario < 0)) {
+                                exp.costoUnitario = 0;
+                                fixed = true;
+                            }
+                            return exp;
+                        });
+                    }
+                    
+                    if (fixed) {
+                        fixedCount++;
+                        log(`✅ Reparado: ${event.name || 'Evento ' + (index + 1)}`, 'success');
+                    }
+                    
+                    return event;
+                });
+                
+                localStorage.setItem('demo_events', JSON.stringify(fixedEvents));
+                
+                log(`\n=== REPARACIÓN COMPLETADA ===`);
+                log(`Eventos reparados: ${fixedCount}`, 'success');
+                log(`Total eventos: ${fixedEvents.length}`, 'success');
+                log('\n⚠️ Por favor, recarga la página para ver los cambios.', 'warning');
+                
+            } catch (error) {
+                log(`Error al reparar: ${error.message}`, 'error');
+            }
+        }
+
+        function backupEvents() {
+            output.innerHTML = '';
+            log('=== CREANDO BACKUP ===');
+            
+            try {
+                const eventsStr = localStorage.getItem('demo_events');
+                if (!eventsStr) {
+                    log('No hay eventos para respaldar', 'warning');
+                    return;
+                }
+                
+                const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+                const filename = `eventos-backup-${timestamp}.json`;
+                
+                const blob = new Blob([eventsStr], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                a.click();
+                
+                log(`✅ Backup creado: ${filename}`, 'success');
+                
+            } catch (error) {
+                log(`Error al crear backup: ${error.message}`, 'error');
+            }
+        }
+
+        function clearCorruptedEvents() {
+            if (!confirm('⚠️ ADVERTENCIA: Esto eliminará eventos corruptos. ¿Continuar?')) {
+                return;
+            }
+            
+            output.innerHTML = '';
+            log('=== ELIMINANDO EVENTOS CORRUPTOS ===');
+            
+            try {
+                const eventsStr = localStorage.getItem('demo_events');
+                if (!eventsStr) {
+                    log('No hay eventos', 'warning');
+                    return;
+                }
+                
+                const events = JSON.parse(eventsStr);
+                let removedCount = 0;
+                
+                const validEvents = events.filter((event, index) => {
+                    const isValid = event.id && 
+                                    event.financial && 
+                                    !isNaN(event.financial.totalExpenses) && 
+                                    isFinite(event.financial.totalExpenses);
+                    
+                    if (!isValid) {
+                        removedCount++;
+                        log(`❌ Eliminado: ${event.name || 'Evento ' + (index + 1)}`, 'error');
+                    }
+                    
+                    return isValid;
+                });
+                
+                localStorage.setItem('demo_events', JSON.stringify(validEvents));
+                
+                log(`\n=== LIMPIEZA COMPLETADA ===`);
+                log(`Eventos eliminados: ${removedCount}`, 'warning');
+                log(`Eventos válidos restantes: ${validEvents.length}`, 'success');
+                log('\n⚠️ Por favor, recarga la página para ver los cambios.', 'warning');
+                
+            } catch (error) {
+                log(`Error al limpiar: ${error.message}`, 'error');
+            }
+        }
+
+        // Auto-analyze on load
+        window.onload = function() {
+            log('Herramienta de reparación cargada. Selecciona una opción.', 'success');
+        };
+    </script>
+</body>
+</html>

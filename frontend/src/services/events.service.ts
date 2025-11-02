@@ -8,13 +8,18 @@ const isDemoMode = import.meta.env.VITE_DEMO_MODE === 'true';
 const simulateNetworkDelay = () => new Promise(resolve => setTimeout(resolve, 300));
 
 class EventsService {
-  private events: Event[] = [...MOCK_EVENTS];
+  private getEventsFromStorage(): Event[] {
+    // Combinar MOCK_EVENTS con eventos guardados en localStorage
+    const storedEvents = JSON.parse(localStorage.getItem('demo_events') || '[]');
+    return [...MOCK_EVENTS, ...storedEvents];
+  }
 
   async getAll(filters?: EventFilters): Promise<Event[]> {
     if (isDemoMode) {
       await simulateNetworkDelay();
       
-      let filtered = [...this.events];
+      // Obtener eventos de localStorage y MOCK_EVENTS
+      let filtered = this.getEventsFromStorage();
 
       // Aplicar filtros
       if (filters?.search) {
@@ -84,7 +89,7 @@ class EventsService {
   async getById(id: number): Promise<Event> {
     if (isDemoMode) {
       await simulateNetworkDelay();
-      const event = this.events.find(e => e.id === id);
+      const event = this.getEventsFromStorage().find(e => e.id === id);
       if (!event) {
         throw new Error('Evento no encontrado');
       }

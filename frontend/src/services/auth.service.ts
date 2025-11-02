@@ -12,9 +12,18 @@ class AuthService {
     if (isDemoMode) {
       await simulateNetworkDelay();
       
-      const user = DEMO_USERS.find(
-        u => u.email === credentials.email && u.password === credentials.password
+      // Buscar primero en usuarios actualizados de localStorage
+      const storedUsers = JSON.parse(localStorage.getItem('demo_users') || '[]');
+      let user = storedUsers.find(
+        (u: any) => u.email === credentials.email && u.password === credentials.password
       );
+      
+      // Si no se encuentra, buscar en DEMO_USERS
+      if (!user) {
+        user = DEMO_USERS.find(
+          u => u.email === credentials.email && u.password === credentials.password
+        );
+      }
 
       if (!user) {
         throw new Error('Credenciales inválidas');
@@ -113,7 +122,14 @@ class AuthService {
       await simulateNetworkDelay();
       const demoUser = localStorage.getItem('demo_user');
       if (demoUser) {
-        return JSON.parse(demoUser);
+        const user = JSON.parse(demoUser);
+        // Actualizar assignedEventIds desde demo_users si existe
+        const storedUsers = JSON.parse(localStorage.getItem('demo_users') || '[]');
+        const updatedUser = storedUsers.find((u: any) => u.id === user.id);
+        if (updatedUser) {
+          return { ...user, assignedEventIds: updatedUser.assignedEventIds || [] };
+        }
+        return user;
       }
       throw new Error('No hay sesión activa');
     }

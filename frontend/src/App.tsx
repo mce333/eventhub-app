@@ -7,6 +7,11 @@ import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
 import Eventos from './pages/Eventos';
 import EventoDetalle from './pages/EventoDetalle';
+import Clientes from './pages/Clientes';
+import Finanzas from './pages/Finanzas';
+import Almacen from './pages/Almacen';
+import Estadisticas from './pages/Estadisticas';
+import Configuracion from './pages/Configuracion';
 import NotFound from './pages/NotFound';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -57,6 +62,46 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <EventoDetalle />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/clientes"
+        element={
+          <ProtectedRoute>
+            <Clientes />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/finanzas"
+        element={
+          <ProtectedRoute>
+            <Finanzas />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/almacen"
+        element={
+          <ProtectedRoute>
+            <Almacen />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/estadisticas"
+        element={
+          <ProtectedRoute>
+            <Estadisticas />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/configuracion"
+        element={
+          <ProtectedRoute>
+            <Configuracion />
           </ProtectedRoute>
         }
       />

@@ -1,12 +1,13 @@
-import { Calendar, TrendingUp, Users, DollarSign } from "lucide-react";
+import { Calendar, CheckCircle2, Clock, DollarSign } from "lucide-react";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { Header } from "@/components/dashboard/Header";
 import { MetricCard } from "@/components/dashboard/MetricCard";
 import { EventCard } from "@/components/dashboard/EventCard";
-import { StatChart } from "@/components/dashboard/StatChart";
+import { EventCalendar } from "@/components/dashboard/EventCalendar";
+import { ChatbotHelper } from "@/components/dashboard/ChatbotHelper";
 import { useAuth } from "@/contexts/AuthContext";
-import { MOCK_DASHBOARD_DATA } from "@/lib/mockData";
-import { useEffect } from "react";
+import { MOCK_DASHBOARD_DATA, MOCK_EVENTS } from "@/lib/mockData";
+import { useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { getUserRole, hasPermission } from "@/lib/permissions";
 
@@ -23,6 +24,52 @@ export default function Dashboard() {
   }, [userRole, navigate]);
 
   const dashboardData = MOCK_DASHBOARD_DATA[user?.id || 1];
+
+  // Calcular métricas actualizadas
+  const metrics = useMemo(() => {
+    // Cargar eventos SOLO de localStorage
+    const storedEvents = JSON.parse(localStorage.getItem('demo_events') || '[]');
+    
+    console.log('📊 Dashboard: eventos cargados:', storedEvents.length);
+    
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    
+    // Eventos de este mes
+    const eventosEsteMes = storedEvents.filter(event => {
+      const eventDate = new Date(event.date);
+      return eventDate.getMonth() === currentMonth && eventDate.getFullYear() === currentYear;
+    }).length;
+    
+    // Eventos realizados (completados)
+    const eventosRealizados = storedEvents.filter(event => event.status === 'completed').length;
+    
+    // Eventos por realizar (confirmados o en progreso)
+    const eventosPorRealizar = storedEvents.filter(event => 
+      event.status === 'confirmed' || event.status === 'in_progress'
+    ).length;
+    
+    // Calcular ingresos del mes
+    const ingresosEventosRealizados = storedEvents
+      .filter(event => event.status === 'completed')
+      .reduce((sum, event) => sum + (event.financial?.totalIncome || 0), 0);
+    
+    const adelantosEventosPorRealizar = storedEvents
+      .filter(event => event.status === 'confirmed' || event.status === 'in_progress')
+      .reduce((sum, event) => sum + (event.financial?.advancePayment || 0), 0);
+    
+    const ingresosTotalesMes = ingresosEventosRealizados + adelantosEventosPorRealizar;
+    
+    return {
+      eventosEsteMes,
+      eventosRealizados,
+      eventosPorRealizar,
+      ingresosTotalesMes,
+      ingresosEventosRealizados,
+      adelantosEventosPorRealizar
+    };
+  }, []);
 
   if (!hasPermission(userRole, 'canViewDashboard')) {
     return null; // Will redirect
@@ -51,40 +98,34 @@ export default function Dashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <MetricCard
                 title="Eventos Este Mes"
-                value={dashboardData.totalEvents}
-                change="+12% vs mes anterior"
-                changeType="positive"
+                value={metrics.eventosEsteMes}
                 icon={Calendar}
                 trend="up"
               />
               <MetricCard
-                title="Ingresos Totales"
-                value={`€${dashboardData.totalRevenue.toLocaleString()}`}
-                change="+8.2% vs mes anterior"
-                changeType="positive"
+                title="Eventos Realizados"
+                value={metrics.eventosRealizados}
+                icon={CheckCircle2}
+                trend="up"
+              />
+              <MetricCard
+                title="Eventos por Realizar"
+                value={metrics.eventosPorRealizar}
+                icon={Clock}
+                trend="up"
+              />
+              <MetricCard
+                title="Ingresos del Mes"
+                value={`S/ ${metrics.ingresosTotalesMes.toLocaleString()}`}
+                change={`Realizados: S/ ${metrics.ingresosEventosRealizados.toLocaleString()}`}
+                extraInfo={`Adelantos: S/ ${metrics.adelantosEventosPorRealizar.toLocaleString()}`}
                 icon={DollarSign}
                 trend="up"
               />
-              <MetricCard
-                title="Eventos Activos"
-                value={dashboardData.activeEvents}
-                change="+5.4% vs mes anterior"
-                changeType="positive"
-                icon={Users}
-                trend="up"
-              />
-              <MetricCard
-                title="Ocupación Media"
-                value="87%"
-                change="-2.1% vs mes anterior"
-                changeType="negative"
-                icon={TrendingUp}
-                trend="down"
-              />
             </div>
 
-            {/* Chart Section */}
-            <StatChart data={dashboardData.monthlyStats} />
+            {/* Calendar Section */}
+            <EventCalendar />
 
             {/* Upcoming Events */}
             <div className="space-y-4">
@@ -99,27 +140,37 @@ export default function Dashboard() {
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {dashboardData.upcomingEvents.map((event) => (
-                  <EventCard 
-                    key={event.id} 
-                    title={event.name}
-                    date={new Date(event.date).toLocaleDateString('es-ES', { 
-                      day: 'numeric', 
-                      month: 'long', 
-                      year: 'numeric' 
-                    })}
-                    time="10:00 - 18:00"
-                    location={event.location}
-                    attendees={event.attendees}
-                    capacity={event.attendees + 50}
-                    status={event.status}
-                  />
-                ))}
+                {dashboardData?.upcomingEvents && dashboardData.upcomingEvents.length > 0 ? (
+                  dashboardData.upcomingEvents.map((event) => (
+                    <EventCard 
+                      key={event.id} 
+                      title={event.name}
+                      date={new Date(event.date).toLocaleDateString('es-ES', { 
+                        day: 'numeric', 
+                        month: 'long', 
+                        year: 'numeric' 
+                      })}
+                      time="10:00 - 18:00"
+                      location={event.location}
+                      attendees={event.attendees}
+                      capacity={event.attendees + 50}
+                      status={event.status}
+                    />
+                  ))
+                ) : (
+                  <div className="col-span-full py-12 text-center text-muted-foreground">
+                    <Calendar className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                    <p>No hay eventos próximos</p>
+                  </div>
+                )}
               </div>
             </div>
           </div>
         </main>
       </div>
+      
+      {/* Chatbot Helper */}
+      <ChatbotHelper />
     </div>
   );
 }

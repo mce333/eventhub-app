@@ -21,7 +21,7 @@ export default function Login() {
 
     try {
       await login({ email, password });
-      toast.success('¡Bienvenido a EventHub!');
+      toast.success('¡Bienvenido al Sistema!');
       navigate('/');
     } catch (error) {
       toast.error('Credenciales incorrectas');
@@ -34,7 +34,7 @@ export default function Login() {
     setIsLoading(true);
     try {
       await login({ email: demoEmail, password: demoPassword });
-      toast.success('¡Bienvenido a EventHub!');
+      toast.success('¡Bienvenido al Sistema!');
       navigate('/');
     } catch (error) {
       toast.error('Error al iniciar sesión');
@@ -53,8 +53,8 @@ export default function Login() {
               <Calendar className="w-10 h-10 text-white" />
             </div>
             <div>
-              <h1 className="text-4xl font-bold text-foreground">EventHub</h1>
-              <p className="text-muted-foreground">Sistema de Gestión de Eventos</p>
+              <h1 className="text-4xl font-bold text-foreground">Sistema de Control de Eventos</h1>
+              <p className="text-muted-foreground">Gestión Profesional de Eventos</p>
             </div>
           </div>
           

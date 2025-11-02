@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -17,7 +17,7 @@ import { Progress } from '@/components/ui/progress';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, ArrowRight, Upload, Plus, Trash2, CalendarIcon, Users } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Upload, Plus, Trash2, CalendarIcon, Users, Save } from 'lucide-react';
 import { toast } from 'sonner';
 import { CreateEventDTO, EventType, ServiceType, PaymentType, EventStaff } from '@/types/events';
 import { useAuth } from '@/contexts/AuthContext';
@@ -30,11 +30,14 @@ import { DEMO_USERS } from '@/lib/mockData';
 import { getServiceUsers } from '@/lib/permissions';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { getEventImageByType } from '@/lib/eventImages';
 import { cn } from '@/lib/utils';
+import { STAFF_ROLES, getDefaultRate, getRateType, canRoleHaveSystemAccess } from '@/lib/staffRoles';
 
 interface CreateEventModalProps {
   open: boolean;
   onClose: () => void;
+  initialDate?: Date;
 }
 
 interface DecorationItem {
@@ -43,6 +46,8 @@ interface DecorationItem {
   providerCost: number;
   clientCost: number;
   profit: number;
+  estadoPago: 'pendiente' | 'adelanto' | 'pagado';
+  montoPagado: number;
 }
 
 const STEPS = [
@@ -63,14 +68,20 @@ const EVENT_TYPES: { value: EventType; label: string }[] = [
   { value: 'otro', label: 'Otro' },
 ];
 
-export function CreateEventModal({ open, onClose }: CreateEventModalProps) {
+export function CreateEventModal({ open, onClose, initialDate }: CreateEventModalProps) {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(0);
-  const [selectedDate, setSelectedDate] = useState<Date>();
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(initialDate);
   const [menuItems, setMenuItems] = useState(menuService.getMenuItems());
   const [decorationItems, setDecorationItems] = useState<DecorationItem[]>([]);
   const [selectedServiceUsers, setSelectedServiceUsers] = useState<number[]>([]);
+  const [savedStaffIndexes, setSavedStaffIndexes] = useState<Set<number>>(new Set());
+  const [isFoodSaved, setIsFoodSaved] = useState(false);
+  const [areBeveragesSaved, setAreBeveragesSaved] = useState(false);
+  const [savedBeverageIndexes, setSavedBeverageIndexes] = useState<Set<number>>(new Set());
+  const [beerData, setBeerData] = useState<{modalidad: 'cover' | 'compra_local', cantidad: number, numeroCajas?: number, costoPorCaja?: number, costoCajaLocal?: number, costoCajaCliente?: number} | null>(null);
+  const [cocktailData, setCocktailData] = useState<{cantidad: number, costoCoctelLocal: number, costoCoctelCliente: number} | null>(null);
   const [formData, setFormData] = useState<Partial<CreateEventDTO>>({
     serviceType: 'con_comida',
     decoration: [],
@@ -79,6 +90,13 @@ export function CreateEventModal({ open, onClose }: CreateEventModalProps) {
 
   const progress = ((currentStep + 1) / STEPS.length) * 100;
   const serviceUsers = getServiceUsers(DEMO_USERS);
+
+  // Update selectedDate when initialDate prop changes
+  useEffect(() => {
+    if (initialDate) {
+      setSelectedDate(initialDate);
+    }
+  }, [initialDate]);
 
   const handleNext = () => {
     if (!validateCurrentStep()) {
@@ -164,20 +182,37 @@ export function CreateEventModal({ open, onClose }: CreateEventModalProps) {
 
       const newEventId = Date.now();
       
+      // Determinar status basado en la fecha del evento
+      const eventDate = new Date(formData.date!);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const eventStatus = eventDate < today ? 'completed' : 'confirmed';
+      
+      // Add unique IDs to expenses
+      const expensesWithIds = predeterminedExpenses.map((expense, index) => ({
+        ...expense,
+        id: newEventId + index + 1, // Unique ID for each expense
+        amount: 0,
+        date: new Date().toISOString(),
+      }));
+      
       const newEvent = {
         id: newEventId,
         name: formData.name!,
         type: formData.type!,
+        eventCategory: formData.eventCategory || 'evento',
         date: formData.date!,
         endDate: formData.date,
         location: formData.location!,
         venue: formData.location!,
         maxAttendees: formData.maxAttendees!,
         attendees: 0,
-        status: 'draft' as const,
+        status: eventStatus as const,
         description: formData.description || '',
+        imageUrl: getEventImageByType(formData.type!),
         serviceType: formData.serviceType!,
         foodDetails: formData.foodDetails,
+        beverages: formData.beverages || [],
         rentalDetails: formData.rentalDetails,
         client: {
           id: Date.now(),
@@ -196,7 +231,8 @@ export function CreateEventModal({ open, onClose }: CreateEventModalProps) {
           advancePayment: formData.contract?.pagoAdelantado || 0,
           pendingPayment: totalPrice - (formData.contract?.pagoAdelantado || 0),
         },
-        expenses: predeterminedExpenses,
+        expenses: expensesWithIds,
+        payments: [],
         decoration: decorationItems.map((item, idx) => ({
           id: idx + 1,
           item: item.package,
@@ -207,6 +243,8 @@ export function CreateEventModal({ open, onClose }: CreateEventModalProps) {
           providerCost: item.providerCost,
           profit: item.profit,
           estado: 'pendiente' as const,
+          estadoPago: item.estadoPago || 'pendiente',
+          montoPagado: item.montoPagado || 0,
         })),
         furniture: [],
         staff: formData.staff || [],
@@ -231,15 +269,24 @@ export function CreateEventModal({ open, onClose }: CreateEventModalProps) {
 
       console.log('Nuevo evento creado:', newEvent);
 
+      // Obtener IDs de personal con acceso al sistema
+      const staffWithAccess = (formData.staff || [])
+        .filter(s => s.hasSystemAccess && s.userId)
+        .map(s => s.userId!);
+
+      // Agregar assignedServiceUsers al evento
+      newEvent.assignedServiceUsers = staffWithAccess;
+
       const existingEvents = JSON.parse(localStorage.getItem('demo_events') || '[]');
-      const updatedEvents = [...existingEvents, newEvent];
+      // Insertar al principio del array para que aparezca en primera fila
+      const updatedEvents = [newEvent, ...existingEvents];
       localStorage.setItem('demo_events', JSON.stringify(updatedEvents));
       
-      // Update assigned events for service users
-      if (selectedServiceUsers.length > 0) {
+      // Update assigned events for service users with system access
+      if (staffWithAccess.length > 0) {
         const storedUsers = JSON.parse(localStorage.getItem('demo_users') || JSON.stringify(DEMO_USERS));
         const updatedUsers = storedUsers.map((u: any) => {
-          if (selectedServiceUsers.includes(u.id)) {
+          if (staffWithAccess.includes(u.id)) {
             return {
               ...u,
               assignedEventIds: [...(u.assignedEventIds || []), newEventId],
@@ -251,6 +298,7 @@ export function CreateEventModal({ open, onClose }: CreateEventModalProps) {
       }
       
       console.log('Total de eventos:', updatedEvents.length);
+      console.log('Personal con acceso:', staffWithAccess);
 
       toast.success('¡Evento creado exitosamente!');
       
@@ -275,6 +323,8 @@ export function CreateEventModal({ open, onClose }: CreateEventModalProps) {
         providerCost: 0,
         clientCost: 0,
         profit: 0,
+        estadoPago: 'pendiente',
+        montoPagado: 0,
       },
     ]);
   };
@@ -290,14 +340,18 @@ export function CreateEventModal({ open, onClose }: CreateEventModalProps) {
       [field]: value,
     };
     
+    // Auto-fill costs when package is selected
     if (field === 'package') {
       const selectedPackage = DECORATION_PACKAGES.find(p => p.name === value);
       if (selectedPackage) {
         updated[index].providerCost = selectedPackage.providerCost;
         updated[index].clientCost = selectedPackage.clientCost;
+        // Calculate profit immediately when package is selected
+        updated[index].profit = selectedPackage.clientCost - selectedPackage.providerCost;
       }
     }
     
+    // Recalculate profit when costs change
     if (field === 'providerCost' || field === 'clientCost') {
       updated[index].profit = updated[index].clientCost - updated[index].providerCost;
     }
@@ -347,13 +401,26 @@ export function CreateEventModal({ open, onClose }: CreateEventModalProps) {
         {
           name: '',
           role: '',
+          roleId: '',
           hours: 0,
+          plates: 0,
           hourlyRate: 0,
           totalCost: 0,
           contact: '',
+          hasSystemAccess: false,
         },
       ],
     });
+  };
+
+  const saveStaffMember = (index: number) => {
+    const staffMember = formData.staff?.[index];
+    if (!staffMember?.name || !staffMember?.roleId) {
+      toast.error('Por favor completa el nombre y rol del personal');
+      return;
+    }
+    setSavedStaffIndexes(prev => new Set([...prev, index]));
+    toast.success('Personal registrado correctamente');
   };
 
   const removeStaff = (index: number) => {
@@ -367,18 +434,174 @@ export function CreateEventModal({ open, onClose }: CreateEventModalProps) {
     });
   };
 
-  const updateStaff = (index: number, field: keyof EventStaff, value: string | number) => {
+  const saveFoodSection = () => {
+    if (!formData.foodDetails?.tipoDePlato || !formData.foodDetails?.cantidadDePlatos || !formData.foodDetails?.precioPorPlato) {
+      toast.error('Por favor completa todos los campos de comida');
+      return;
+    }
+    setIsFoodSaved(true);
+    toast.success('Sección de comida guardada correctamente');
+  };
+
+  const saveBeverage = (index: number) => {
+    const beverage = formData.beverages?.[index];
+    if (!beverage) return;
+
+    // Validar campos según tipo
+    if (beverage.tipo === 'gaseosa' || beverage.tipo === 'agua' || beverage.tipo === 'champan') {
+      if (!beverage.cantidad || !beverage.precioUnitario) {
+        toast.error('Por favor completa cantidad y precio por unidad');
+        return;
+      }
+    } else if (beverage.tipo === 'cerveza') {
+      if (!beverage.cantidad && !beverage.numeroCajas) {
+        toast.error('Por favor completa la cantidad');
+        return;
+      }
+    } else if (beverage.tipo === 'coctel') {
+      if (!beverage.cantidad) {
+        toast.error('Por favor completa la cantidad');
+        return;
+      }
+    }
+
+    setSavedBeverageIndexes(prev => new Set([...prev, index]));
+    toast.success('Bebida registrada correctamente');
+  };
+
+  const saveBeveragesSection = () => {
+    // Validar que se hayan llenado los campos necesarios
+    if (formData.beverages && formData.beverages.length > 0) {
+      const allValid = formData.beverages.every(bev => {
+        if (bev.tipo === 'gaseosa' || bev.tipo === 'agua' || bev.tipo === 'champan') {
+          return bev.cantidad && bev.precioUnitario;
+        } else if (bev.tipo === 'cerveza') {
+          return bev.cantidad || bev.numeroCajas;
+        } else if (bev.tipo === 'coctel') {
+          return bev.cantidad;
+        }
+        return false;
+      });
+      
+      if (!allValid) {
+        toast.error('Por favor completa todos los campos de las bebidas');
+        return;
+      }
+    }
+    setAreBeveragesSaved(true);
+    toast.success('Sección de bebidas guardada correctamente');
+  };
+
+  const addBeverage = () => {
+    setFormData({
+      ...formData,
+      beverages: [
+        ...(formData.beverages || []),
+        {
+          id: Date.now(),
+          tipo: 'gaseosa',
+        },
+      ],
+    });
+  };
+
+
+  const updateStaff = (index: number, field: keyof EventStaff, value: string | number | boolean) => {
     const updated = [...(formData.staff || [])];
     updated[index] = {
       ...updated[index],
       [field]: value,
     };
     
+    // Si cambia el roleId, actualizar tarifa predeterminada y tipo de tarifa
+    if (field === 'roleId' && typeof value === 'string') {
+      const defaultRate = getDefaultRate(value);
+      const rateType = getRateType(value);
+      const canAccess = canRoleHaveSystemAccess(value);
+      const roleName = STAFF_ROLES.find(r => r.id === value)?.name || '';
+      
+      updated[index].role = roleName;
+      updated[index].hourlyRate = defaultRate;
+      updated[index].hasSystemAccess = canAccess ? updated[index].hasSystemAccess : false;
+      
+      // Auto-llenar email y password según el rol
+      if (value === 'coordinador') {
+        updated[index].systemEmail = 'coordinador@eventhub.com';
+        updated[index].systemPassword = 'coord123';
+        updated[index].userId = 2; // ID del usuario Coordinador
+      } else if (value === 'encargado_compras') {
+        updated[index].systemEmail = 'compras@eventhub.com';
+        updated[index].systemPassword = 'compras123';
+        updated[index].userId = 3; // ID del usuario Encargado de Compras
+      }
+      
+      // Calcular costo según tipo de tarifa
+      if (rateType === 'perPlate' && formData.foodDetails?.cantidadDePlatos) {
+        updated[index].plates = formData.foodDetails.cantidadDePlatos;
+        updated[index].totalCost = defaultRate * formData.foodDetails.cantidadDePlatos;
+      } else {
+        updated[index].hours = updated[index].hours || 8; // Default 8 horas
+        updated[index].totalCost = defaultRate * (updated[index].hours || 8);
+      }
+    }
+    
+    // Si se activa hasSystemAccess, asegurarse de que tenga credenciales
+    if (field === 'hasSystemAccess' && value === true && updated[index].roleId) {
+      const roleId = updated[index].roleId!;
+      if (roleId === 'coordinador') {
+        updated[index].systemEmail = 'coordinador@eventhub.com';
+        updated[index].systemPassword = 'coord123';
+        updated[index].userId = 2;
+      } else if (roleId === 'encargado_compras') {
+        updated[index].systemEmail = 'compras@eventhub.com';
+        updated[index].systemPassword = 'compras123';
+        updated[index].userId = 3;
+      }
+    }
+    
+    // Recalcular costo si cambian horas o tarifa
     if (field === 'hours' || field === 'hourlyRate') {
-      updated[index].totalCost = updated[index].hours * updated[index].hourlyRate;
+      const rateType = updated[index].roleId ? getRateType(updated[index].roleId!) : 'hourly';
+      if (rateType === 'hourly') {
+        updated[index].totalCost = (updated[index].hours || 0) * (updated[index].hourlyRate || 0);
+      }
+    }
+    
+    // Recalcular costo si cambian platos o tarifa
+    if (field === 'plates' || (field === 'hourlyRate' && updated[index].roleId && getRateType(updated[index].roleId!) === 'perPlate')) {
+      updated[index].totalCost = (updated[index].plates || 0) * (updated[index].hourlyRate || 0);
     }
     
     setFormData({ ...formData, staff: updated });
+  };
+
+  const updateBeverage = (index: number, field: string, value: any) => {
+    const updated = [...(formData.beverages || [])];
+    updated[index] = {
+      ...updated[index],
+      [field]: value,
+    };
+    
+    // Si cambia el tipo a cerveza o coctel, inicializar modalidad
+    if (field === 'tipo' && (value === 'cerveza' || value === 'coctel') && !updated[index].modalidad) {
+      updated[index].modalidad = 'cover';
+    }
+    
+    // Calcular utilidad si es cerveza o coctel
+    if (updated[index].tipo === 'cerveza' && updated[index].modalidad === 'compra_local') {
+      updated[index].utilidad = (updated[index].costoCajaCliente || 0) - (updated[index].costoCajaLocal || 0);
+    } else if (updated[index].tipo === 'coctel' && updated[index].modalidad === 'compra_local') {
+      updated[index].utilidad = (updated[index].costoCoctelCliente || 0) - (updated[index].costoCoctelLocal || 0);
+    }
+    
+    setFormData({ ...formData, beverages: updated });
+  };
+
+  const removeBeverage = (index: number) => {
+    setFormData({
+      ...formData,
+      beverages: formData.beverages?.filter((_, i) => i !== index),
+    });
   };
 
   const calculateTotals = () => {
@@ -386,20 +609,30 @@ export function CreateEventModal({ open, onClose }: CreateEventModalProps) {
       ? formData.foodDetails.cantidadDePlatos * formData.foodDetails.precioPorPlato
       : 0;
     
+    const cervezaCost = formData.foodDetails?.incluyeCerveza
+      ? (formData.foodDetails.numeroCajasCerveza || 0) * (formData.foodDetails.costoPorCaja || 0)
+      : 0;
+    
+    const decorationTotalCost = decorationItems.reduce((sum, item) => sum + item.totalCost, 0);
+    const decorationProviderCost = decorationItems.reduce((sum, item) => sum + item.providerCost, 0);
     const decorationClientCost = decorationItems.reduce((sum, item) => sum + item.clientCost, 0);
     const decorationProfit = decorationItems.reduce((sum, item) => sum + item.profit, 0);
     
-    const staffCost = (formData.staff || []).reduce((sum, person) => sum + person.totalCost, 0);
+    const garantia = formData.contract?.garantia || 0;
     
-    const totalPrice = foodCost + decorationClientCost + staffCost;
+    // Precio total = comida + cerveza + decoración (cliente) + garantía
+    const totalPrice = foodCost + cervezaCost + decorationClientCost + garantia;
     const advancePayment = formData.contract?.pagoAdelantado || 0;
     const balance = totalPrice - advancePayment;
     
     return {
       foodCost,
+      cervezaCost,
+      decorationTotalCost,
+      decorationProviderCost,
       decorationClientCost,
       decorationProfit,
-      staffCost,
+      garantia,
       totalPrice,
       advancePayment,
       balance,
@@ -433,7 +666,7 @@ export function CreateEventModal({ open, onClose }: CreateEventModalProps) {
             <div>
               <Label>Título del Evento *</Label>
               <Input
-                placeholder="Ej: Quinceañera de María"
+                placeholder="Nombre del evento"
                 value={formData.name || ''}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               />
@@ -475,7 +708,7 @@ export function CreateEventModal({ open, onClose }: CreateEventModalProps) {
               <Label>Cantidad de Personas *</Label>
               <Input
                 type="number"
-                placeholder="150"
+                placeholder="Número de asistentes"
                 value={formData.maxAttendees || ''}
                 onChange={(e) => setFormData({ ...formData, maxAttendees: parseInt(e.target.value) })}
               />
@@ -522,102 +755,477 @@ export function CreateEventModal({ open, onClose }: CreateEventModalProps) {
             </div>
 
             {formData.serviceType === 'con_comida' && (
+              <>
+                {/* Sección COMIDA */}
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-base">🍽️ Comida</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div>
+                      <Label>Tipo de Plato *</Label>
+                      <Select
+                        value={formData.foodDetails?.tipoDePlato || ''}
+                        onValueChange={(value) => {
+                          const selectedItem = menuItems.find(item => item.name === value);
+                          setFormData({
+                            ...formData,
+                            foodDetails: {
+                              ...formData.foodDetails!,
+                              tipoDePlato: value,
+                              precioPorPlato: selectedItem?.price || 0,
+                            },
+                          });
+                        }}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecciona un plato" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {menuItems.map((item) => (
+                            <SelectItem key={item.id} value={item.name}>
+                              {item.name} - S/ {item.price}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div>
+                      <Label>Cantidad de Platos *</Label>
+                      <Input
+                        type="number"
+                        placeholder="Número de platos"
+                        value={formData.foodDetails?.cantidadDePlatos || ''}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            foodDetails: {
+                              ...formData.foodDetails!,
+                              cantidadDePlatos: parseInt(e.target.value) || 0,
+                            },
+                          })
+                        }
+                      />
+                    </div>
+
+                    <div>
+                      <Label>Precio por Plato *</Label>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        value={formData.foodDetails?.precioPorPlato || ''}
+                        disabled={!!formData.foodDetails?.tipoDePlato}
+                        className={formData.foodDetails?.tipoDePlato ? 'bg-muted' : ''}
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Sección BEBIDAS */}
+                <Card>
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-base">🍺 Bebidas</CardTitle>
+                      <Button
+                        type="button"
+                        size="sm"
+                        onClick={addBeverage}
+                        variant="outline"
+                      >
+                        <Plus className="h-4 w-4 mr-2" />
+                        Agregar Bebida
+                      </Button>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    {/* Lista de bebidas agregadas */}
+                    {formData.beverages && formData.beverages.length > 0 ? (
+                      <div className="space-y-3">
+                        {formData.beverages.map((bev, index) => {
+                          const isSaved = savedBeverageIndexes.has(index);
+                          
+                          return (
+                          <Card key={bev.id} className={`border-2 ${isSaved ? 'bg-green-500/5 border-green-500/30' : ''}`}>
+                            <CardContent className={isSaved ? 'pt-3 pb-3' : 'pt-4 space-y-3'}>
+                              {!isSaved ? (
+                                <div className="flex items-start justify-between gap-4">
+                                  <div className="flex-1 space-y-3">
+                                  {/* Tipo de bebida */}
+                                  <div>
+                                    <Label className="text-sm">Tipo de Bebida *</Label>
+                                    <Select
+                                      value={bev.tipo}
+                                      onValueChange={(value) => updateBeverage(index, 'tipo', value)}
+                                    >
+                                      <SelectTrigger>
+                                        <SelectValue />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        <SelectItem value="gaseosa">Gaseosa</SelectItem>
+                                        <SelectItem value="agua">Agua</SelectItem>
+                                        <SelectItem value="champan">Champán</SelectItem>
+                                        <SelectItem value="vino">Vino</SelectItem>
+                                        <SelectItem value="cerveza">Cerveza</SelectItem>
+                                        <SelectItem value="coctel">Cóctel</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
+
+                                  {/* Gaseosa, Agua, Champán, Vino - Litros, Cantidad, Precio */}
+                                  {(bev.tipo === 'gaseosa' || bev.tipo === 'agua' || bev.tipo === 'champan' || bev.tipo === 'vino') && (
+                                    <div className="space-y-3">
+                                      <div>
+                                        <Label className="text-sm">Número de Litros</Label>
+                                        <Input
+                                          type="number"
+                                          placeholder=""
+                                          value={bev.litros || ''}
+                                          onChange={(e) => updateBeverage(index, 'litros', parseInt(e.target.value) || 0)}
+                                        />
+                                      </div>
+                                      <div className="grid grid-cols-2 gap-3">
+                                        <div>
+                                          <Label className="text-sm">Cantidad</Label>
+                                          <Input
+                                            type="number"
+                                            placeholder="Unidades"
+                                            value={bev.cantidad || ''}
+                                            onChange={(e) => updateBeverage(index, 'cantidad', parseInt(e.target.value) || 0)}
+                                          />
+                                        </div>
+                                        <div>
+                                          <Label className="text-sm">Precio por Unidad (S/)</Label>
+                                          <Input
+                                            type="number"
+                                            step="0.01"
+                                            placeholder=""
+                                            value={bev.precioUnitario || ''}
+                                            onChange={(e) => updateBeverage(index, 'precioUnitario', parseFloat(e.target.value) || 0)}
+                                          />
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )}
+
+                                  {/* Cerveza */}
+                                  {bev.tipo === 'cerveza' && (
+                                    <div className="space-y-3 p-3 bg-yellow-500/5 rounded-lg border border-yellow-500/20">
+                                      <div>
+                                        <Label className="text-sm">Modalidad</Label>
+                                        <Select
+                                          value={bev.modalidad || 'cover'}
+                                          onValueChange={(value) => updateBeverage(index, 'modalidad', value)}
+                                        >
+                                          <SelectTrigger>
+                                            <SelectValue />
+                                          </SelectTrigger>
+                                          <SelectContent>
+                                            <SelectItem value="cover">Cover</SelectItem>
+                                            <SelectItem value="compra_local">Compra en el Local</SelectItem>
+                                          </SelectContent>
+                                        </Select>
+                                      </div>
+
+                                      {bev.modalidad === 'cover' && (
+                                        <div className="grid grid-cols-2 gap-3">
+                                          <div>
+                                            <Label className="text-xs">Número de Cajas</Label>
+                                            <Input
+                                              type="number"
+                                              placeholder=""
+                                              value={bev.numeroCajas || ''}
+                                              onChange={(e) => updateBeverage(index, 'numeroCajas', parseInt(e.target.value) || 0)}
+                                            />
+                                          </div>
+                                          <div>
+                                            <Label className="text-xs">Costo por Caja (S/)</Label>
+                                            <Input
+                                              type="number"
+                                              step="0.01"
+                                              placeholder=""
+                                              value={bev.costoPorCaja || ''}
+                                              onChange={(e) => updateBeverage(index, 'costoPorCaja', parseFloat(e.target.value) || 0)}
+                                            />
+                                          </div>
+                                        </div>
+                                      )}
+
+                                      {bev.modalidad === 'compra_local' && (
+                                        <div className="space-y-3">
+                                          <div>
+                                            <Label className="text-xs">Cantidad (Cajas)</Label>
+                                            <Input
+                                              type="number"
+                                              placeholder=""
+                                              value={bev.cantidad || ''}
+                                              onChange={(e) => updateBeverage(index, 'cantidad', parseInt(e.target.value) || 0)}
+                                            />
+                                          </div>
+                                          <div className="grid grid-cols-2 gap-3">
+                                            <div>
+                                              <Label className="text-xs">Costo Caja (Local) S/</Label>
+                                              <Input
+                                                type="number"
+                                                step="0.01"
+                                                placeholder=""
+                                                value={bev.costoCajaLocal || ''}
+                                                onChange={(e) => updateBeverage(index, 'costoCajaLocal', parseFloat(e.target.value) || 0)}
+                                              />
+                                            </div>
+                                            <div>
+                                              <Label className="text-xs">Costo Caja (Cliente) S/</Label>
+                                              <Input
+                                                type="number"
+                                                step="0.01"
+                                                placeholder=""
+                                                value={bev.costoCajaCliente || ''}
+                                                onChange={(e) => updateBeverage(index, 'costoCajaCliente', parseFloat(e.target.value) || 0)}
+                                              />
+                                            </div>
+                                          </div>
+                                          <div className="p-2 bg-green-500/10 rounded">
+                                            <div className="flex justify-between text-sm">
+                                              <span className="text-green-700">Utilidad por Caja:</span>
+                                              <span className="font-bold text-green-700">
+                                                S/ {((bev.costoCajaCliente || 0) - (bev.costoCajaLocal || 0)).toFixed(2)}
+                                              </span>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      )}
+                                    </div>
+                                  )}
+
+                                  {/* Cócteles */}
+                                  {bev.tipo === 'coctel' && (
+                                    <div className="space-y-3 p-3 bg-purple-500/5 rounded-lg border border-purple-500/20">
+                                      <div>
+                                        <Label className="text-sm">Modalidad</Label>
+                                        <Select
+                                          value={bev.modalidad || 'cover'}
+                                          onValueChange={(value) => updateBeverage(index, 'modalidad', value)}
+                                        >
+                                          <SelectTrigger>
+                                            <SelectValue />
+                                          </SelectTrigger>
+                                          <SelectContent>
+                                            <SelectItem value="cover">Cover</SelectItem>
+                                            <SelectItem value="compra_local">Compra en el Local</SelectItem>
+                                          </SelectContent>
+                                        </Select>
+                                      </div>
+
+                                      {bev.modalidad === 'cover' && (
+                                        <div className="grid grid-cols-2 gap-3">
+                                          <div>
+                                            <Label className="text-xs">Número de Cócteles</Label>
+                                            <Input
+                                              type="number"
+                                              placeholder=""
+                                              value={bev.cantidad || ''}
+                                              onChange={(e) => updateBeverage(index, 'cantidad', parseInt(e.target.value) || 0)}
+                                            />
+                                          </div>
+                                          <div>
+                                            <Label className="text-xs">Costo por Cóctel (S/)</Label>
+                                            <Input
+                                              type="number"
+                                              step="0.01"
+                                              placeholder=""
+                                              value={bev.costoPorCaja || ''}
+                                              onChange={(e) => updateBeverage(index, 'costoPorCaja', parseFloat(e.target.value) || 0)}
+                                            />
+                                          </div>
+                                        </div>
+                                      )}
+
+                                      {bev.modalidad === 'compra_local' && (
+                                        <div className="space-y-3">
+                                          <div>
+                                            <Label className="text-xs">Cantidad (Cócteles)</Label>
+                                            <Input
+                                              type="number"
+                                              placeholder=""
+                                              value={bev.cantidad || ''}
+                                              onChange={(e) => updateBeverage(index, 'cantidad', parseInt(e.target.value) || 0)}
+                                            />
+                                          </div>
+                                          <div className="grid grid-cols-2 gap-3">
+                                            <div>
+                                              <Label className="text-xs">Costo Cóctel (Local) S/</Label>
+                                              <Input
+                                                type="number"
+                                                step="0.01"
+                                                placeholder=""
+                                                value={bev.costoCoctelLocal || ''}
+                                                onChange={(e) => updateBeverage(index, 'costoCoctelLocal', parseFloat(e.target.value) || 0)}
+                                              />
+                                            </div>
+                                            <div>
+                                              <Label className="text-xs">Costo Cóctel (Cliente) S/</Label>
+                                              <Input
+                                                type="number"
+                                                step="0.01"
+                                                placeholder=""
+                                                value={bev.costoCoctelCliente || ''}
+                                                onChange={(e) => updateBeverage(index, 'costoCoctelCliente', parseFloat(e.target.value) || 0)}
+                                              />
+                                            </div>
+                                          </div>
+                                          <div className="p-2 bg-green-500/10 rounded">
+                                            <div className="flex justify-between text-sm">
+                                              <span className="text-green-700">Utilidad por Cóctel:</span>
+                                              <span className="font-bold text-green-700">
+                                                S/ {((bev.costoCoctelCliente || 0) - (bev.costoCoctelLocal || 0)).toFixed(2)}
+                                              </span>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      )}
+                                    </div>
+                                  )}
+                                </div>
+                                
+                                {/* Botones */}
+                                <div className="flex items-center gap-2 shrink-0">
+                                  {!isSaved && (
+                                    <Button
+                                      type="button"
+                                      size="sm"
+                                      onClick={() => saveBeverage(index)}
+                                      className="bg-gradient-primary"
+                                    >
+                                      <Save className="h-4 w-4 mr-2" />
+                                      Registrar
+                                    </Button>
+                                  )}
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => removeBeverage(index)}
+                                    className="shrink-0"
+                                  >
+                                    <Trash2 className="h-4 w-4 text-destructive" />
+                                  </Button>
+                                </div>
+                              </div>
+                              ) : (
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-3">
+                                    <div className="h-10 w-10 rounded-full bg-green-500/20 flex items-center justify-center">
+                                      <span className="text-lg font-bold text-green-700 capitalize">
+                                        {bev.tipo.charAt(0)}
+                                      </span>
+                                    </div>
+                                    <div>
+                                      <p className="font-semibold text-sm capitalize">{bev.tipo}</p>
+                                      <p className="text-xs text-muted-foreground">
+                                        {bev.tipo === 'gaseosa' || bev.tipo === 'agua' || bev.tipo === 'champan' || bev.tipo === 'vino'
+                                          ? `${bev.cantidad || 0} unid. × S/ ${bev.precioUnitario || 0}`
+                                          : bev.tipo === 'cerveza'
+                                          ? `${bev.cantidad || bev.numeroCajas || 0} cajas`
+                                          : `${bev.cantidad || 0} cócteles`
+                                        }
+                                      </p>
+                                    </div>
+                                  </div>
+                                  <Badge variant="outline" className="bg-green-500/20 text-green-700 border-green-500/30 text-xs">
+                                    ✓ Registrado
+                                  </Badge>
+                                </div>
+                              )}
+                            </CardContent>
+                          </Card>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <div className="text-center py-8 text-muted-foreground">
+                        <p className="text-sm">No hay bebidas agregadas</p>
+                        <p className="text-xs mt-1">Haz clic en "Agregar Bebida" para comenzar</p>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </>
+            )}
+
+            {formData.serviceType === 'solo_alquiler' && (
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Detalles de Comida</CardTitle>
+                  <CardTitle className="text-lg">Detalles de Alquiler</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div>
-                    <Label>Tipo de Plato *</Label>
-                    <Select
-                      value={formData.foodDetails?.tipoDePlato || ''}
-                      onValueChange={(value) => {
-                        const selectedItem = menuItems.find(item => item.name === value);
-                        setFormData({
-                          ...formData,
-                          foodDetails: {
-                            ...formData.foodDetails!,
-                            tipoDePlato: value,
-                            precioPorPlato: selectedItem?.price || 0,
-                          },
-                        });
-                      }}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecciona un plato" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {menuItems.map((item) => (
-                          <SelectItem key={item.id} value={item.name}>
-                            {item.name} - S/ {item.price}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label>Cantidad de Mesas</Label>
+                      <Input
+                        type="number"
+                        placeholder="Ej: 20"
+                        value={formData.rentalDetails?.cantidadMesas || ''}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            rentalDetails: {
+                              ...formData.rentalDetails!,
+                              cantidadMesas: parseInt(e.target.value) || 0,
+                            },
+                          })
+                        }
+                      />
+                    </div>
 
-                  <div>
-                    <Label>Cantidad de Platos *</Label>
-                    <Input
-                      type="number"
-                      placeholder="150"
-                      value={formData.foodDetails?.cantidadDePlatos || ''}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          foodDetails: {
-                            ...formData.foodDetails!,
-                            cantidadDePlatos: parseInt(e.target.value),
-                          },
-                        })
-                      }
-                    />
-                  </div>
+                    <div>
+                      <Label>Cantidad de Vasos</Label>
+                      <Input
+                        type="number"
+                        placeholder="Ej: 100"
+                        value={formData.rentalDetails?.cantidadVasos || ''}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            rentalDetails: {
+                              ...formData.rentalDetails!,
+                              cantidadVasos: parseInt(e.target.value) || 0,
+                            },
+                          })
+                        }
+                      />
+                    </div>
 
-                  <div>
-                    <Label>Precio por Plato *</Label>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      value={formData.foodDetails?.precioPorPlato || ''}
-                      disabled={!!formData.foodDetails?.tipoDePlato}
-                      className={formData.foodDetails?.tipoDePlato ? 'bg-muted' : ''}
-                    />
-                  </div>
+                    <div>
+                      <Label>Mantelería</Label>
+                      <Input
+                        type="number"
+                        placeholder="Cantidad"
+                        value={formData.rentalDetails?.cantidadManteleria || ''}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            rentalDetails: {
+                              ...formData.rentalDetails!,
+                              cantidadManteleria: parseInt(e.target.value) || 0,
+                            },
+                          })
+                        }
+                      />
+                    </div>
 
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="cerveza"
-                      checked={formData.foodDetails?.incluyeCerveza || false}
-                      onCheckedChange={(checked) =>
-                        setFormData({
-                          ...formData,
-                          foodDetails: { ...formData.foodDetails!, incluyeCerveza: checked as boolean },
-                        })
-                      }
-                    />
-                    <Label htmlFor="cerveza">¿Incluye Cerveza?</Label>
-                  </div>
-
-                  <div>
-                    <Label>Tipo de Pago *</Label>
-                    <Select
-                      value={formData.foodDetails?.tipoDePago || 'cover'}
-                      onValueChange={(value) =>
-                        setFormData({
-                          ...formData,
-                          foodDetails: { ...formData.foodDetails!, tipoDePago: value as PaymentType },
-                        })
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="cover">Cover (pago fijo)</SelectItem>
-                        <SelectItem value="compra_local">Compra en el local</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="vigilante"
+                        checked={formData.rentalDetails?.incluyeVigilante || false}
+                        onCheckedChange={(checked) =>
+                          setFormData({
+                            ...formData,
+                            rentalDetails: { ...formData.rentalDetails!, incluyeVigilante: checked as boolean },
+                          })
+                        }
+                      />
+                      <Label htmlFor="vigilante">¿Incluye Vigilante?</Label>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -629,9 +1237,30 @@ export function CreateEventModal({ open, onClose }: CreateEventModalProps) {
         return (
           <div className="space-y-4">
             <div>
-              <Label>Nombre del Cliente *</Label>
+              <Label>Tipo de Cliente *</Label>
+              <Select
+                value={formData.client?.tipoCliente || 'individual'}
+                onValueChange={(value) =>
+                  setFormData({
+                    ...formData,
+                    client: { ...formData.client!, tipoCliente: value as 'individual' | 'corporativo' },
+                  })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecciona tipo" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="individual">Individual</SelectItem>
+                  <SelectItem value="corporativo">Corporativo</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label>{formData.client?.tipoCliente === 'corporativo' ? 'Nombre de la Empresa *' : 'Nombre del Cliente *'}</Label>
               <Input
-                placeholder="Juan Pérez"
+                placeholder={formData.client?.tipoCliente === 'corporativo' ? 'Empresa XYZ' : 'Juan Pérez'}
                 value={formData.client?.name || ''}
                 onChange={(e) =>
                   setFormData({
@@ -700,23 +1329,47 @@ export function CreateEventModal({ open, onClose }: CreateEventModalProps) {
             </div>
 
             <div>
-              <Label>Foto del Contrato</Label>
-              <div className="flex items-center gap-2">
-                <Input type="file" accept="image/*" />
-                <Button type="button" variant="outline" size="icon">
-                  <Upload className="h-4 w-4" />
-                </Button>
-              </div>
+              <Label>Garantía (S/)</Label>
+              <Input
+                type="number"
+                placeholder="500.00"
+                step="0.01"
+                value={formData.contract?.garantia || ''}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    contract: {
+                      ...formData.contract!,
+                      garantia: parseFloat(e.target.value) || 0,
+                    },
+                  })
+                }
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                Monto de garantía por daños o cancelación
+              </p>
             </div>
 
             <div>
-              <Label>Recibos de Pago</Label>
-              <div className="flex items-center gap-2">
-                <Input type="file" accept="image/*" multiple />
-                <Button type="button" variant="outline" size="icon">
-                  <Upload className="h-4 w-4" />
-                </Button>
-              </div>
+              <Label>Caja Chica del Evento (S/)</Label>
+              <Input
+                type="number"
+                placeholder="10000.00"
+                step="0.01"
+                value={formData.contract?.presupuestoAsignado || ''}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    contract: {
+                      ...formData.contract!,
+                      presupuestoAsignado: parseFloat(e.target.value) || 0,
+                    },
+                  })
+                }
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                Presupuesto asignado para todos los gastos del evento
+              </p>
             </div>
           </div>
         );
@@ -811,6 +1464,33 @@ export function CreateEventModal({ open, onClose }: CreateEventModalProps) {
                               className="bg-success/10 font-bold"
                             />
                           </div>
+                          
+                          {/* Estado de Pago */}
+                          <div>
+                            <Label>Estado de Pago</Label>
+                            <select
+                              className="w-full h-10 px-3 rounded-md border border-input bg-background"
+                              value={item.estadoPago || 'pendiente'}
+                              onChange={(e) => updateDecoration(index, 'estadoPago', e.target.value)}
+                            >
+                              <option value="pendiente">Pendiente</option>
+                              <option value="adelanto">Adelanto Dado</option>
+                              <option value="pagado">Pagado Completo</option>
+                            </select>
+                          </div>
+                          
+                          {/* Monto Pagado */}
+                          {(item.estadoPago === 'adelanto' || item.estadoPago === 'pagado') && (
+                            <div>
+                              <Label>Monto Pagado (S/)</Label>
+                              <Input
+                                type="number"
+                                step="0.01"
+                                value={item.montoPagado || 0}
+                                onChange={(e) => updateDecoration(index, 'montoPagado', parseFloat(e.target.value) || 0)}
+                              />
+                            </div>
+                          )}
                         </div>
                         <Button
                           type="button"
@@ -839,137 +1519,246 @@ export function CreateEventModal({ open, onClose }: CreateEventModalProps) {
       case 5:
         return (
           <div className="space-y-4">
-            {/* Service Users Section */}
-            <Card className="border-primary/30 bg-primary/5">
-              <CardHeader>
-                <CardTitle className="text-base flex items-center gap-2">
-                  <Users className="h-5 w-5" />
-                  Personal de Servicio (Usuarios del Sistema)
-                </CardTitle>
-                <CardDescription>
-                  Selecciona usuarios que tendrán acceso para registrar gastos en este evento
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {serviceUsers.map((serviceUser) => (
-                  <div
-                    key={serviceUser.id}
-                    className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors"
-                  >
-                    <div className="flex items-center gap-3">
-                      <Checkbox
-                        checked={selectedServiceUsers.includes(serviceUser.id)}
-                        onCheckedChange={() => toggleServiceUser(serviceUser.id)}
-                      />
-                      <div>
-                        <p className="font-medium">{serviceUser.name} {serviceUser.last_name}</p>
-                        <p className="text-xs text-muted-foreground">{serviceUser.email}</p>
-                      </div>
-                    </div>
-                    {selectedServiceUsers.includes(serviceUser.id) && (
-                      <Badge variant="outline" className="bg-success/10 text-success border-success/20">
-                        Asignado
-                      </Badge>
-                    )}
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-
-            {/* Temporary Staff Section */}
+            {/* Personal Temporal Section - ÚNICO LUGAR PARA AGREGAR PERSONAL */}
             <Card>
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div>
-                    <CardTitle className="text-base">Personal Temporal</CardTitle>
+                    <CardTitle className="text-base">Personal del Evento</CardTitle>
                     <CardDescription>
-                      Personal sin cuenta en el sistema (mozos, limpieza, etc.)
+                      Agrega el personal necesario para el evento. Los roles de Coordinador y Encargado de Compras pueden tener acceso al sistema.
                     </CardDescription>
                   </div>
                   <Button type="button" onClick={addStaff} size="sm">
                     <Plus className="h-4 w-4 mr-2" />
-                    Agregar
+                    Agregar Personal
                   </Button>
                 </div>
               </CardHeader>
               <CardContent>
-                {formData.staff && formData.staff.filter(s => !s.userId).length > 0 ? (
+                {formData.staff && formData.staff.length > 0 ? (
                   <div className="space-y-3">
-                    {formData.staff.filter(s => !s.userId).map((person, index) => {
-                      const actualIndex = formData.staff!.indexOf(person);
+                    {formData.staff.map((person, index) => {
+                      const rateType = person.roleId ? getRateType(person.roleId) : 'hourly';
+                      const canAccess = person.roleId ? canRoleHaveSystemAccess(person.roleId) : false;
+                      const isSaved = savedStaffIndexes.has(index);
+                      
                       return (
-                        <Card key={actualIndex}>
-                          <CardContent className="pt-6 space-y-3">
-                            <div className="flex items-start justify-between">
-                              <div className="flex-1 grid grid-cols-2 gap-3">
-                                <div>
-                                  <Label>Nombre</Label>
-                                  <Input
-                                    placeholder="Juan Pérez"
-                                    value={person.name}
-                                    onChange={(e) => updateStaff(actualIndex, 'name', e.target.value)}
-                                  />
+                        <Card key={index} className={`border-2 ${isSaved ? 'bg-green-500/5 border-green-500/30' : ''}`}>
+                          <CardContent className={isSaved ? 'pt-3 pb-3' : 'pt-6 space-y-4'}>
+                            {isSaved ? (
+                              // Compact saved view
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                  <div className="h-10 w-10 rounded-full bg-green-500/20 flex items-center justify-center">
+                                    <span className="text-lg font-bold text-green-700">
+                                      {person.name.charAt(0)}
+                                    </span>
+                                  </div>
+                                  <div>
+                                    <p className="font-semibold text-sm">{person.name}</p>
+                                    <p className="text-xs text-muted-foreground">{person.role}</p>
+                                  </div>
                                 </div>
-                                <div>
-                                  <Label>Rol</Label>
-                                  <Input
-                                    placeholder="Mesero"
-                                    value={person.role}
-                                    onChange={(e) => updateStaff(actualIndex, 'role', e.target.value)}
-                                  />
+                                <div className="text-right">
+                                  <p className="font-bold text-sm">S/ {person.totalCost.toLocaleString()}</p>
+                                  <Badge variant="outline" className="bg-green-500/20 text-green-700 border-green-500/30 text-xs mt-1">
+                                    ✓ Registrado
+                                  </Badge>
                                 </div>
-                                <div>
-                                  <Label>Horas</Label>
-                                  <Input
-                                    type="number"
-                                    value={person.hours}
-                                    onChange={(e) =>
-                                      updateStaff(actualIndex, 'hours', parseInt(e.target.value))
-                                    }
-                                  />
+                              </div>
+                            ) : (
+                              // Full editable form
+                              <div className="space-y-4">
+                            <div className="flex items-start justify-between gap-4">
+                              <div className="flex-1 space-y-4">
+                                {/* Fila 1: Nombre y Rol */}
+                                <div className="grid grid-cols-2 gap-3">
+                                  <div>
+                                    <Label>Nombre *</Label>
+                                    <Input
+                                      placeholder="Juan Pérez"
+                                      value={person.name}
+                                      onChange={(e) => updateStaff(index, 'name', e.target.value)}
+                                    />
+                                  </div>
+                                  <div>
+                                    <Label>Rol *</Label>
+                                    <Select
+                                      value={person.roleId || ''}
+                                      onValueChange={(value) => updateStaff(index, 'roleId', value)}
+                                    >
+                                      <SelectTrigger>
+                                        <SelectValue placeholder="Selecciona un rol" />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        {STAFF_ROLES.map((role) => (
+                                          <SelectItem key={role.id} value={role.id}>
+                                            <div className="flex flex-col">
+                                              <span>{role.name}</span>
+                                              <span className="text-xs text-muted-foreground">
+                                                S/ {role.defaultRate}/{role.rateType === 'hourly' ? 'hora' : 'plato'}
+                                              </span>
+                                            </div>
+                                          </SelectItem>
+                                        ))}
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
                                 </div>
-                                <div>
-                                  <Label>Tarifa/Hora</Label>
-                                  <Input
-                                    type="number"
-                                    step="0.01"
-                                    value={person.hourlyRate}
-                                    onChange={(e) =>
-                                      updateStaff(actualIndex, 'hourlyRate', parseFloat(e.target.value))
-                                    }
-                                  />
+
+                                {/* Fila 2: Tarifa y Cantidad */}
+                                <div className="grid grid-cols-3 gap-3">
+                                  {rateType === 'hourly' ? (
+                                    <>
+                                      <div>
+                                        <Label>Horas</Label>
+                                        <Input
+                                          type="number"
+                                          value={person.hours || 0}
+                                          onChange={(e) => updateStaff(index, 'hours', parseInt(e.target.value) || 0)}
+                                        />
+                                      </div>
+                                      <div>
+                                        <Label>Tarifa/Hora (S/)</Label>
+                                        <Input
+                                          type="number"
+                                          step="0.01"
+                                          value={person.hourlyRate || 0}
+                                          onChange={(e) => updateStaff(index, 'hourlyRate', parseFloat(e.target.value) || 0)}
+                                        />
+                                      </div>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <div>
+                                        <Label>Platos</Label>
+                                        <Input
+                                          type="number"
+                                          value={person.plates || 0}
+                                          onChange={(e) => updateStaff(index, 'plates', parseInt(e.target.value) || 0)}
+                                        />
+                                      </div>
+                                      <div>
+                                        <Label>Tarifa/Plato (S/)</Label>
+                                        <Input
+                                          type="number"
+                                          step="0.01"
+                                          value={person.hourlyRate || 0}
+                                          onChange={(e) => updateStaff(index, 'hourlyRate', parseFloat(e.target.value) || 0)}
+                                        />
+                                      </div>
+                                    </>
+                                  )}
+                                  <div>
+                                    <Label>Costo Total</Label>
+                                    <Input
+                                      type="number"
+                                      value={person.totalCost || 0}
+                                      disabled
+                                      className="bg-muted font-bold"
+                                    />
+                                  </div>
                                 </div>
+
+                                {/* Fila 3: Contacto */}
                                 <div>
-                                  <Label>Contacto</Label>
+                                  <Label>Contacto *</Label>
                                   <Input
                                     placeholder="+51 999 999 999"
                                     value={person.contact}
-                                    onChange={(e) => updateStaff(actualIndex, 'contact', e.target.value)}
+                                    onChange={(e) => updateStaff(index, 'contact', e.target.value)}
                                   />
                                 </div>
-                                <div>
-                                  <Label>Costo Total</Label>
-                                  <Input type="number" value={person.totalCost} disabled className="bg-muted" />
-                                </div>
+
+                                {/* Opción de acceso al sistema (solo para Coordinador y Encargado de Compras) */}
+                                {canAccess && (
+                                  <div className="border-t pt-4 space-y-3">
+                                    <div className="flex items-center space-x-2">
+                                      <Checkbox
+                                        id={`access-${index}`}
+                                        checked={person.hasSystemAccess || false}
+                                        onCheckedChange={(checked) => updateStaff(index, 'hasSystemAccess', checked as boolean)}
+                                      />
+                                      <label
+                                        htmlFor={`access-${index}`}
+                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                      >
+                                        Conceder acceso al sistema
+                                      </label>
+                                    </div>
+                                    
+                                    {person.hasSystemAccess && (
+                                      <Card className="bg-primary/5 border-primary/20">
+                                        <CardContent className="pt-4 space-y-3">
+                                          <div className="grid grid-cols-2 gap-3">
+                                            <div>
+                                              <Label className="text-xs">Email de acceso</Label>
+                                              <Input
+                                                type="email"
+                                                value={person.systemEmail || ''}
+                                                readOnly
+                                                disabled
+                                                className="h-9 bg-muted"
+                                              />
+                                            </div>
+                                            <div>
+                                              <Label className="text-xs">Contraseña</Label>
+                                              <Input
+                                                type="text"
+                                                value={person.systemPassword || ''}
+                                                readOnly
+                                                disabled
+                                                className="h-9 bg-muted"
+                                              />
+                                            </div>
+                                          </div>
+                                          <p className="text-xs text-muted-foreground">
+                                            ✅ Credenciales asignadas automáticamente según el rol seleccionado
+                                          </p>
+                                        </CardContent>
+                                      </Card>
+                                    )}
+                                  </div>
+                                )}
                               </div>
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => removeStaff(actualIndex)}
-                                className="ml-2"
-                              >
-                                <Trash2 className="h-4 w-4 text-destructive" />
-                              </Button>
+                              
+                              {/* Botones de acción */}
+                              <div className="flex flex-col gap-2">
+                                {!isSaved && (
+                                  <Button
+                                    type="button"
+                                    size="sm"
+                                    onClick={() => saveStaffMember(index)}
+                                    className="bg-gradient-primary"
+                                  >
+                                    <Save className="h-4 w-4 mr-2" />
+                                    Registrar
+                                  </Button>
+                                )}
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => removeStaff(index)}
+                                  className="shrink-0"
+                                >
+                                  <Trash2 className="h-4 w-4 text-destructive" />
+                                </Button>
+                              </div>
                             </div>
+                              </div>
+                            )}
                           </CardContent>
                         </Card>
                       );
                     })}
                   </div>
                 ) : (
-                  <div className="py-8 text-center text-muted-foreground">
-                    <p>No hay personal temporal agregado</p>
+                  <div className="py-12 text-center text-muted-foreground">
+                    <Users className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                    <p>No hay personal agregado</p>
+                    <p className="text-sm mt-1">Haz clic en "Agregar Personal" para comenzar</p>
                   </div>
                 )}
               </CardContent>
@@ -977,12 +1766,17 @@ export function CreateEventModal({ open, onClose }: CreateEventModalProps) {
 
             {/* Total Cost Card */}
             {formData.staff && formData.staff.length > 0 && (
-              <Card className="bg-primary/5 border-primary/20">
+              <Card className="bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
                 <CardContent className="p-4">
                   <div className="flex justify-between items-center">
-                    <span className="font-semibold">Costo Total de Personal:</span>
-                    <span className="text-xl font-bold text-primary">
-                      S/ {(formData.staff || []).reduce((sum, p) => sum + p.totalCost, 0).toFixed(2)}
+                    <div>
+                      <p className="text-sm text-muted-foreground">Costo Total de Personal</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {formData.staff.length} persona{formData.staff.length !== 1 ? 's' : ''} contratada{formData.staff.length !== 1 ? 's' : ''}
+                      </p>
+                    </div>
+                    <span className="text-2xl font-bold text-primary">
+                      S/ {(formData.staff || []).reduce((sum, p) => sum + (p.totalCost || 0), 0).toFixed(2)}
                     </span>
                   </div>
                 </CardContent>
@@ -1030,41 +1824,169 @@ export function CreateEventModal({ open, onClose }: CreateEventModalProps) {
                 <CardTitle className="text-base">Desglose de Costos</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3 text-sm">
+                {/* Comida */}
                 {totals.foodCost > 0 && (
-                  <div className="flex justify-between">
-                    <span>Costo de Comida:</span>
-                    <span className="font-medium">S/ {totals.foodCost.toFixed(2)}</span>
+                  <div className="p-3 bg-background rounded-lg border">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="font-semibold">Comida</span>
+                      <span className="font-bold">S/ {totals.foodCost.toFixed(2)}</span>
+                    </div>
+                    {formData.foodDetails && (
+                      <div className="space-y-1 text-xs text-muted-foreground">
+                        <div className="flex justify-between">
+                          <span>Plato:</span>
+                          <span className="font-medium">{formData.foodDetails.tipoDePlato}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Cantidad de platos:</span>
+                          <span className="font-medium">{formData.foodDetails.cantidadDePlatos}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Precio por plato:</span>
+                          <span className="font-medium">S/ {formData.foodDetails.precioPorPlato.toFixed(2)}</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
+                
+                {/* Cerveza */}
+                {formData.foodDetails?.incluyeCerveza && totals.cervezaCost > 0 && (
+                  <div className="p-3 bg-background rounded-lg border">
+                    <div className="flex justify-between items-center">
+                      <span className="font-semibold">Cerveza</span>
+                      <span className="font-bold">S/ {totals.cervezaCost.toFixed(2)}</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {formData.foodDetails.numeroCajasCerveza || 0} cajas × S/ {formData.foodDetails.costoPorCaja || 0}
+                      {' - '}
+                      {formData.foodDetails.tipoDePago === 'cover' ? 'Cover' : 'Compra en local'}
+                    </p>
+                  </div>
+                )}
+                
+                {/* Bebidas */}
+                {formData.beverages && formData.beverages.length > 0 && (
+                  <div className="p-3 bg-background rounded-lg border">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="font-semibold">Bebidas</span>
+                      <span className="font-bold">S/ {
+                        formData.beverages.reduce((total, bev) => {
+                          let cost = 0;
+                          if (bev.tipo === 'gaseosa' || bev.tipo === 'agua' || bev.tipo === 'champan' || bev.tipo === 'vino') {
+                            cost = (bev.cantidad || 0) * (bev.precioUnitario || 0);
+                          } else if (bev.tipo === 'cerveza') {
+                            if (bev.modalidad === 'cover') {
+                              cost = (bev.numeroCajas || 0) * (bev.costoPorCaja || 0);
+                            } else {
+                              cost = (bev.cantidad || 0) * (bev.costoCajaLocal || 0); // COSTO LOCAL
+                            }
+                          } else if (bev.tipo === 'coctel') {
+                            if (bev.modalidad === 'cover') {
+                              cost = 0; // Cover no tiene costo
+                            } else {
+                              cost = (bev.cantidad || 0) * (bev.costoCoctelLocal || 0); // COSTO LOCAL
+                            }
+                          }
+                          return total + cost;
+                        }, 0).toFixed(2)
+                      }</span>
+                    </div>
+                    <div className="space-y-1 text-xs text-muted-foreground">
+                      {formData.beverages.map((bev, idx) => {
+                        let cost = 0;
+                        let desc = '';
+                        if (bev.tipo === 'gaseosa' || bev.tipo === 'agua' || bev.tipo === 'champan' || bev.tipo === 'vino') {
+                          cost = (bev.cantidad || 0) * (bev.precioUnitario || 0);
+                          desc = `${bev.cantidad || 0} unid. × S/ ${bev.precioUnitario || 0}`;
+                        } else if (bev.tipo === 'cerveza') {
+                          if (bev.modalidad === 'cover') {
+                            cost = (bev.numeroCajas || 0) * (bev.costoPorCaja || 0);
+                            desc = `${bev.numeroCajas || 0} cajas × S/ ${bev.costoPorCaja || 0} (Cover)`;
+                          } else {
+                            cost = (bev.cantidad || 0) * (bev.costoCajaLocal || 0);
+                            desc = `${bev.cantidad || 0} cajas × S/ ${bev.costoCajaLocal || 0} (Local)`;
+                          }
+                        } else if (bev.tipo === 'coctel') {
+                          if (bev.modalidad === 'cover') {
+                            cost = 0;
+                            desc = 'Cover incluido';
+                          } else {
+                            cost = (bev.cantidad || 0) * (bev.costoCoctelLocal || 0);
+                            desc = `${bev.cantidad || 0} cócteles × S/ ${bev.costoCoctelLocal || 0} (Local)`;
+                          }
+                        }
+                        return (
+                          <div key={idx} className="flex justify-between">
+                            <span className="capitalize">{bev.tipo}:</span>
+                            <span>S/ {cost.toFixed(2)} ({desc})</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+                
+                {/* Decoración */}
                 {totals.decorationClientCost > 0 && (
-                  <>
-                    <div className="flex justify-between">
-                      <span>Costo Decoración (Cliente):</span>
-                      <span className="font-medium">S/ {totals.decorationClientCost.toFixed(2)}</span>
+                  <div className="p-3 bg-background rounded-lg border">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="font-semibold">Decoración</span>
+                      <span className="font-bold">S/ {totals.decorationClientCost.toFixed(2)}</span>
                     </div>
-                    <div className="flex justify-between text-success">
-                      <span>Ganancia Decoración:</span>
-                      <span className="font-bold">S/ {totals.decorationProfit.toFixed(2)}</span>
+                    <div className="grid grid-cols-2 gap-2 text-xs">
+                      <div>
+                        <p className="text-muted-foreground">Costo del Proveedor:</p>
+                        <p className="font-medium">S/ {totals.decorationProviderCost.toFixed(2)}</p>
+                      </div>
+                      <div>
+                        <p className="text-muted-foreground">Costo al Cliente:</p>
+                        <p className="font-medium">S/ {totals.decorationClientCost.toFixed(2)}</p>
+                      </div>
                     </div>
-                  </>
-                )}
-                {totals.staffCost > 0 && (
-                  <div className="flex justify-between">
-                    <span>Costo de Personal:</span>
-                    <span className="font-medium">S/ {totals.staffCost.toFixed(2)}</span>
+                    <div className="mt-2 p-2 bg-green-500/10 rounded">
+                      <div className="flex justify-between text-xs">
+                        <span className="text-green-700">Ganancia:</span>
+                        <span className="font-bold text-green-700">S/ {totals.decorationProfit.toFixed(2)}</span>
+                      </div>
+                    </div>
                   </div>
                 )}
-                <div className="border-t pt-3 flex justify-between">
-                  <span className="font-bold text-lg">PRECIO TOTAL:</span>
-                  <span className="font-bold text-xl text-primary">S/ {totals.totalPrice.toFixed(2)}</span>
+                
+                {/* Garantía */}
+                {totals.garantia > 0 && (
+                  <div className="p-3 bg-background rounded-lg border">
+                    <div className="flex justify-between items-center">
+                      <span className="font-semibold">Garantía</span>
+                      <span className="font-bold">S/ {totals.garantia.toFixed(2)}</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Garantía por daños o cancelación
+                    </p>
+                  </div>
+                )}
+                
+                {/* Precio Total */}
+                <div className="border-t-2 pt-3 mt-4">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="font-bold text-base">PRECIO TOTAL:</span>
+                    <span className="font-bold text-2xl text-primary">S/ {totals.totalPrice.toFixed(2)}</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Incluye: Comida{totals.cervezaCost > 0 ? ', Cerveza' : ''}{totals.decorationClientCost > 0 ? ', Decoración' : ''}{totals.garantia > 0 ? ', Garantía' : ''}
+                  </p>
                 </div>
-                <div className="flex justify-between">
-                  <span>Pago Adelantado:</span>
-                  <span className="font-medium">S/ {totals.advancePayment.toFixed(2)}</span>
+                
+                {/* Adelanto */}
+                <div className="flex justify-between p-2 bg-blue-500/10 rounded">
+                  <span className="font-medium">Pago Adelantado:</span>
+                  <span className="font-bold text-blue-600">S/ {totals.advancePayment.toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between text-warning">
+                
+                {/* Saldo Pendiente */}
+                <div className="flex justify-between p-2 bg-warning/10 rounded">
                   <span className="font-semibold">Saldo Pendiente:</span>
-                  <span className="font-bold">S/ {totals.balance.toFixed(2)}</span>
+                  <span className="font-bold text-warning text-lg">S/ {totals.balance.toFixed(2)}</span>
                 </div>
               </CardContent>
             </Card>

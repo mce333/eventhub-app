@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { ArrowLeft, Edit, Save, X, AlertTriangle } from 'lucide-react';
 import { Event, EventStatus } from '@/types/events';
+import { MOCK_EVENTS } from '@/lib/mockData';
 import { useAuth } from '@/contexts/AuthContext';
 import { getUserRole, hasPermission, canViewEvent, canEditExpenses } from '@/lib/permissions';
 import { toast } from 'sonner';
@@ -17,7 +18,9 @@ import { EventContractTab } from '@/components/events/EventContractTab';
 import { EventDecorationTab } from '@/components/events/EventDecorationTab';
 import { EventStaffTab } from '@/components/events/EventStaffTab';
 import { EventExpensesTab } from '@/components/events/EventExpensesTab';
+import { EventIncomesTab } from '@/components/events/EventIncomesTab';
 import { EventGalleryTab } from '@/components/events/EventGalleryTab';
+import { ChatbotHelper } from '@/components/dashboard/ChatbotHelper';
 
 const statusConfig: Record<EventStatus, { label: string; color: string }> = {
   draft: { label: 'Borrador', color: 'bg-muted/10 text-muted-foreground border-muted/20' },
@@ -40,6 +43,7 @@ export default function EventoDetalle() {
   const canEdit = hasPermission(userRole, 'canEditEvent');
   const canViewFinancial = hasPermission(userRole, 'canViewFinancial');
   const isEncargadoCompras = userRole === 'encargado_compras';
+  const isCoordinador = userRole === 'coordinador';
   const isServicio = userRole === 'servicio';
 
   useEffect(() => {
@@ -47,65 +51,72 @@ export default function EventoDetalle() {
   }, [id]);
 
   const loadEvent = () => {
-    const storedEvents = localStorage.getItem('demo_events');
-    if (storedEvents) {
-      const events: Event[] = JSON.parse(storedEvents);
-      const foundEvent = events.find(e => e.id === parseInt(id || '0'));
-      
-      if (foundEvent) {
-        // Check if user has permission to view this event
-        if (!canViewEvent(user, foundEvent)) {
-          toast.error('No tienes permiso para ver este evento');
-          navigate('/eventos');
-          return;
-        }
-        
-        setEvent(foundEvent);
-        setEditedEvent(foundEvent);
-      } else {
-        toast.error('Evento no encontrado');
+    // Buscar SOLO en localStorage
+    const storedEvents = JSON.parse(localStorage.getItem('demo_events') || '[]');
+    
+    console.log('🔍 Buscando evento ID:', id);
+    console.log('📦 Total eventos en localStorage:', storedEvents.length);
+    
+    const foundEvent = storedEvents.find((e: Event) => e.id === parseInt(id || '0'));
+    
+    if (foundEvent) {
+      console.log('✅ Evento encontrado:', foundEvent.name);
+      // Check if user has permission to view this event
+      if (!canViewEvent(user, foundEvent)) {
+        toast.error('No tienes permiso para ver este evento');
         navigate('/eventos');
+        return;
       }
+      
+      setEvent(foundEvent);
+      setEditedEvent(foundEvent);
+    } else {
+      console.log('❌ Evento no encontrado');
+      toast.error('Evento no encontrado');
+      navigate('/eventos');
     }
   };
 
   const handleSave = () => {
     if (!editedEvent) return;
 
-    const storedEvents = localStorage.getItem('demo_events');
-    if (storedEvents) {
-      const events: Event[] = JSON.parse(storedEvents);
-      const index = events.findIndex(e => e.id === editedEvent.id);
-      
-      if (index !== -1) {
-        // Add audit log entry
-        const updatedEvent = {
-          ...editedEvent,
-          updatedAt: new Date().toISOString(),
-          auditLog: [
-            ...(editedEvent.auditLog || []),
-            {
-              id: Date.now(),
-              eventId: editedEvent.id,
-              userId: user?.id || 1,
-              userName: `${user?.name} ${user?.last_name}`,
-              userRole: user?.role?.name || 'admin',
-              action: 'updated' as const,
-              section: 'evento',
-              description: 'Información del evento actualizada',
-              timestamp: new Date().toISOString(),
-              changes: {},
-            },
-          ],
-        };
+    const storedEvents = JSON.parse(localStorage.getItem('demo_events') || '[]');
+    const index = storedEvents.findIndex((e: Event) => e.id === editedEvent.id);
+    
+    // Add audit log entry
+    const updatedEvent = {
+      ...editedEvent,
+      updatedAt: new Date().toISOString(),
+      auditLog: [
+        ...(editedEvent.auditLog || []),
+        {
+          id: Date.now(),
+          eventId: editedEvent.id,
+          userId: user?.id || 1,
+          userName: `${user?.name} ${user?.last_name}`,
+          userRole: user?.role?.name || 'admin',
+          action: 'updated' as const,
+          section: 'evento',
+          description: 'Información del evento actualizada',
+          timestamp: new Date().toISOString(),
+          changes: {},
+        },
+      ],
+    };
 
-        events[index] = updatedEvent;
-        localStorage.setItem('demo_events', JSON.stringify(events));
-        setEvent(updatedEvent);
-        setIsEditing(false);
-        toast.success('Evento actualizado correctamente');
-      }
+    if (index !== -1) {
+      // Update existing event in demo_events
+      storedEvents[index] = updatedEvent;
+      localStorage.setItem('demo_events', JSON.stringify(storedEvents));
+    } else {
+      // Event is from MOCK_EVENTS, add it to demo_events
+      storedEvents.push(updatedEvent);
+      localStorage.setItem('demo_events', JSON.stringify(storedEvents));
     }
+    
+    setEvent(updatedEvent);
+    setIsEditing(false);
+    toast.success('Evento actualizado correctamente');
   };
 
   const handleCancel = () => {
@@ -128,7 +139,7 @@ export default function EventoDetalle() {
   }
 
   // Determine default tab based on user role
-  const defaultTab = isEncargadoCompras || isServicio ? 'expenses' : 'info';
+  const defaultTab = isEncargadoCompras || isServicio ? 'expenses' : 'contract';
 
   return (
     <div className="min-h-screen bg-background flex">
@@ -162,27 +173,6 @@ export default function EventoDetalle() {
                 </div>
               </div>
 
-              {canEdit && !isEncargadoCompras && !isServicio && (
-                <div className="flex gap-2">
-                  {isEditing ? (
-                    <>
-                      <Button variant="outline" onClick={handleCancel}>
-                        <X className="h-4 w-4 mr-2" />
-                        Cancelar
-                      </Button>
-                      <Button onClick={handleSave} className="bg-gradient-primary">
-                        <Save className="h-4 w-4 mr-2" />
-                        Guardar
-                      </Button>
-                    </>
-                  ) : (
-                    <Button onClick={() => setIsEditing(true)} className="bg-gradient-primary">
-                      <Edit className="h-4 w-4 mr-2" />
-                      Editar
-                    </Button>
-                  )}
-                </div>
-              )}
             </div>
 
             {/* Service User Info Alert */}
@@ -252,41 +242,42 @@ export default function EventoDetalle() {
 
             {/* Tabs */}
             <Tabs defaultValue={defaultTab} className="w-full">
-              <TabsList className={isEncargadoCompras || isServicio ? "grid w-full grid-cols-1" : "grid w-full grid-cols-6"}>
-                {!isEncargadoCompras && !isServicio && (
+              <TabsList className={isEncargadoCompras || isServicio || isCoordinador ? "grid w-full grid-cols-2" : "grid w-full grid-cols-6"}>
+                {!isEncargadoCompras && !isServicio && !isCoordinador && (
                   <>
-                    <TabsTrigger value="info">Información</TabsTrigger>
-                    <TabsTrigger value="contract">Contrato</TabsTrigger>
+                    <TabsTrigger value="contract">Información del Contrato</TabsTrigger>
                     <TabsTrigger value="decoration">Decoración</TabsTrigger>
                     <TabsTrigger value="staff">Personal</TabsTrigger>
                   </>
                 )}
                 <TabsTrigger value="expenses">Gastos</TabsTrigger>
-                {!isEncargadoCompras && !isServicio && (
+                {(userRole === 'admin' || userRole === 'coordinador') && (
+                  <TabsTrigger value="incomes">Ingresos</TabsTrigger>
+                )}
+                {!isEncargadoCompras && !isServicio && !isCoordinador && (
                   <TabsTrigger value="gallery">Galería</TabsTrigger>
                 )}
               </TabsList>
 
-              {!isEncargadoCompras && !isServicio && (
+              {!isEncargadoCompras && !isServicio && !isCoordinador && (
                 <>
-                  <TabsContent value="info">
-                    <EventInfoTab
-                      event={isEditing ? editedEvent! : event}
-                      isEditing={isEditing}
-                      onUpdate={setEditedEvent}
-                    />
-                  </TabsContent>
-
                   <TabsContent value="contract">
-                    <EventContractTab event={event} />
+                    <div className="space-y-6">
+                      <EventInfoTab
+                        event={isEditing ? editedEvent! : event}
+                        isEditing={isEditing}
+                        onUpdate={setEditedEvent}
+                      />
+                      <EventContractTab event={event} />
+                    </div>
                   </TabsContent>
 
                   <TabsContent value="decoration">
-                    <EventDecorationTab event={event} />
+                    <EventDecorationTab event={event} onUpdate={loadEvent} />
                   </TabsContent>
 
                   <TabsContent value="staff">
-                    <EventStaffTab event={event} />
+                    <EventStaffTab event={event} onUpdate={loadEvent} />
                   </TabsContent>
                 </>
               )}
@@ -295,7 +286,13 @@ export default function EventoDetalle() {
                 <EventExpensesTab event={event} onUpdate={loadEvent} />
               </TabsContent>
 
-              {!isEncargadoCompras && !isServicio && (
+              {(userRole === 'admin' || userRole === 'coordinador') && (
+                <TabsContent value="incomes">
+                  <EventIncomesTab event={event} onUpdate={loadEvent} />
+                </TabsContent>
+              )}
+
+              {!isEncargadoCompras && !isServicio && !isCoordinador && (
                 <TabsContent value="gallery">
                   <EventGalleryTab event={event} />
                 </TabsContent>
@@ -304,6 +301,9 @@ export default function EventoDetalle() {
           </div>
         </main>
       </div>
+      
+      {/* Chatbot Helper */}
+      <ChatbotHelper />
     </div>
   );
 }

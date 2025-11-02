@@ -1,4 +1,4 @@
-import { LayoutDashboard, Calendar, Users, Settings, TrendingUp, MapPin } from "lucide-react";
+import { LayoutDashboard, Calendar, Users, Settings, TrendingUp, Package, DollarSign } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
@@ -7,9 +7,9 @@ import { getUserRole, canAccessRoute } from "@/lib/permissions";
 const menuItems = [
   { title: "Dashboard", icon: LayoutDashboard, path: "/" },
   { title: "Eventos", icon: Calendar, path: "/eventos" },
+  { title: "Finanzas", icon: DollarSign, path: "/finanzas" },
   { title: "Clientes", icon: Users, path: "/clientes" },
-  { title: "Estadísticas", icon: TrendingUp, path: "/estadisticas" },
-  { title: "Espacios", icon: MapPin, path: "/espacios" },
+  { title: "Almacén", icon: Package, path: "/almacen" },
   { title: "Configuración", icon: Settings, path: "/configuracion" },
 ];
 
@@ -28,7 +28,7 @@ export function Sidebar() {
             <Calendar className="w-6 h-6 text-white" />
           </div>
           <div>
-            <h1 className="text-lg font-bold text-foreground">EventHub</h1>
+            <h1 className="text-lg font-bold text-foreground">Sistema de Control</h1>
             <p className="text-xs text-muted-foreground">Panel de Control</p>
           </div>
         </div>
@@ -55,18 +55,6 @@ export function Sidebar() {
           </NavLink>
         ))}
       </nav>
-
-      <div className="p-4 border-t border-sidebar-border">
-        <div className="bg-gradient-card rounded-lg p-4 border border-primary/20">
-          <h3 className="text-sm font-semibold text-foreground mb-2">¿Necesitas ayuda?</h3>
-          <p className="text-xs text-muted-foreground mb-3">
-            Contacta con soporte para resolver tus dudas
-          </p>
-          <button className="w-full px-3 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors">
-            Contactar
-          </button>
-        </div>
-      </div>
     </aside>
   );
 }
