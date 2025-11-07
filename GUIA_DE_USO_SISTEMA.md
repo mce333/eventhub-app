@@ -541,14 +541,3 @@ Base de datos de clientes:
 
 ---
 
-## 📞 SOPORTE
-
-Si tienes dudas sobre alguna funcionalidad:
-1. Verifica el rol de tu usuario
-2. Consulta la sección correspondiente en esta guía
-3. Contacta al administrador del sistema
-
----
-
-**Última actualización:** Junio 2025
-**Versión del Sistema:** 2.0
